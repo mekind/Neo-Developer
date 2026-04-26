@@ -10,7 +10,6 @@ export default function App() {
     agents,
     isLoading,
     errorMessage,
-    lastInteractionMessage,
     isDialogOpen,
     activeChatAgent,
     isChatOpen,
@@ -19,15 +18,16 @@ export default function App() {
     closeChatDialog,
     handleCreateAgent,
     handleAgentInteraction,
+    handleOpenTestChat,
   } = useAgentsPage()
 
   return (
     <main className="app-shell">
-      <TitleSection liveCount={agents.length} />
+      <TitleSection liveCount={agents.length} onOpenTestChat={handleOpenTestChat} isChatDisabled={agents.length === 0} />
 
       <div className="app-body">
         <SidebarSection agents={agents} isLoading={isLoading} errorMessage={errorMessage} onOpenDialog={openDialog} />
-        <MapSection agents={agents} onAgentInteraction={handleAgentInteraction} lastInteractionMessage={lastInteractionMessage} />
+        <MapSection agents={agents} onAgentInteraction={handleAgentInteraction} />
       </div>
 
       <AddAgentDialogSection isOpen={isDialogOpen} onClose={closeDialog} onCreateAgent={handleCreateAgent} />

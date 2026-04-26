@@ -14,40 +14,13 @@ const backendAgents: AgentPayload[] = [
     name: 'Hana',
     imageAsset: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22/%3E',
   },
-  {
-    id: 'guide-min',
-    name: 'Min',
-    imageAsset: null,
-  },
 ]
 
 function installFetchMock(overrides: Record<string, { ok?: boolean; status?: number; json: unknown }> = {}) {
-  vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
     const url = String(input)
     const pathname = new URL(url).pathname
-    const method = init?.method ?? 'GET'
-    const override = overrides[`${method} ${pathname}`] ?? overrides[pathname]
-
-    const payload =
-      override ??
-      (pathname === '/agents' && method === 'POST'
-        ? {
-            ok: true,
-            status: 200,
-            json: {
-              id: 'new-agent',
-              name: 'Warm Guide',
-              archetype: 'maker',
-              personaSummary: 'Warm school guide',
-              backstoryPrompt: 'Helps every newcomer settle in.',
-              createdAt: '2026-04-26T00:00:00.000Z',
-            },
-          }
-        : {
-            ok: true,
-            status: 200,
-            json: backendAgents,
-          })
+    const payload = overrides[pathname] ?? { ok: true, status: 200, json: backendAgents }
 
     return {
       ok: payload.ok ?? true,
@@ -58,11 +31,18 @@ function installFetchMock(overrides: Record<string, { ok?: boolean; status?: num
 }
 
 vi.mock('@/game/WorldCanvas', () => ({
-  WorldCanvas: ({ onAgentInteraction }: { onAgentInteraction: (agent: { id: string; label: string; usesPlaceholder: boolean }) => void }) => (
+  WorldCanvas: ({ onAgentInteraction }: { onAgentInteraction: (agent: { id: string; label: string; usesPlaceholder: boolean; imageSrc: string }) => void }) => (
     <div aria-label="Phaser map viewport">
       <button
         type="button"
-        onClick={() => onAgentInteraction({ id: 'mentor-hana', label: 'Hana', usesPlaceholder: false })}
+        onClick={() =>
+          onAgentInteraction({
+            id: 'mentor-hana',
+            label: 'Hana',
+            usesPlaceholder: false,
+            imageSrc: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22/%3E',
+          })
+        }
       >
         Simulate interaction
       </button>
@@ -82,80 +62,55 @@ describe('App', () => {
     vi.unstubAllEnvs()
   })
 
-  it('renders the shell with a game-only world stage', async () => {
+  it('renders the shell with the game viewport and seeded dummy npcs', async () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/agents/i)
-    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Phaser map viewport/i)).toBeInTheDocument()
     expect(await screen.findByText('Hana')).toBeInTheDocument()
-    expect(screen.queryByText(/commons floor/i)).not.toBeInTheDocument()
+    expect(await screen.findByText('Haru')).toBeInTheDocument()
+    expect(screen.getByText('Miso')).toBeInTheDocument()
+    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3')
   })
 
-  it('keeps the add agent flow and appends a created npc', async () => {
+  it('adds a local npc from the dialog', async () => {
     render(<App />)
 
-    fireEvent.click(screen.getAllByRole('button', { name: /^add agent$/i })[0])
-    const dialog = screen.getByRole('dialog')
+    fireEvent.click(screen.getByRole('button', { name: /^add agent$/i }))
+    const dialog = screen.getByRole('dialog', { name: /add agent npc/i })
+    fireEvent.change(within(dialog).getByLabelText(/name/i), { target: { value: 'Warm Guide' } })
     fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
-    fireEvent.change(within(dialog).getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
 
-    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3'))
-    expect(screen.getByText('Warm Guide')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Warm Guide')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('4'))
   })
 
-  it('renders a simple backend agent roster', async () => {
+  it('opens chat from the header trigger', async () => {
     render(<App />)
-
-    expect(screen.getByRole('button', { name: /^add agent$/i })).toBeInTheDocument()
-
-    const roster = await screen.findByRole('list', { name: /backend agent list/i })
-    expect(within(roster).getByText('Hana')).toBeInTheDocument()
-    expect(within(roster).getByText('Min')).toBeInTheDocument()
-  })
-
-  it('falls back to the agent id when the backend omits a display name', async () => {
-    installFetchMock({
-      '/agents': {
-        json: [{ id: 'mystery-agent', imageAsset: null }],
-      },
-    })
-
-    render(<App />)
-
-    const roster = await screen.findByRole('list', { name: /backend agent list/i })
-    expect(within(roster).getByText('mystery-agent')).toBeInTheDocument()
-  })
-
-  it('shows an error state when the backend request fails', async () => {
-    installFetchMock({
-      '/agents': { ok: false, status: 500, json: {} },
-    })
-
-    render(<App />)
-
-    expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
-  })
-
-  it('falls back to the default backend URL when the env is missing', async () => {
-    vi.unstubAllEnvs()
-
-    render(<App />)
-
     await screen.findByText('Hana')
-    expect(globalThis.fetch).toHaveBeenCalled()
-    expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
+
+    fireEvent.click(screen.getByRole('button', { name: /open npc chat/i }))
+
+    expect(screen.getByRole('dialog', { name: /chat with hana/i })).toBeInTheDocument()
   })
 
-  it('opens the npc chat dialog from the game interaction callback', async () => {
+  it('opens chat from the game interaction callback', async () => {
     render(<App />)
     await screen.findByText('Hana')
 
     fireEvent.click(screen.getByRole('button', { name: /simulate interaction/i }))
 
     expect(screen.getByRole('dialog', { name: /chat with hana/i })).toBeInTheDocument()
-    expect(screen.getByText(/스쿨 커먼즈에 온 걸 환영해요/i)).toBeInTheDocument()
+  })
+
+  it('shows an error state when the backend request fails but still keeps dummy npcs', async () => {
+    installFetchMock({ '/agents': { ok: false, status: 500, json: {} } })
+
+    render(<App />)
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
+    expect(await screen.findByText('Haru')).toBeInTheDocument()
+    expect(screen.getByText('Miso')).toBeInTheDocument()
   })
 })

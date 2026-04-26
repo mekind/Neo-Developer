@@ -11,7 +11,6 @@ import {
 
 type WorldCanvasProps = {
   agents: WorldAgent[]
-  lastInteractionMessage: string | null
   onAgentInteraction: (agent: WorldAgent) => void
 }
 
@@ -19,6 +18,7 @@ const MAP_WIDTH = 2400
 const MAP_HEIGHT = 1350
 const VIEWPORT_WIDTH = 1280
 const VIEWPORT_HEIGHT = 720
+const PLAYER_RADIUS = 32
 const AGENT_RADIUS = 28
 const MINIMAP_X = 1040
 const MINIMAP_Y = 24
@@ -26,6 +26,7 @@ const MINIMAP_WIDTH = 180
 const MINIMAP_HEIGHT = 102
 const MINIMAP_PADDING = 8
 const CAMERA_LERP = 0.16
+const SPEECH_MS = 1200
 const OBSTACLES = [
   { x: 300, y: 350, width: 320, height: 140, color: 0xcfaf84 },
   { x: 980, y: 460, width: 360, height: 150, color: 0xd7b88c },
@@ -42,6 +43,14 @@ function projectY(yPercent: number) {
   return (yPercent / 100) * MAP_HEIGHT
 }
 
+function unprojectX(x: number) {
+  return (x / MAP_WIDTH) * 100
+}
+
+function unprojectY(y: number) {
+  return (y / MAP_HEIGHT) * 100
+}
+
 function projectMiniMapPoint(xPercent: number, yPercent: number) {
   return {
     x: MINIMAP_X + MINIMAP_PADDING + (xPercent / 100) * (MINIMAP_WIDTH - MINIMAP_PADDING * 2),
@@ -56,16 +65,31 @@ function getInputVector(cursors: Phaser.Types.Input.Keyboard.CursorKeys): Moveme
   }
 }
 
-export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction }: WorldCanvasProps) {
+function clampWorldPoint(x: number, y: number) {
+  return {
+    x: Math.min(MAP_WIDTH - PLAYER_RADIUS, Math.max(PLAYER_RADIUS, x)),
+    y: Math.min(MAP_HEIGHT - PLAYER_RADIUS, Math.max(PLAYER_RADIUS, y)),
+  }
+}
+
+function circleIntersectsRect(cx: number, cy: number, radius: number, rect: (typeof OBSTACLES)[number]) {
+  const nearestX = Math.max(rect.x, Math.min(cx, rect.x + rect.width))
+  const nearestY = Math.max(rect.y, Math.min(cy, rect.y + rect.height))
+  return Math.hypot(cx - nearestX, cy - nearestY) < radius
+}
+
+function circlesOverlap(ax: number, ay: number, ar: number, bx: number, by: number, br: number) {
+  return Math.hypot(ax - bx, ay - by) < ar + br
+}
+
+export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
   const interactionCallbackRef = useRef(onAgentInteraction)
-  const lastInteractionMessageRef = useRef(lastInteractionMessage)
 
   agentsRef.current = agents
   interactionCallbackRef.current = onAgentInteraction
-  lastInteractionMessageRef.current = lastInteractionMessage
 
   useEffect(() => {
     let cancelled = false
@@ -83,8 +107,7 @@ export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction
         private playerMarker!: Phaser.GameObjects.Arc
         private playerLabel!: Phaser.GameObjects.Text
         private promptText!: Phaser.GameObjects.Text
-        private feedbackText!: Phaser.GameObjects.Text
-        private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }>()
+        private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text; speech: Phaser.GameObjects.Text }>()
         private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
         private spaceKey?: Phaser.Input.Keyboard.Key
         private playerState = {
@@ -92,6 +115,7 @@ export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction
           velocity: { x: 0, y: 0 } as MovementVector,
         }
         private currentInteractionTarget: WorldAgent | null = null
+        private speechByAgent = new Map<string, number>()
 
         create() {
           this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
@@ -100,7 +124,7 @@ export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction
           this.background = this.add.graphics()
           this.obstacleLayer = this.add.graphics()
           this.minimapLayer = this.add.graphics().setScrollFactor(0)
-          this.playerMarker = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), AGENT_RADIUS + 4, 0x22c55e)
+          this.playerMarker = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), PLAYER_RADIUS, 0x22c55e)
           this.playerMarker.setStrokeStyle(5, 0xfffbeb, 1)
           this.playerLabel = this.add.text(0, 0, this.playerState.label, {
             color: '#234035',
@@ -120,26 +144,17 @@ export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction
             .setScrollFactor(0)
             .setDepth(20)
             .setVisible(false)
-          this.feedbackText = this.add.text(20, 20, '', {
-            color: '#f8fafc',
-            fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
-            fontSize: '14px',
-            backgroundColor: 'rgba(17,24,39,0.76)',
-            padding: { x: 10, y: 6 },
-          })
-            .setScrollFactor(0)
-            .setDepth(20)
-            .setVisible(false)
 
           this.drawBackground()
           this.drawObstacles()
-          this.syncSprites()
+          this.syncSprites(this.time.now)
           this.cameras.main.startFollow(this.playerMarker, true, CAMERA_LERP, CAMERA_LERP)
 
           this.cursors = this.input.keyboard?.createCursorKeys() ?? ({}) as Phaser.Types.Input.Keyboard.CursorKeys
           this.spaceKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
           this.spaceKey?.on(Phaser.Input.Keyboard.Events.DOWN, () => {
             if (this.currentInteractionTarget) {
+              this.speechByAgent.set(this.currentInteractionTarget.id, this.time.now + SPEECH_MS)
               interactionCallbackRef.current(this.currentInteractionTarget)
             }
           })
@@ -148,7 +163,7 @@ export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction
           this.handleResize({ width: this.scale.width, height: this.scale.height })
         }
 
-        update(_time: number, delta: number) {
+        update(time: number, delta: number) {
           const movement = resolvePlayerMovementStep(
             getInputVector(this.cursors),
             this.playerState.velocity,
@@ -156,23 +171,51 @@ export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction
             delta,
           )
           this.playerState.velocity = movement.velocity
-          const nextPosition = moveWorldPosition(this.playerState, movement.velocity, delta)
-          this.playerState.xPercent = nextPosition.xPercent
-          this.playerState.yPercent = nextPosition.yPercent
 
-          this.syncSprites()
+          const rawNext = moveWorldPosition(this.playerState, movement.velocity, delta)
+          const attempted = clampWorldPoint(projectX(rawNext.xPercent), projectY(rawNext.yPercent))
+          const current = { x: projectX(this.playerState.xPercent), y: projectY(this.playerState.yPercent) }
+          const resolved = this.resolveCollision(current, attempted)
+          this.playerState.xPercent = unprojectX(resolved.x)
+          this.playerState.yPercent = unprojectY(resolved.y)
+
+          this.syncSprites(time)
           this.syncInteractionUi()
           this.drawMinimap()
         }
 
-        private syncSprites() {
+        private resolveCollision(current: { x: number; y: number }, attempted: { x: number; y: number }) {
+          const tryPoint = (candidate: { x: number; y: number }) => {
+            if (OBSTACLES.some((rect) => circleIntersectsRect(candidate.x, candidate.y, PLAYER_RADIUS, rect))) return false
+            if (
+              agentsRef.current.some((agent) =>
+                circlesOverlap(candidate.x, candidate.y, PLAYER_RADIUS, projectX(agent.xPercent), projectY(agent.yPercent), AGENT_RADIUS),
+              )
+            ) {
+              return false
+            }
+            return true
+          }
+
+          if (tryPoint(attempted)) return attempted
+
+          const xOnly = { x: attempted.x, y: current.y }
+          if (tryPoint(xOnly)) return xOnly
+
+          const yOnly = { x: current.x, y: attempted.y }
+          if (tryPoint(yOnly)) return yOnly
+
+          return current
+        }
+
+        private syncSprites(time: number) {
           const snapshot = agentsRef.current
           const ids = new Set(snapshot.map((agent) => agent.id))
           const playerX = projectX(this.playerState.xPercent)
           const playerY = projectY(this.playerState.yPercent)
 
           this.playerMarker.setPosition(playerX, playerY)
-          this.playerLabel.setPosition(playerX - 30, playerY + 40).setText(this.playerState.label)
+          this.playerLabel.setPosition(playerX - 30, playerY + 44).setText(this.playerState.label)
 
           snapshot.forEach((agent) => {
             const existing = this.agentSprites.get(agent.id)
@@ -191,19 +234,32 @@ export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction
                 padding: { x: 8, y: 4 },
               })
 
-              this.agentSprites.set(agent.id, { body, label })
+              const speech = this.add.text(x, y - 54, '안녕', {
+                color: '#234035',
+                fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+                fontSize: '14px',
+                backgroundColor: 'rgba(255,255,255,0.94)',
+                padding: { x: 10, y: 5 },
+              })
+                .setOrigin(0.5)
+                .setVisible(false)
+
+              this.agentSprites.set(agent.id, { body, label, speech })
               return
             }
 
             existing.body.setPosition(x, y)
             existing.body.setFillStyle(agent.usesPlaceholder ? 0xfde68a : 0x93c5fd)
             existing.label.setPosition(x - 40, y + 36).setText(agent.label)
+            existing.speech.setPosition(x, y - 54)
+            existing.speech.setVisible((this.speechByAgent.get(agent.id) ?? 0) > time)
           })
 
           for (const [id, sprite] of this.agentSprites.entries()) {
             if (ids.has(id)) continue
             sprite.body.destroy()
             sprite.label.destroy()
+            sprite.speech.destroy()
             this.agentSprites.delete(id)
           }
         }
@@ -220,13 +276,6 @@ export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction
             this.promptText.setVisible(true)
           } else {
             this.promptText.setVisible(false)
-          }
-
-          if (lastInteractionMessageRef.current) {
-            this.feedbackText.setText(lastInteractionMessageRef.current)
-            this.feedbackText.setVisible(true)
-          } else {
-            this.feedbackText.setVisible(false)
           }
         }
 

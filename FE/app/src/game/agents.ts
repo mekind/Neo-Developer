@@ -135,10 +135,9 @@ export function buildWorldAgents(records: BackendAgentRecord[]): WorldAgent[] {
   return records.map((record) => buildWorldAgentBase(record, occupied))
 }
 
-export function appendCreatedAgent(existingAgents: WorldAgent[], record: CreatedAgentRecord): WorldAgent[] {
+export function createLocalWorldAgent(existingAgents: WorldAgent[], record: CreatedAgentRecord): WorldAgent {
   const occupied = existingAgents.map((agent) => ({ xPercent: agent.xPercent, yPercent: agent.yPercent }))
-  const nextAgent = buildWorldAgentBase({ id: record.id, name: record.name, imageAsset: null }, occupied)
-  return [...existingAgents, nextAgent]
+  return buildWorldAgentBase({ id: record.id, name: record.name, imageAsset: null }, occupied)
 }
 
 export function clampPercent(value: number, min: number, max: number) {

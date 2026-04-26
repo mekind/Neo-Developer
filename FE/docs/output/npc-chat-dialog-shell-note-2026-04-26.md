@@ -2,32 +2,37 @@
 
 ## Summary
 
-Added a dedicated frontend chat-dialog shell component for agent NPC conversations.
-This pass only creates the reusable dialog surface and styling; it does not yet wire the dialog to an interaction trigger.
+Expanded the frontend NPC chat dialog from a simple shell into a fuller conversation-interface mock.
+This pass still stops short of BE wiring, but the dialog now looks and feels like a real in-product chat surface and can be opened from a temporary header trigger for testing.
 
 ## What changed
 
 - `FE/app/src/sections/dialog/AgentChatDialogSection.tsx`
-  - introduces a standalone NPC chat dialog component
-  - accepts `agent`, `isOpen`, and `onClose` props
-  - renders a first-pass transcript-style NPC bubble and close action
+  - keeps the standalone NPC chat dialog boundary
+  - adds a richer header, NPC summary card, transcript area, prompt chips, message composer, and send button shell
+  - preserves a clean prop contract: `agent`, `isOpen`, `onClose`
+- `FE/app/src/App.tsx`
+  - wires a temporary header-level trigger path for opening the NPC chat dialog against the first loaded agent
+- `FE/app/src/sections/title/TitleSection.tsx`
+  - adds a topbar test button for opening the chat dialog without waiting for real world interaction wiring
 - `FE/app/src/styles/global.css`
-  - adds chat-dialog layout and bubble styles for the new component
+  - adds polished chat-dialog styling plus the topbar trigger treatment
 
 ## Intent
 
-Create the UI boundary for future NPC conversation work before coupling it to keyboard or click interaction logic.
+Reach a design-ready chat interface before coupling the dialog to actual NPC interaction events or backend chat state, while still making the UI easy to test in the browser right now.
 
 ## Scope boundary
 
 This pass intentionally does **not** include:
 
-- keyboard-triggered open behavior
+- keyboard-triggered open behavior from proximity interaction
 - click-to-open behavior from the Phaser map
-- message input or branching conversation options
+- real message sending
 - backend chat persistence or dialogue state sync
+- branching dialogue logic or conversation history loading
 
 ## Follow-up notes
 
-- the next step should connect this dialog to a concrete interaction event
-- if dialogue grows beyond a single NPC line, keep transcript rendering inside the dialog component rather than pushing chat layout into `App.tsx`
+- the temporary header trigger should be removed once a real NPC interaction path opens the dialog
+- once backend chat exists, keep transcript rendering and composer behavior inside this component boundary rather than spreading chat layout across `App.tsx`
