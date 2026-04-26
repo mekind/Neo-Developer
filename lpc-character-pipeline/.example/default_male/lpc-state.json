@@ -34,8 +34,8 @@
       "itemId": "torso_clothes_longsleeve2",
       "subId": null,
       "variant": "",
-      "recolor": "bluegray",
-      "name": "Longsleeve 2 (bluegray)"
+      "recolor": "orange",
+      "name": "Longsleeve 2 (orange)"
     },
     "legs": {
       "itemId": "legs_pants",
@@ -83,7 +83,7 @@
     "1h_backslash": false,
     "1h_halfslash": false
   },
-  "url": "https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/#sex=male&body=Body_Color_light&head=Human_Male_light&expression=Neutral_light&hair=Plain_dark_brown&clothes=Longsleeve_2_bluegray&legs=Pants_charcoal&shoes=Basic_Shoes_black",
+  "url": "https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/#sex=male&body=Body_Color_light&head=Human_Male_light&expression=Neutral_light&hair=Plain_dark_brown&clothes=Longsleeve_2_orange&legs=Pants_charcoal&shoes=Basic_Shoes_black",
   "layers": [
     {
       "itemId": "body",
@@ -178,10 +178,10 @@
     },
     {
       "itemId": "torso_clothes_longsleeve2",
-      "name": "Longsleeve 2 (bluegray)",
+      "name": "Longsleeve 2 (orange)",
       "variant": "",
       "recolors": {
-        "clothes": "bluegray"
+        "clothes": "orange"
       },
       "zPos": 35,
       "layerNum": 1,

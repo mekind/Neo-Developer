@@ -22,11 +22,11 @@ import json
 import sys
 from pathlib import Path
 
-from mapper import map_persona, enforce_torso_coverage
+from mapper import map_persona, enforce_color_restrictions, enforce_torso_coverage
 from composer import compose
 
 MODULE_ROOT = Path(__file__).resolve().parent.parent  # lpc-character-pipeline/
-DEFAULT_CATALOG = MODULE_ROOT / "poc" / "lpc-catalog-curated.json"
+DEFAULT_CATALOG = MODULE_ROOT / "walk-safe-catalog.json"
 
 
 def main() -> int:
@@ -83,6 +83,7 @@ def main() -> int:
     )
 
     state = enforce_torso_coverage(mapping["lpc_state"], catalog_text)
+    state = enforce_color_restrictions(state, catalog_text)
     state_path_pre = output_dir / "lpc-state.pre.json"
     state_path_pre.write_text(
         json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8"

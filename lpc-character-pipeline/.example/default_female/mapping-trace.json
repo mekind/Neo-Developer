@@ -1,11 +1,6 @@
 {
-  "mode": "manual-default-fallback",
-  "note": "Simple clothing-only default female bundle for fallback use. Avoids jackets and extra layered accessories so walk playback stays as stable as possible.",
   "trace": [
-    {
-      "selectionGroup": "clothes",
-      "itemId": "torso_clothes_longsleeve2",
-      "reason": "Chosen as a simple torso base without jacket layering."
-    }
-  ]
+    "manual default female regeneration with safe hair_plain dark_brown"
+  ],
+  "reason": "stabilize fallback-safe female default bundle"
 }

@@ -105,6 +105,15 @@ def _strip_fence(raw: str) -> str:
 
 
 _TOP_LAYER_KEYS = ("clothes", "jacket", "vest")
+_SAFE_SKIN_RECOLORS = ("light", "olive", "bronze", "black")
+_SAFE_HAIR_RECOLORS = ("orange", "gold", "red", "black", "white", "light_brown", "gray")
+
+
+def _pick_first_available(preferred: tuple[str, ...], available: list[str], default: str = "") -> str:
+    for color in preferred:
+        if color in available:
+            return color
+    return available[0] if available else default
 
 
 def _pick_first(values: list[str], preferred: tuple[str, ...]) -> str:
@@ -206,6 +215,69 @@ def enforce_torso_coverage(state: dict, catalog_or_json: dict | str) -> dict:
 
     next_selections = dict(selections)
     next_selections["clothes"] = default_top
+    return {**state, "selections": next_selections}
+
+
+def enforce_color_restrictions(state: dict, catalog_or_json: dict | str) -> dict:
+    """Clamp skin/hair colors to explicit safe allowlists.
+
+    - skin (body/head/expression): light | olive | bronze | black
+    - hair-like groups: orange | gold | red | black | white | light_brown | gray
+    """
+    catalog = (
+        json.loads(catalog_or_json)
+        if isinstance(catalog_or_json, str)
+        else (catalog_or_json or {})
+    )
+
+    groups = (catalog.get("selectionGroups") or {})
+    palettes = catalog.get("palettes") or {}
+    skin_recolors = [c for c in (catalog.get("skinRecolors") or []) if isinstance(c, str)]
+
+    selections = (state.get("selections") or {})
+    next_selections = dict(selections)
+
+    allowed_skin = [c for c in _SAFE_SKIN_RECOLORS if c in skin_recolors]
+    safe_skin = _pick_first_available(_SAFE_SKIN_RECOLORS, allowed_skin or skin_recolors, default="light")
+
+    for key in ("body", "head", "expression"):
+        sel = next_selections.get(key)
+        if not isinstance(sel, dict):
+            continue
+        new_sel = dict(sel)
+        new_sel["recolor"] = safe_skin
+        next_selections[key] = new_sel
+
+    hair_groups = {"hair", "ponytail", "hairextl", "hairextr", "hairtie", "mustache", "beard"}
+    for group_name, sel in list(next_selections.items()):
+        if not isinstance(sel, dict):
+            continue
+        item_id = sel.get("itemId")
+        if not isinstance(item_id, str):
+            continue
+        is_hair_like = group_name in hair_groups or item_id.startswith("hair_") or item_id.startswith("hairext_")
+        if not is_hair_like:
+            continue
+
+        item_meta = ((groups.get(group_name) or {}).get("items") or {}).get(item_id) or {}
+        palette_sig = item_meta.get("recolorPalette")
+        if not isinstance(palette_sig, str):
+            continue
+
+        available = (((palettes.get(palette_sig) or {}).get("colors") or []))
+        available = [c for c in available if isinstance(c, str)]
+        allowed = [c for c in _SAFE_HAIR_RECOLORS if c in available]
+        if not allowed:
+            continue
+
+        current = sel.get("recolor")
+        if isinstance(current, str) and current in allowed:
+            continue
+
+        new_sel = dict(sel)
+        new_sel["recolor"] = _pick_first_available(_SAFE_HAIR_RECOLORS, allowed, default=allowed[0])
+        next_selections[group_name] = new_sel
+
     return {**state, "selections": next_selections}
 
 

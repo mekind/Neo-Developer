@@ -5,19 +5,19 @@
     "body": {
       "itemId": "body",
       "variant": "",
-      "recolor": "light",
+      "recolor": "peach",
       "name": "Body Color"
     },
     "head": {
       "itemId": "heads_human_male",
       "variant": "",
-      "recolor": "light",
+      "recolor": "",
       "name": "Human Male"
     },
     "expression": {
       "itemId": "face_neutral",
       "variant": "",
-      "recolor": "light",
+      "recolor": "",
       "name": "Neutral"
     },
     "hair": {
@@ -29,7 +29,7 @@
     "clothes": {
       "itemId": "torso_clothes_longsleeve2",
       "variant": "",
-      "recolor": "bluegray",
+      "recolor": "orange",
       "name": "Longsleeve 2"
     },
     "legs": {

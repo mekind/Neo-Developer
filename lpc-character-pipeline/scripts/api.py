@@ -41,11 +41,11 @@ from pydantic import BaseModel, Field
 SCRIPTS_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from mapper import map_persona, enforce_torso_coverage  # noqa: E402
+from mapper import map_persona, enforce_color_restrictions, enforce_torso_coverage  # noqa: E402
 from composer import Composer, FRAME_MAP  # noqa: E402
 
 MODULE_ROOT = SCRIPTS_DIR.parent
-DEFAULT_CATALOG = MODULE_ROOT / "poc" / "lpc-catalog-curated.json"
+DEFAULT_CATALOG = MODULE_ROOT / "walk-safe-catalog.json"
 
 
 app = FastAPI(title="lpc-character-svc", version="0.1.0")
@@ -112,6 +112,7 @@ def generate_character(req: GenerateRequest) -> GenerateResponse:
         raise HTTPException(status_code=502, detail=f"mapper failed: {e}") from e
 
     state = enforce_torso_coverage(mapping.get("lpc_state") or {}, catalog)
+    state = enforce_color_restrictions(state, catalog)
     if not state or not isinstance(state, dict):
         raise HTTPException(status_code=502, detail="mapper returned no lpc_state")
 
