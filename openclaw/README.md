@@ -33,10 +33,33 @@ curl http://localhost:3001/api/health
 | `pnpm build` | production build |
 | `pnpm start` | production server on port 3001 |
 | `pnpm typecheck` | TS check without emit |
+| `pnpm vercel:link` | link this folder to a Vercel project (one-time) |
+| `pnpm vercel:env:pull` | pull project env into `.env.local` |
+| `pnpm vercel:deploy:preview` | manual preview deploy (pull → build → deploy prebuilt) |
+| `pnpm vercel:deploy:prod` | manual production deploy |
+
+The `vercel:*` scripts assume `vercel` CLI is installed globally (`npm i -g vercel`) and `pnpm vercel:link` has been run once.
 
 ## Deployment
 
-Vercel project root directory must be `AIM/openclaw`. See `../docs/openclaw/setup-guide.md`.
+Vercel project root directory must be `openclaw` (relative to repo root). Setup details in `../docs/openclaw/setup-guide.md`.
+
+### CI/CD
+
+| Workflow | Trigger | Purpose |
+|---|---|---|
+| `.github/workflows/ci-openclaw.yml` | PR / push to `main`, `kds` touching `openclaw/**` | typecheck + build |
+| `.github/workflows/deploy-openclaw.yml` | push to `main` touching `openclaw/**`, manual dispatch | production deploy via Vercel CLI |
+
+Required GitHub Secrets:
+
+| Secret | Use |
+|---|---|
+| `VERCEL_TOKEN` | shared with backend/frontend, can reuse |
+| `VERCEL_OPENCLAW_ORG_ID` | OpenClaw Vercel project org |
+| `VERCEL_OPENCLAW_PROJECT_ID` | OpenClaw Vercel project ID |
+
+> Preview deploys are handled automatically by Vercel's git integration once the project is linked — no GHA needed.
 
 ## Project layout
 

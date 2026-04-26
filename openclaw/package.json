@@ -6,7 +6,13 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "vercel:link": "vercel link --yes",
+    "vercel:env:pull": "vercel env pull .env.local",
+    "vercel:build:preview": "vercel pull --yes --environment=preview && vercel build",
+    "vercel:build:prod": "vercel pull --yes --environment=production && vercel build --prod",
+    "vercel:deploy:preview": "pnpm vercel:build:preview && vercel deploy --prebuilt",
+    "vercel:deploy:prod": "pnpm vercel:build:prod && vercel deploy --prebuilt --prod"
   },
   "dependencies": {
     "@ai-sdk/gateway": "^3.0.104",
