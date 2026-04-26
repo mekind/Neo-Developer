@@ -2,61 +2,31 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
 
-type MockResponseConfig = {
-  ok?: boolean
-  status?: number
-  json: unknown
+type AgentPayload = {
+  id: string
+  name?: string
+  imageAsset?: string | null
 }
 
-const defaultAgents = [
+const backendAgents: AgentPayload[] = [
   {
-    id: 'agent-seed-1',
-    name: 'Guide Mina',
-    archetype: 'maker',
-    personaSummary: 'Warm school guide',
-    backstoryPrompt: 'Helps newcomers settle in.',
-    createdAt: '2026-04-26T00:00:00.000Z',
+    id: 'mentor-hana',
+    name: 'Hana',
+    imageAsset: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22/%3E',
   },
   {
-    id: 'agent-seed-2',
-    name: 'Spark Joon',
-    archetype: 'spark',
-    personaSummary: 'Creative spark',
-    backstoryPrompt: 'Keeps the commons lively.',
-    createdAt: '2026-04-26T00:05:00.000Z',
+    id: 'guide-min',
+    name: 'Min',
+    imageAsset: null,
   },
 ]
 
-const defaultItems = [
-  {
-    id: '1',
-    name: 'Mock Coffee',
-    description: 'A freshly brewed mock coffee',
-    price: 4500,
-    createdAt: '2026-04-26T00:00:00.000Z',
-    updatedAt: '2026-04-26T00:00:00.000Z',
-  },
-]
-
-function installFetchMock(overrides: Record<string, MockResponseConfig> = {}) {
-  vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
-    const url = String(input)
-    const pathname = new URL(url).pathname
-    const method = init?.method ?? 'GET'
-
-    const config = overrides[`${method} ${pathname}`] ?? overrides[pathname] ??
-      (pathname === '/items'
-        ? { ok: true, status: 200, json: defaultItems }
-        : pathname === '/agents' && method === 'GET'
-          ? { ok: true, status: 200, json: defaultAgents }
-          : { ok: false, status: 404, json: {} })
-
-    return {
-      ok: config.ok ?? true,
-      status: config.status ?? 200,
-      json: async () => config.json,
-    } as Response
-  })
+function installFetchMock(payload: AgentPayload[] = backendAgents, status = 200) {
+  vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+    ok: status >= 200 && status < 300,
+    status,
+    json: async () => payload,
+  } as Response)
 }
 
 describe('App', () => {
@@ -66,93 +36,72 @@ describe('App', () => {
     installFetchMock()
   })
 
-  it('renders the layout with a controllable user avatar and backend agent NPCs', async () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllEnvs()
+  })
+
+  it('renders the backend-driven shell with a separate controllable player avatar', async () => {
     render(<App />)
 
-    expect(screen.getByRole('heading', { name: /편하게 둘러보는 데모 공간/i })).toBeInTheDocument()
-    expect(screen.getByRole('complementary')).toHaveTextContent(/current player/i)
-    expect(screen.getByRole('button', { name: /open agent dialog/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/current player summary/i)).toHaveTextContent(/you is the controllable user avatar/i)
+    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
-    expect(screen.getByText(/controlling you at \(124, 180\)/i)).toBeInTheDocument()
-    expect(await screen.findByRole('heading', { name: /spawned avatars: 3/i })).toBeInTheDocument()
-    await screen.findByRole('list', { name: /live items list/i })
+    expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
+    expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
-  it('creates an agent npc from the dialog without replacing the user avatar', async () => {
-    installFetchMock({
-      'POST /agents': {
-        json: {
-          id: 'agent-3',
-          name: 'Nova Guide',
-          archetype: 'maker',
-          personaSummary: 'Warm school guide',
-          backstoryPrompt: 'Helps every newcomer settle in.',
-          createdAt: '2026-04-26T00:10:00.000Z',
-        },
+  it('renders a simple backend agent roster', async () => {
+    render(<App />)
+
+    const roster = await screen.findByRole('list', { name: /backend agent list/i })
+    expect(within(roster).getByText('Hana')).toBeInTheDocument()
+    expect(within(roster).getByText('Min')).toBeInTheDocument()
+  })
+
+  it('falls back to the agent id when the backend omits a display name', async () => {
+    installFetchMock([
+      {
+        id: 'mystery-agent',
+        imageAsset: null,
       },
-    })
+    ])
 
     render(<App />)
-    await screen.findByRole('heading', { name: /spawned avatars: 3/i })
 
-    fireEvent.click(screen.getByRole('button', { name: /open agent dialog/i }))
-    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Warm school guide' } })
-    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), {
-      target: { value: 'Helps every newcomer settle in.' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: /create agent/i }))
-
-    expect(await screen.findByRole('heading', { name: /spawned avatars: 4/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/current character summary/i)).toHaveTextContent(/you is the controllable user avatar/i)
-    expect(screen.getByText(/controlling you at \(124, 180\)/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/nova guide · maker/i)).toHaveLength(2)
+    const roster = await screen.findByRole('list', { name: /backend agent list/i })
+    expect(within(roster).getByText('mystery-agent')).toBeInTheDocument()
   })
 
-  it('renders live items from the backend demo slice', async () => {
+  it('uses a placeholder avatar when the backend agent has no image asset', async () => {
     render(<App />)
 
-    const liveItemsList = await screen.findByRole('list', { name: /live items list/i })
-    expect(within(liveItemsList).getByText('Mock Coffee')).toBeInTheDocument()
+    const placeholderAvatar = await screen.findByRole('img', { name: /min avatar/i })
+    expect(placeholderAvatar.getAttribute('src')).toContain('data:image/svg+xml')
   })
 
-  it('shows an error state when the items request fails', async () => {
-    installFetchMock({ '/items': { ok: false, status: 500, json: {} } })
+  it('falls back to the placeholder avatar for disallowed image sources', async () => {
+    installFetchMock([
+      {
+        id: 'unsafe-agent',
+        name: 'Unsafe',
+        imageAsset: 'ftp://example.com/avatar.png',
+      },
+    ])
+
+    render(<App />)
+
+    const fallbackAvatar = await screen.findByRole('img', { name: /unsafe avatar/i })
+    expect(fallbackAvatar.getAttribute('src')).toContain('data:image/svg+xml')
+  })
+
+  it('shows an error state when the backend request fails', async () => {
+    installFetchMock([], 500)
 
     render(<App />)
 
     expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
-  })
-
-  it('shows submit errors inside the dialog when agent creation fails', async () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
-      const url = String(input)
-      const pathname = new URL(url).pathname
-
-      if (pathname === '/items') {
-        return { ok: true, status: 200, json: async () => defaultItems } as Response
-      }
-
-      if (pathname === '/agents' && init?.method === 'POST') {
-        return { ok: false, status: 500, json: async () => ({}) } as Response
-      }
-
-      if (pathname === '/agents') {
-        return { ok: true, status: 200, json: async () => defaultAgents } as Response
-      }
-
-      return { ok: false, status: 404, json: async () => ({}) } as Response
-    })
-
-    render(<App />)
-    await screen.findByRole('heading', { name: /spawned avatars: 3/i })
-
-    fireEvent.click(screen.getByRole('button', { name: /open agent dialog/i }))
-    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Warm guide' } })
-    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Supports the class.' } })
-    fireEvent.click(screen.getByRole('button', { name: /create agent/i }))
-
-    expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
-    fetchMock.mockRestore()
   })
 
   it('shows a configuration error when the API base URL is missing', async () => {
@@ -160,34 +109,35 @@ describe('App', () => {
 
     render(<App />)
 
-    const alerts = await screen.findAllByRole('alert')
-    expect(alerts).toHaveLength(2)
-    alerts.forEach((alert) => expect(alert).toHaveTextContent('Missing VITE_API_BASE_URL configuration.'))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
     expect(globalThis.fetch).not.toHaveBeenCalled()
   })
 
   it('moves only the user avatar and unlocks interaction feedback near an agent npc', async () => {
+    const randomSpy = vi.spyOn(Math, 'random')
+    randomSpy.mockReturnValueOnce(0.1).mockReturnValueOnce(0.2).mockReturnValueOnce(0.6).mockReturnValueOnce(0.7)
+
     render(<App />)
-    await screen.findByRole('heading', { name: /spawned avatars: 3/i })
+    await screen.findByRole('img', { name: /hana avatar/i })
 
     vi.useFakeTimers()
     try {
       fireEvent.keyDown(window, { key: 'ArrowRight' })
       act(() => {
-        vi.advanceTimersByTime(450)
+        vi.advanceTimersByTime(180)
       })
       fireEvent.keyUp(window, { key: 'ArrowRight' })
 
-      expect(screen.getByText(/controlling you at \(268, 180\)/i)).toBeInTheDocument()
-      expect(screen.getByText(/press e near guide mina to interact/i)).toBeInTheDocument()
+      expect(screen.getByText(/controlling you at \(21%, 32%\)/i)).toBeInTheDocument()
+      expect(screen.getByText(/press e near hana to interact/i)).toBeInTheDocument()
 
       fireEvent.keyDown(window, { key: 'e' })
 
-      expect(screen.getByText(/you greeted guide mina/i)).toBeInTheDocument()
-      expect(screen.getByText(/distance to guide mina: 48px/i)).toBeInTheDocument()
-      expect(screen.getAllByText(/guide mina/i)[0]).toBeInTheDocument()
+      expect(screen.getByText(/you greeted hana/i)).toBeInTheDocument()
+      expect(screen.getByText(/distance to hana: 1.0%/i)).toBeInTheDocument()
     } finally {
       vi.useRealTimers()
+      randomSpy.mockRestore()
     }
   })
 })

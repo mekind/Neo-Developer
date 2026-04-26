@@ -7,6 +7,7 @@
 - [[Frontend Stack Baseline]] ([Frontend Stack Baseline](topics/frontend-stack-baseline.md))
 - [[Frontend Project Bootstrap]] ([Frontend Project Bootstrap](topics/frontend-project-bootstrap.md))
 - [[Frontend API Integration Baseline]] ([Frontend API Integration Baseline](topics/frontend-api-integration-baseline.md))
+- [[Frontend Backend Agent Roster]] ([Frontend Backend Agent Roster](topics/frontend-backend-agent-roster.md))
 
 ## Navigation
 - [[Topics Index]] ([Topics Index](topics/_index.md))

@@ -96,6 +96,10 @@ Tests currently cover:
 
 ## Follow-up guidance
 
+The `/items` demo slice is no longer the main world-occupant flow.
+The next durable step after this page is documented in [[Frontend Backend Agent Roster]]([Frontend Backend Agent Roster](frontend-backend-agent-roster.md)).
+
+
 When the next API slice is added:
 1. keep config lookup in `config/`
 2. keep generic transport code in `lib/`

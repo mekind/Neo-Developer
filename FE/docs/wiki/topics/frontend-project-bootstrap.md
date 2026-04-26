@@ -71,6 +71,8 @@ This keeps the world surface visually dominant, closer to a Gather-like product 
 
 The current placeholder art direction also favors a warm school commons tone so the world feels closer to a friendly campus-like social space than a cold technical demo.
 
+The current shell direction also favors removing placeholder-style copy and tightening layout density so the frontend reads more like an actual product surface than a narrated demo.
+
 ## Relevant implementation files
 
 - `FE/app/src/App.tsx`

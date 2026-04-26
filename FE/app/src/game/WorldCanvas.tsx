@@ -1,22 +1,22 @@
 import { useEffect, useRef } from 'react'
 
-import { INTERACTION_RADIUS, WORLD_HEIGHT, WORLD_WIDTH, measureDistance, type WorldCharacter } from './characters'
+import { INTERACTION_RADIUS_PERCENT, measurePercentDistance, type WorldAgent, type WorldPlayer } from './agents'
 
 type WorldCanvasProps = {
-  characters: WorldCharacter[]
-  currentCharacter: WorldCharacter | null
-  interactionTarget: WorldCharacter | null
-  playerStatusCopy: string
-  interactionStatusCopy: string
+  agents: WorldAgent[]
+  player: WorldPlayer
+  isLoading: boolean
+  errorMessage: string | null
+  interactionTarget: WorldAgent | null
   lastInteractionMessage: string | null
 }
 
 export function WorldCanvas({
-  characters,
-  currentCharacter,
+  agents,
+  player,
+  isLoading,
+  errorMessage,
   interactionTarget,
-  playerStatusCopy,
-  interactionStatusCopy,
   lastInteractionMessage,
 }: WorldCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -101,88 +101,66 @@ export function WorldCanvas({
 
     context.fillStyle = '#4d463f'
     context.font = 'bold 18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-    context.fillText('Warm school commons prototype', 28, 42)
-    context.font = '16px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-    context.fillText('새 캐릭터가 생성된 뒤 바로 움직이고 상호작용할 수 있습니다.', 28, 68)
+    context.fillText('School Commons', 28, 42)
+  }, [])
 
-    if (characters.length === 0) {
-      context.fillStyle = 'rgba(77, 70, 63, 0.72)'
-      context.font = '18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-      context.fillText('아직 생성된 캐릭터가 없습니다.', 28, 120)
-      return
-    }
-
-    characters.forEach((character) => {
-      const isCurrent = currentCharacter?.id === character.id
-      const isInteractionTarget = interactionTarget?.id === character.id
-      const labelPrefix = character.kind === 'player' ? 'You' : 'NPC'
-
-      if (isCurrent) {
-        context.strokeStyle = 'rgba(34, 197, 94, 0.4)'
-        context.lineWidth = 10
-        context.beginPath()
-        context.arc(character.x, character.y, INTERACTION_RADIUS, 0, Math.PI * 2)
-        context.stroke()
-      }
-
-      context.fillStyle = character.color
-      context.beginPath()
-      context.arc(character.x, character.y, 18, 0, Math.PI * 2)
-      context.fill()
-
-      context.strokeStyle = isCurrent ? '#f8fafc' : isInteractionTarget ? '#facc15' : 'rgba(226,232,240,0.45)'
-      context.lineWidth = isCurrent || isInteractionTarget ? 3 : 1
-      context.stroke()
-
-      context.fillStyle = '#4d463f'
-      context.font = '14px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-      context.fillText(`${labelPrefix}: ${character.name}`, character.x - 30, character.y + 38)
-    })
-
-    if (currentCharacter && interactionTarget) {
-      context.fillStyle = '#facc15'
-      context.font = '15px sans-serif'
-      context.fillText(
-        `Interaction ready: ${currentCharacter.name} ↔ ${interactionTarget.name}`,
-        24,
-        height - 32,
-      )
-    }
-  }, [characters, currentCharacter, interactionTarget])
+  const distanceToTarget = interactionTarget ? measurePercentDistance(player, interactionTarget) : null
 
   return (
     <div className="world-surface">
       <div className="world-status">
         <div>
-          <p className="eyebrow">Live world state</p>
-          <h2>Spawned avatars: {characters.length}</h2>
-          <p className="world-helper world-helper-strong">{playerStatusCopy}</p>
+          <p className="eyebrow">Room</p>
+          <h2>Agents: {agents.length}</h2>
+          <p className="world-helper world-helper-strong">
+            Controlling {player.label} at ({player.xPercent.toFixed(0)}%, {player.yPercent.toFixed(0)}%).
+          </p>
         </div>
         <p className="world-helper">
-          {currentCharacter ? interactionStatusCopy : '첫 번째 캐릭터를 만들면 월드에 바로 반영됩니다.'}
+          {isLoading
+            ? 'Loading backend roster.'
+            : errorMessage
+              ? 'Backend roster unavailable.'
+              : interactionTarget
+                ? `Press E near ${interactionTarget.label} to interact.`
+                : agents.length > 0
+                  ? 'Move closer to an agent NPC to interact.'
+                  : 'No backend agents returned.'}
         </p>
       </div>
-      <canvas ref={canvasRef} width={WORLD_WIDTH} height={WORLD_HEIGHT} aria-label="2D world prototype canvas" />
+
+      <div className="world-canvas-stage">
+        <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
+
+        <div className="world-agent-layer" aria-label="Backend world agents">
+          <figure
+            className="world-agent world-player"
+            style={{ left: `${player.xPercent}%`, top: `${player.yPercent}%` }}
+          >
+            <div className="world-agent-ring" style={{ width: `${INTERACTION_RADIUS_PERCENT * 2}%`, height: `${INTERACTION_RADIUS_PERCENT * 2}%` }} />
+            <img src={player.imageSrc} alt={`${player.label} avatar`} className="world-agent-avatar" />
+            <figcaption>{player.label}</figcaption>
+          </figure>
+
+          {!isLoading && !errorMessage && agents.length > 0
+            ? agents.map((agent) => (
+                <figure
+                  key={agent.id}
+                  className={`world-agent${interactionTarget?.id === agent.id ? ' world-agent-target' : ''}`}
+                  style={{ left: `${agent.xPercent}%`, top: `${agent.yPercent}%` }}
+                >
+                  <img src={agent.imageSrc} alt={`${agent.label} avatar`} className="world-agent-avatar" />
+                  <figcaption>{agent.label}</figcaption>
+                </figure>
+              ))
+            : null}
+        </div>
+      </div>
+
       <div className="world-feedback" aria-live="polite">
         <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
-        {currentCharacter && interactionTarget ? (
-          <p>
-            Distance to {interactionTarget.name}: {Math.round(measureDistance(currentCharacter, interactionTarget))}px
-          </p>
-        ) : (
-          <p>Bring your player close to an agent NPC to unlock the interaction prompt.</p>
-        )}
+        {distanceToTarget !== null ? <p>Distance to {interactionTarget?.label}: {distanceToTarget.toFixed(1)}%</p> : null}
       </div>
-      {characters.length > 0 ? (
-        <ul className="world-roster" aria-label="World roster">
-          {characters.map((character) => (
-            <li key={character.id}>
-              <span className="world-roster-dot" style={{ backgroundColor: character.color }} aria-hidden="true" />
-              {character.name} · {character.archetype}
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   )
 }
