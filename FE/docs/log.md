@@ -1,5 +1,6 @@
 # FE Vault Activity Log
 
+- 2026-04-26: Documented the backend-driven world-agent roster pass, including `/agents` ownership, FE-side roster mapping, placeholder avatar fallback, and per-load random placement rules.
 - 2026-04-26: Documented the first FE API integration baseline, including env/config ownership, transport layering, endpoint validation, and live `/items` proof in `InteractionPanel`.
 - 2026-04-26: Initialized FE llm-wiki-style vault scaffold with source/wiki/output separation and starter indexes.
 - 2026-04-26: Moved FE documentation vault root under `FE/docs/` and updated entry points.

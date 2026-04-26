@@ -33,8 +33,13 @@ h1,
 h2,
 h3,
 p,
-ul {
+ul,
+figure {
   margin-top: 0;
+}
+
+figure {
+  margin-inline: 0;
 }
 
 .app-shell {
@@ -120,6 +125,12 @@ ul {
   overflow: hidden;
 }
 
+.world-canvas-stage {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+}
+
 .world-surface canvas {
   width: 100%;
   height: 100%;
@@ -127,6 +138,39 @@ ul {
   display: block;
   border-radius: 12px;
   border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.world-agent-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.world-agent {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  width: 96px;
+}
+
+.world-agent-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: 3px solid rgba(255, 247, 237, 0.9);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.18);
+}
+
+.world-agent figcaption {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 247, 237, 0.85);
+  color: #5b4636;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .world-status {
@@ -142,72 +186,17 @@ ul {
   margin-bottom: 0;
 }
 
-.world-roster {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding-left: 0;
-  list-style: none;
-  margin-bottom: 0;
-}
-
-.world-roster li {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(30, 41, 59, 0.85);
-}
-
-.world-roster-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-}
-
-.creation-form,
 .panel-section {
   display: grid;
   gap: 12px;
 }
 
-.creation-form {
-  margin: 20px 0;
+.panel-section + .panel-section {
+  margin-top: 20px;
 }
 
-.field {
-  display: grid;
-  gap: 8px;
-}
-
-.field span,
 .panel-section h3 {
   color: #f8fafc;
-}
-
-.field input,
-.field select {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(15, 23, 42, 0.95);
-  color: inherit;
-}
-
-button {
-  padding: 12px 14px;
-  border: 0;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #22c55e, #14b8a6);
-  color: #022c22;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-button:hover {
-  filter: brightness(1.05);
 }
 
 .muted-list {
@@ -243,5 +232,14 @@ button:hover {
   .world-status {
     flex-direction: column;
     align-items: start;
+  }
+
+  .world-agent {
+    width: 84px;
+  }
+
+  .world-agent-avatar {
+    width: 48px;
+    height: 48px;
   }
 }

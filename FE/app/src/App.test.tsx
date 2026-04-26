@@ -1,72 +1,87 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import App from './App'
+
+const backendAgents = [
+  {
+    id: 'mentor-hana',
+    name: 'Hana',
+    imageAsset: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22/%3E',
+  },
+  {
+    id: 'guide-min',
+    name: 'Min',
+    imageAsset: null,
+  },
+]
 
 describe('App', () => {
   beforeEach(() => {
     vi.stubEnv('VITE_API_BASE_URL', 'https://backend-kappa-brown-63.vercel.app')
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
-      json: async () => [],
+      json: async () => backendAgents,
     } as Response)
   })
 
-  it('renders the gather-like world layout shell', async () => {
+  it('renders the backend-driven world layout shell', async () => {
     render(<App />)
+
     expect(screen.getByRole('heading', { name: /gather-like world layout/i })).toBeInTheDocument()
-    expect(screen.getByRole('complementary')).toHaveTextContent(/sidebar ui placeholder/i)
+    expect(screen.getByRole('complementary')).toHaveTextContent(/backend agent roster/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
-    await screen.findByRole('list', { name: /live items list/i })
+    expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
-  it('creates a character from the side panel and reflects it in the world UI', async () => {
+  it('replaces the local creation UI with a simple backend agent list', async () => {
     render(<App />)
 
-    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Nova' } })
-    fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'maker' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-
-    expect(screen.getByLabelText(/current character summary/i)).toHaveTextContent(/nova joined as a maker/i)
-    expect(screen.getByRole('heading', { name: /spawned avatars: 1/i })).toBeInTheDocument()
-    expect(screen.getAllByText(/nova · maker/i)).toHaveLength(2)
-    await screen.findByRole('list', { name: /live items list/i })
+    expect(screen.queryByRole('button', { name: /create character/i })).not.toBeInTheDocument()
+    const roster = await screen.findByRole('list', { name: /backend agent list/i })
+    expect(within(roster).getByText(/hana · image asset/i)).toBeInTheDocument()
+    expect(within(roster).getByText(/min · placeholder image/i)).toBeInTheDocument()
   })
 
-  it('appends multiple created characters instead of replacing the current roster', async () => {
-    render(<App />)
-
-    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Nova' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-
-    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Milo' } })
-    fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'spark' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-
-    expect(screen.getByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
-    expect(screen.getByText(/milo is the latest character added to the canvas/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/nova · scout/i)).toHaveLength(2)
-    expect(screen.getAllByText(/milo · spark/i)).toHaveLength(2)
-    await screen.findByRole('list', { name: /live items list/i })
-  })
-
-  it('renders live items from the backend demo slice', async () => {
+  it('falls back to the agent id when the backend omits a display name', async () => {
     vi.mocked(globalThis.fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => [
         {
-          id: '1',
-          name: 'Mock Coffee',
-          description: 'A freshly brewed mock coffee',
-          price: 4500,
-          createdAt: '2026-04-26T00:00:00.000Z',
-          updatedAt: '2026-04-26T00:00:00.000Z',
+          id: 'mystery-agent',
+          imageAsset: null,
         },
       ],
     } as Response)
 
     render(<App />)
 
-    const liveItemsList = await screen.findByRole('list', { name: /live items list/i })
-    expect(within(liveItemsList).getByText('Mock Coffee')).toBeInTheDocument()
+    const roster = await screen.findByRole('list', { name: /backend agent list/i })
+    expect(within(roster).getByText(/mystery-agent · placeholder image/i)).toBeInTheDocument()
+  })
+
+  it('uses a placeholder avatar when the backend agent has no image asset', async () => {
+    render(<App />)
+
+    const placeholderAvatar = await screen.findByRole('img', { name: /min avatar/i })
+    expect(placeholderAvatar.getAttribute('src')).toContain('data:image/svg+xml')
+  })
+
+
+  it('falls back to the placeholder avatar for disallowed image sources', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        {
+          id: 'unsafe-agent',
+          name: 'Unsafe',
+          imageAsset: 'ftp://example.com/avatar.png',
+        },
+      ],
+    } as Response)
+
+    render(<App />)
+
+    const fallbackAvatar = await screen.findByRole('img', { name: /unsafe avatar/i })
+    expect(fallbackAvatar.getAttribute('src')).toContain('data:image/svg+xml')
   })
 
   it('shows an error state when the backend request fails', async () => {
@@ -78,7 +93,8 @@ describe('App', () => {
 
     render(<App />)
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
+    const alerts = await screen.findAllByRole('alert')
+    expect(alerts[0]).toHaveTextContent('API request failed: 500')
   })
 
   it('shows a configuration error when the API base URL is missing', async () => {
@@ -86,7 +102,8 @@ describe('App', () => {
 
     render(<App />)
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
+    const alerts = await screen.findAllByRole('alert')
+    expect(alerts[0]).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
     expect(globalThis.fetch).not.toHaveBeenCalled()
   })
 })

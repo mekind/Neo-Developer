@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react'
 
-import { type WorldCharacter } from './characters'
+import { type WorldAgent } from './agents'
 
 type WorldCanvasProps = {
-  characters: WorldCharacter[]
-  currentCharacter: WorldCharacter | null
+  agents: WorldAgent[]
+  isLoading: boolean
+  errorMessage: string | null
 }
 
-export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) {
+export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -92,55 +93,44 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
     context.font = 'bold 18px sans-serif'
     context.fillText('Warm school commons prototype', 28, 42)
     context.font = '16px sans-serif'
-    context.fillText('새 캐릭터가 따뜻한 학교 분위기의 월드에 바로 배치됩니다.', 28, 68)
-
-    if (characters.length === 0) {
-      context.fillStyle = 'rgba(91, 70, 54, 0.72)'
-      context.font = '18px sans-serif'
-      context.fillText('No spawned characters yet', 28, 120)
-      return
-    }
-
-    characters.forEach((character, index) => {
-      context.fillStyle = character.color
-      context.beginPath()
-      context.arc(character.x, character.y, 18, 0, Math.PI * 2)
-      context.fill()
-
-      context.strokeStyle = currentCharacter?.id === character.id ? '#fff7ed' : 'rgba(91,70,54,0.45)'
-      context.lineWidth = currentCharacter?.id === character.id ? 3 : 1
-      context.stroke()
-
-      context.fillStyle = '#5b4636'
-      context.font = '14px sans-serif'
-      context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
-    })
-  }, [characters, currentCharacter])
+    context.fillText('Backend agents appear at random stationary spots for the current load.', 28, 68)
+  }, [])
 
   return (
     <div className="world-surface">
       <div className="world-status">
         <div>
           <p className="eyebrow">Live world state</p>
-          <h2>Spawned avatars: {characters.length}</h2>
+          <h2>Backend agents: {agents.length}</h2>
         </div>
         <p className="world-helper">
-          {currentCharacter
-            ? `${currentCharacter.name} is the latest character added to the canvas.`
-            : 'Submit the form to create the first prototype avatar.'}
+          {isLoading
+            ? 'Loading backend agents into the world.'
+            : errorMessage
+              ? 'Backend agent roster could not be loaded.'
+              : agents.length > 0
+                ? 'Agents stay still after they appear, but can get new random spots on the next reload.'
+                : 'No backend agents were returned for this world load.'}
         </p>
       </div>
-      <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
-      {characters.length > 0 ? (
-        <ul className="world-roster" aria-label="World roster">
-          {characters.map((character) => (
-            <li key={character.id}>
-              <span className="world-roster-dot" style={{ backgroundColor: character.color }} aria-hidden="true" />
-              {character.name} · {character.archetype}
-            </li>
-          ))}
-        </ul>
-      ) : null}
+
+      <div className="world-canvas-stage">
+        <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
+        {!isLoading && !errorMessage && agents.length > 0 ? (
+          <div className="world-agent-layer" aria-label="Backend world agents">
+            {agents.map((agent) => (
+              <figure
+                key={agent.id}
+                className="world-agent"
+                style={{ left: `${agent.xPercent}%`, top: `${agent.yPercent}%` }}
+              >
+                <img src={agent.imageSrc} alt={`${agent.label} avatar`} className="world-agent-avatar" />
+                <figcaption>{agent.label}</figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : null}
+      </div>
     </div>
   )
 }

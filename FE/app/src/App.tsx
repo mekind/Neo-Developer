@@ -1,32 +1,44 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { InteractionPanel } from '@/components/InteractionPanel'
-import { archetypeOptions, type CharacterArchetype, type WorldCharacter } from '@/game/characters'
+import { buildWorldAgents, type WorldAgent } from '@/game/agents'
 import { WorldCanvas } from '@/game/WorldCanvas'
+import { listAgents } from '@/services/agents'
 
 export default function App() {
-  const [characters, setCharacters] = useState<WorldCharacter[]>([])
+  const [agents, setAgents] = useState<WorldAgent[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const handleCreateCharacter = (name: string, archetype: CharacterArchetype) => {
-    setCharacters((current) => [
-      ...current,
-      (() => {
-        const palette = archetypeOptions.find((option) => option.value === archetype) ?? archetypeOptions[0]
-        const index = current.length
+  useEffect(() => {
+    let isMounted = true
 
-        return {
-          id: `${name}-${index + 1}`,
-          name,
-          archetype,
-          color: palette.color,
-          x: 160 + (index % 4) * 180,
-          y: 180 + Math.floor(index / 4) * 110,
+    async function loadAgents() {
+      try {
+        setIsLoading(true)
+        setErrorMessage(null)
+        const nextAgents = await listAgents()
+        if (isMounted) {
+          setAgents(buildWorldAgents(nextAgents))
         }
-      })(),
-    ])
-  }
+      } catch (error) {
+        if (isMounted) {
+          setErrorMessage(error instanceof Error ? error.message : 'Failed to load backend agents.')
+          setAgents([])
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+      }
+    }
 
-  const currentCharacter = useMemo(() => characters.at(-1) ?? null, [characters])
+    void loadAgents()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   return (
     <main className="app-shell">
@@ -36,23 +48,25 @@ export default function App() {
           <h1>Gather-like World Layout</h1>
         </div>
         <p className="topbar-copy">
-          상단 바와 사이드바를 유지한 채, 따뜻한 학교 공용공간 톤의 월드에서 패널 기반 캐릭터 생성 플로우를 바로 검증합니다.
+          상단 바와 사이드바를 유지한 채, 백엔드에서 받은 agent roster가 따뜻한 학교 공용공간 톤의 월드에
+          랜덤 위치로 배치되는 첫 공유공간 데모를 보여줍니다.
         </p>
       </header>
 
       <div className="app-body">
         <aside className="sidebar panel-shell">
-          <InteractionPanel characters={characters} onCreateCharacter={handleCreateCharacter} />
+          <InteractionPanel agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
         </aside>
 
         <section className="world-stage panel-shell" aria-label="world stage">
           <div className="world-stage-copy">
             <p className="eyebrow">World viewport</p>
             <p className="description">
-              Gather-like 레이아웃을 유지하면서, 생성된 캐릭터가 따뜻한 학교 공용공간 톤의 월드에 즉시 나타나는 첫 상호작용 루프를 보여줍니다.
+              백엔드 agent 리스트가 로드될 때마다 랜덤한 위치에 배치되고, 같은 로드 안에서는 가만히 머무르는
+              Gather-like 월드 데모입니다.
             </p>
           </div>
-          <WorldCanvas characters={characters} currentCharacter={currentCharacter} />
+          <WorldCanvas agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
         </section>
       </div>
     </main>
