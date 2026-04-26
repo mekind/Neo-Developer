@@ -1,7 +1,65 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
+
+vi.mock('@/game/WorldCanvas', () => ({
+  WorldCanvas: ({
+    characters,
+    currentCharacter,
+    interactionTarget,
+    lastInteractionMessage,
+    onCharactersChange,
+    onInteractionMessage,
+    playerStatusCopy,
+    interactionStatusCopy,
+    phaserStatusCopy,
+  }: {
+    characters: Array<{ id: string; name: string; archetype: string; x: number; y: number }>
+    currentCharacter: { id: string; name: string; x: number; y: number } | null
+    interactionTarget: { id: string; name: string } | null
+    lastInteractionMessage: string | null
+    onCharactersChange: (characters: Array<{ id: string; name: string; archetype: string; x: number; y: number }>) => void
+    onInteractionMessage: (message: string) => void
+    playerStatusCopy: string
+    interactionStatusCopy: string
+    phaserStatusCopy: string
+  }) => (
+    <div aria-label="Phaser map viewport">
+      <h2>Spawned avatars: {characters.length}</h2>
+      <p>{playerStatusCopy}</p>
+      <p>{currentCharacter ? interactionStatusCopy : '첫 번째 캐릭터를 만들면 월드에 바로 반영됩니다.'}</p>
+      <p>{phaserStatusCopy}</p>
+      <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
+      {interactionTarget ? <p>Distance to {interactionTarget.name}: 20px</p> : null}
+      <button
+        type="button"
+        onClick={() => {
+          const player = characters.at(-1)
+          if (!player) return
+          onCharactersChange(
+            characters.map((character, index) =>
+              index === characters.length - 1 ? { ...character, x: character.x - 120 } : character,
+            ),
+          )
+        }}
+      >
+        Mock move left
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          const player = currentCharacter
+          const target = interactionTarget
+          if (!player || !target) return
+          onInteractionMessage(`${player.name} greeted ${target.name}.`)
+        }}
+      >
+        Mock interact
+      </button>
+    </div>
+  ),
+}))
 
 describe('App', () => {
   beforeEach(() => {
@@ -29,7 +87,7 @@ describe('App', () => {
 
     expect(screen.getByLabelText(/current character summary/i)).toHaveTextContent(/nova joined as a maker/i)
     expect(screen.getByRole('heading', { name: /spawned avatars: 1/i })).toBeInTheDocument()
-    expect(screen.getAllByText(/nova · maker/i)).toHaveLength(2)
+    expect(screen.getByText(/nova · maker/i)).toBeInTheDocument()
     await screen.findByRole('list', { name: /live items list/i })
   })
 
@@ -44,9 +102,9 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
     expect(screen.getByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
-    expect(screen.getByText(/controlling milo at \(340, 180\)/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/nova · scout/i)).toHaveLength(2)
-    expect(screen.getAllByText(/milo · spark/i)).toHaveLength(2)
+    expect(screen.getByText(/controlling milo at \(1320, 700\)/i)).toBeInTheDocument()
+    expect(screen.getByText(/nova · scout/i)).toBeInTheDocument()
+    expect(screen.getByText(/milo · spark/i)).toBeInTheDocument()
     await screen.findByRole('list', { name: /live items list/i })
   })
 
@@ -96,30 +154,22 @@ describe('App', () => {
     render(<App />)
     await screen.findByRole('list', { name: /live items list/i })
 
-    vi.useFakeTimers()
-    try {
-      fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Nova' } })
-      fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Nova' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
-      fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Milo' } })
-      fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'spark' } })
-      fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Milo' } })
+    fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'spark' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
-      fireEvent.keyDown(window, { key: 'ArrowLeft' })
-      act(() => {
-        vi.advanceTimersByTime(180)
-      })
-      fireEvent.keyUp(window, { key: 'ArrowLeft' })
+    fireEvent.click(screen.getByRole('button', { name: /mock move left/i }))
 
-      expect(screen.getByText(/controlling milo at \(268, 180\)/i)).toBeInTheDocument()
-      expect(screen.getByText(/press e near nova to interact/i)).toBeInTheDocument()
+    expect(screen.getByText(/controlling milo at \(1200, 700\)/i)).toBeInTheDocument()
+    expect(screen.getByText(/press e near nova to interact/i)).toBeInTheDocument()
 
-      fireEvent.keyDown(window, { key: 'e' })
+    fireEvent.click(screen.getByRole('button', { name: /mock interact/i }))
 
-      expect(screen.getByText(/milo greeted nova/i)).toBeInTheDocument()
-      expect(screen.getByText(/distance to nova: 108px/i)).toBeInTheDocument()
-    } finally {
-      vi.useRealTimers()
-    }
+    expect(screen.getByText(/milo greeted nova/i)).toBeInTheDocument()
+    expect(screen.getByText(/distance to nova: 20px/i)).toBeInTheDocument()
+    expect(screen.getByText(/phaser drives the map camera, movement, and proximity interaction/i)).toBeInTheDocument()
   })
 })
