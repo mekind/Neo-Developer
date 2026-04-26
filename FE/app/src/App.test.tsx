@@ -1,4 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
+import { vi } from 'vitest'
+
 import App from './App'
 
 describe('App', () => {
@@ -32,8 +34,39 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
     expect(screen.getByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
-    expect(screen.getByText(/milo is the latest character added to the canvas/i)).toBeInTheDocument()
+    expect(screen.getByText(/controlling milo at \(340, 180\)/i)).toBeInTheDocument()
     expect(screen.getAllByText(/nova · scout/i)).toHaveLength(2)
     expect(screen.getAllByText(/milo · spark/i)).toHaveLength(2)
+  })
+
+  it('moves the latest created character and unlocks interaction feedback nearby', () => {
+    vi.useFakeTimers()
+
+    try {
+      render(<App />)
+
+      fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Nova' } })
+      fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+
+      fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Milo' } })
+      fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'spark' } })
+      fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+
+      fireEvent.keyDown(window, { key: 'ArrowLeft' })
+      act(() => {
+        vi.advanceTimersByTime(180)
+      })
+      fireEvent.keyUp(window, { key: 'ArrowLeft' })
+
+      expect(screen.getByText(/controlling milo at \(268, 180\)/i)).toBeInTheDocument()
+      expect(screen.getByText(/press e near nova to interact/i)).toBeInTheDocument()
+
+      fireEvent.keyDown(window, { key: 'e' })
+
+      expect(screen.getByText(/milo greeted nova/i)).toBeInTheDocument()
+      expect(screen.getByText(/distance to nova: 108px/i)).toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

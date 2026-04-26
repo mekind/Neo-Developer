@@ -1,13 +1,24 @@
 import { useEffect, useRef } from 'react'
 
-import { type WorldCharacter } from './characters'
+import { INTERACTION_RADIUS, WORLD_HEIGHT, WORLD_WIDTH, measureDistance, type WorldCharacter } from './characters'
 
 type WorldCanvasProps = {
   characters: WorldCharacter[]
   currentCharacter: WorldCharacter | null
+  interactionTarget: WorldCharacter | null
+  playerStatusCopy: string
+  interactionStatusCopy: string
+  lastInteractionMessage: string | null
 }
 
-export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) {
+export function WorldCanvas({
+  characters,
+  currentCharacter,
+  interactionTarget,
+  playerStatusCopy,
+  interactionStatusCopy,
+  lastInteractionMessage,
+}: WorldCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -50,7 +61,7 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
     context.fillStyle = '#f8fafc'
     context.font = '16px sans-serif'
     context.fillText('World viewport prototype', 24, 38)
-    context.fillText('Panel-created characters appear here immediately', 24, 64)
+    context.fillText('Create, move, and interact in one loop', 24, 64)
 
     if (characters.length === 0) {
       context.fillStyle = 'rgba(148, 163, 184, 0.9)'
@@ -62,20 +73,41 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
     if (typeof context.arc !== 'function') return
 
     characters.forEach((character, index) => {
+      const isCurrent = currentCharacter?.id === character.id
+      const isInteractionTarget = interactionTarget?.id === character.id
+
+      if (isCurrent) {
+        context.strokeStyle = 'rgba(34, 197, 94, 0.4)'
+        context.lineWidth = 10
+        context.beginPath()
+        context.arc(character.x, character.y, INTERACTION_RADIUS, 0, Math.PI * 2)
+        context.stroke()
+      }
+
       context.fillStyle = character.color
       context.beginPath()
       context.arc(character.x, character.y, 18, 0, Math.PI * 2)
       context.fill()
 
-      context.strokeStyle = currentCharacter?.id === character.id ? '#f8fafc' : 'rgba(226,232,240,0.45)'
-      context.lineWidth = currentCharacter?.id === character.id ? 3 : 1
+      context.strokeStyle = isCurrent ? '#f8fafc' : isInteractionTarget ? '#facc15' : 'rgba(226,232,240,0.45)'
+      context.lineWidth = isCurrent || isInteractionTarget ? 3 : 1
       context.stroke()
 
       context.fillStyle = '#f8fafc'
       context.font = '14px sans-serif'
       context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
     })
-  }, [characters, currentCharacter])
+
+    if (currentCharacter && interactionTarget) {
+      context.fillStyle = '#facc15'
+      context.font = '15px sans-serif'
+      context.fillText(
+        `Interaction ready: ${currentCharacter.name} ↔ ${interactionTarget.name}`,
+        24,
+        height - 32,
+      )
+    }
+  }, [characters, currentCharacter, interactionTarget])
 
   return (
     <div className="world-surface">
@@ -83,14 +115,23 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
         <div>
           <p className="eyebrow">Live world state</p>
           <h2>Spawned avatars: {characters.length}</h2>
+          <p className="world-helper world-helper-strong">{playerStatusCopy}</p>
         </div>
         <p className="world-helper">
-          {currentCharacter
-            ? `${currentCharacter.name} is the latest character added to the canvas.`
-            : 'Submit the form to create the first prototype avatar.'}
+          {currentCharacter ? interactionStatusCopy : 'Submit the form to create the first prototype avatar.'}
         </p>
       </div>
-      <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
+      <canvas ref={canvasRef} width={WORLD_WIDTH} height={WORLD_HEIGHT} aria-label="2D world prototype canvas" />
+      <div className="world-feedback" aria-live="polite">
+        <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
+        {currentCharacter && interactionTarget ? (
+          <p>
+            Distance to {interactionTarget.name}: {Math.round(measureDistance(currentCharacter, interactionTarget))}px
+          </p>
+        ) : (
+          <p>Bring your player close to another avatar to unlock the interaction prompt.</p>
+        )}
+      </div>
       {characters.length > 0 ? (
         <ul className="world-roster" aria-label="World roster">
           {characters.map((character) => (

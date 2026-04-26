@@ -7,3 +7,4 @@
 - 2026-04-26: Added the first panel-to-world character creation prototype note, covering immediate world spawn behavior, append-only prototype roster semantics, and first-pass scope boundaries.
 - 2026-04-26: Marked the FE documentation context as demo/prototype-oriented so future work stays scoped to the demo build.
 - 2026-04-26: Updated the FE shell to a Gather-like layout with a top bar, sidebar, and main world viewport; documented the new layout direction in the FE vault.
+- 2026-04-26: Added the first playable movement + nearby-character interaction loop note, including control rules, success bar, and preserved non-goals.
