@@ -21,45 +21,85 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
     const height = canvas.height
 
     context.clearRect(0, 0, width, height)
-    context.fillStyle = '#0f172a'
+
+    const wallGradient = context.createLinearGradient(0, 0, 0, height)
+    wallGradient.addColorStop(0, '#f6ead8')
+    wallGradient.addColorStop(0.5, '#efe0c7')
+    wallGradient.addColorStop(1, '#e0c39e')
+    context.fillStyle = wallGradient
     context.fillRect(0, 0, width, height)
 
-    context.fillStyle = '#14213d'
-    context.fillRect(0, 0, width, 92)
+    context.fillStyle = '#d6a977'
+    context.fillRect(0, height - 170, width, 170)
 
-    context.strokeStyle = 'rgba(255,255,255,0.08)'
-    for (let x = 0; x <= width; x += 48) {
-      context.beginPath()
-      context.moveTo(x, 0)
-      context.lineTo(x, height)
-      context.stroke()
+    context.fillStyle = '#b98554'
+    for (let x = 0; x < width; x += 64) {
+      context.fillRect(x, height - 170, 4, 170)
     }
 
-    for (let y = 0; y <= height; y += 48) {
+    context.fillStyle = '#8b5e3c'
+    context.fillRect(56, 72, width - 112, 22)
+
+    const windows = [150, 390, 630, 870]
+    windows.forEach((x) => {
+      context.fillStyle = '#91613d'
+      context.fillRect(x, 104, 150, 168)
+      context.fillStyle = '#b9e3f8'
+      context.fillRect(x + 12, 116, 126, 144)
+      context.strokeStyle = 'rgba(255,255,255,0.45)'
+      context.lineWidth = 4
       context.beginPath()
-      context.moveTo(0, y)
-      context.lineTo(width, y)
+      context.moveTo(x + 75, 116)
+      context.lineTo(x + 75, 260)
+      context.moveTo(x + 12, 188)
+      context.lineTo(x + 138, 188)
       context.stroke()
-    }
+    })
 
-    context.fillStyle = '#1d4ed8'
-    context.fillRect(96, 132, 180, 140)
-    context.fillRect(332, 188, 220, 180)
-    context.fillRect(598, 108, 160, 220)
+    context.fillStyle = '#6c8f5f'
+    context.fillRect(1020, 124, 38, 118)
+    context.beginPath()
+    context.arc(1039, 104, 42, 0, Math.PI * 2)
+    context.fill()
 
-    context.fillStyle = '#f8fafc'
+    context.fillStyle = '#c99b64'
+    context.fillRect(176, 342, 220, 86)
+    context.fillRect(480, 360, 250, 96)
+    context.fillRect(834, 334, 200, 82)
+
+    context.fillStyle = '#8a5b39'
+    ;[
+      [200, 428, 12, 76],
+      [360, 428, 12, 76],
+      [510, 456, 12, 70],
+      [688, 456, 12, 70],
+      [860, 416, 12, 74],
+      [1010, 416, 12, 74],
+    ].forEach(([x, y, w, h]) => {
+      context.fillRect(x, y, w, h)
+    })
+
+    context.fillStyle = '#f4d06f'
+    context.beginPath()
+    context.arc(1116, 124, 28, 0, Math.PI * 2)
+    context.fill()
+    context.fillStyle = 'rgba(244, 208, 111, 0.18)'
+    context.beginPath()
+    context.arc(1116, 124, 78, 0, Math.PI * 2)
+    context.fill()
+
+    context.fillStyle = '#5b4636'
+    context.font = 'bold 18px sans-serif'
+    context.fillText('Warm school commons prototype', 28, 42)
     context.font = '16px sans-serif'
-    context.fillText('World viewport prototype', 24, 38)
-    context.fillText('Panel-created characters appear here immediately', 24, 64)
+    context.fillText('새 캐릭터가 따뜻한 학교 분위기의 월드에 바로 배치됩니다.', 28, 68)
 
     if (characters.length === 0) {
-      context.fillStyle = 'rgba(148, 163, 184, 0.9)'
+      context.fillStyle = 'rgba(91, 70, 54, 0.72)'
       context.font = '18px sans-serif'
-      context.fillText('No spawned characters yet', 24, 120)
+      context.fillText('No spawned characters yet', 28, 120)
       return
     }
-
-    if (typeof context.arc !== 'function') return
 
     characters.forEach((character, index) => {
       context.fillStyle = character.color
@@ -67,11 +107,11 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
       context.arc(character.x, character.y, 18, 0, Math.PI * 2)
       context.fill()
 
-      context.strokeStyle = currentCharacter?.id === character.id ? '#f8fafc' : 'rgba(226,232,240,0.45)'
+      context.strokeStyle = currentCharacter?.id === character.id ? '#fff7ed' : 'rgba(91,70,54,0.45)'
       context.lineWidth = currentCharacter?.id === character.id ? 3 : 1
       context.stroke()
 
-      context.fillStyle = '#f8fafc'
+      context.fillStyle = '#5b4636'
       context.font = '14px sans-serif'
       context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
     })
