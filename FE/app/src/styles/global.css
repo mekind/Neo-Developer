@@ -226,13 +226,16 @@ h3 {
 .dialog-panel,
 .chat-dialog-panel {
   width: min(100%, 760px);
+  max-height: calc(100dvh - 40px);
   display: grid;
-  gap: 16px;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  gap: 14px;
   padding: 22px;
   border-radius: 22px;
   border: 1px solid rgba(114, 104, 90, 0.16);
   background: rgba(255, 252, 247, 0.98);
   box-shadow: 0 24px 60px rgba(50, 42, 31, 0.2);
+  overflow: hidden;
 }
 
 .field,
@@ -290,22 +293,32 @@ h3 {
 }
 
 .chat-transcript {
-  display: grid;
-  gap: 12px;
-  min-height: 340px;
-  max-height: 420px;
+  min-height: 0;
   overflow: auto;
   padding: 14px;
   border-radius: 16px;
   background: rgba(244, 236, 227, 0.86);
 }
 
+.chat-transcript-stack {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .chat-bubble {
   display: grid;
-  gap: 6px;
-  max-width: min(78%, 460px);
-  padding: 13px 15px;
-  border-radius: 18px;
+  gap: 4px;
+  max-width: min(72%, 420px);
+  padding: 10px 12px;
+  border-radius: 16px;
+}
+
+.chat-bubble p {
+  margin: 0;
+  line-height: 1.5;
 }
 
 .chat-bubble-agent {
@@ -362,12 +375,12 @@ h3 {
 }
 
 .chat-composer-row textarea {
-  min-height: 140px;
+  min-height: 120px;
   resize: vertical;
 }
 
 .chat-send-button {
-  min-width: 112px;
+  min-width: 104px;
   height: 100%;
   align-self: stretch;
   border: 1px solid rgba(114, 104, 90, 0.18);
