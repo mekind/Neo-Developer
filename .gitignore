@@ -1,2 +1,28 @@
 .DS_Store
 .omc/
+
+# Editor / agent local state
+.claude/
+
+# Local planning / drafts (not committed)
+.archive/
+.dksu/
+ryan-ideas.md
+
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Pipeline outputs
+poc/output/
+output/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node
+node_modules/

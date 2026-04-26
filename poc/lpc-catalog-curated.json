@@ -1,0 +1,4121 @@
+{
+  "source": "LPC Universal Spritesheet Character Generator (sheet_definitions/)",
+  "repo": "https://github.com/liberatedpixelcup/Universal-LPC-Spritesheet-Character-Generator",
+  "extracted_at": "2026-04-26",
+  "note": "Curated subset for human/office-style MyClaw personas. Glasses live in facial_eyes group. Full catalog: /lpc-catalog.json.",
+  "bodyTypes": [
+    "male",
+    "female",
+    "teen",
+    "child",
+    "muscular",
+    "pregnant"
+  ],
+  "selectionGroups": {
+    "body": {
+      "items": {
+        "body": {
+          "name": "Body Color",
+          "variants": []
+        },
+        "body_zombie": {
+          "name": "Zombie",
+          "variants": [
+            "zombie"
+          ]
+        },
+        "body_skeleton": {
+          "name": "Skeleton",
+          "variants": [
+            "skeleton"
+          ]
+        }
+      }
+    },
+    "head": {
+      "items": {
+        "heads_rabbit": {
+          "name": "Rabbit",
+          "variants": []
+        },
+        "heads_rabbit_child": {
+          "name": "Rabbit child",
+          "variants": []
+        },
+        "heads_mouse_child": {
+          "name": "Mouse child",
+          "variants": []
+        },
+        "heads_pig_child": {
+          "name": "Pig child",
+          "variants": []
+        },
+        "heads_pig": {
+          "name": "Pig",
+          "variants": []
+        },
+        "heads_rat_child": {
+          "name": "Rat child",
+          "variants": []
+        },
+        "heads_mouse": {
+          "name": "Mouse",
+          "variants": []
+        },
+        "heads_sheep_child": {
+          "name": "Sheep child",
+          "variants": []
+        },
+        "heads_rat": {
+          "name": "Rat",
+          "variants": []
+        },
+        "heads_sheep": {
+          "name": "Sheep",
+          "variants": []
+        },
+        "heads_wolf_female": {
+          "name": "Wolf female",
+          "variants": []
+        },
+        "heads_wolf_male": {
+          "name": "Wolf male",
+          "variants": []
+        },
+        "heads_wartotaur": {
+          "name": "Wartotaur",
+          "variants": []
+        },
+        "heads_boarman_child": {
+          "name": "Boarman child",
+          "variants": []
+        },
+        "heads_boarman": {
+          "name": "Boarman",
+          "variants": []
+        },
+        "heads_minotaur_female": {
+          "name": "Minotaur female",
+          "variants": []
+        },
+        "heads_minotaur_child": {
+          "name": "Minotaur child",
+          "variants": []
+        },
+        "heads_minotaur": {
+          "name": "Minotaur",
+          "variants": []
+        },
+        "heads_wolf_child": {
+          "name": "Wolf child",
+          "variants": []
+        },
+        "heads_zombie": {
+          "name": "Zombie",
+          "variants": []
+        },
+        "heads_skeleton": {
+          "name": "Skeleton",
+          "variants": [
+            "skeleton"
+          ]
+        },
+        "heads_vampire": {
+          "name": "Vampire",
+          "variants": []
+        },
+        "heads_jack": {
+          "name": "Jack O Lantern",
+          "variants": [
+            "jack"
+          ]
+        },
+        "heads_frankenstein": {
+          "name": "Frankenstein",
+          "variants": []
+        },
+        "heads_alien": {
+          "name": "Alien",
+          "variants": []
+        },
+        "heads_lizard_female": {
+          "name": "Lizard female",
+          "variants": []
+        },
+        "heads_lizard_male": {
+          "name": "Lizard male",
+          "variants": []
+        },
+        "heads_lizard_child": {
+          "name": "Lizard child",
+          "variants": []
+        },
+        "heads_human_male_gaunt": {
+          "name": "Human Male Gaunt",
+          "variants": []
+        },
+        "heads_human_female_small": {
+          "name": "Human Female Small",
+          "variants": []
+        },
+        "heads_human_child": {
+          "name": "Human Child",
+          "variants": []
+        },
+        "heads_human_female": {
+          "name": "Human Female",
+          "variants": []
+        },
+        "heads_human_male": {
+          "name": "Human Male",
+          "variants": []
+        },
+        "heads_human_elderly_small": {
+          "name": "Human Elderly Small",
+          "variants": []
+        },
+        "heads_human_male_elderly": {
+          "name": "Human Male Elderly",
+          "variants": []
+        },
+        "heads_human_male_plump": {
+          "name": "Human Male Plump",
+          "variants": []
+        },
+        "heads_human_female_elderly": {
+          "name": "Human Female Elderly",
+          "variants": []
+        },
+        "heads_human_male_small": {
+          "name": "Human Male Small",
+          "variants": []
+        },
+        "heads_goblin": {
+          "name": "Goblin",
+          "variants": []
+        },
+        "heads_goblin_child": {
+          "name": "Goblin child",
+          "variants": []
+        },
+        "heads_orc_child": {
+          "name": "Orc child",
+          "variants": []
+        },
+        "heads_orc_female": {
+          "name": "Orc female",
+          "variants": []
+        },
+        "heads_troll": {
+          "name": "Troll",
+          "variants": []
+        },
+        "heads_troll_child": {
+          "name": "Troll child",
+          "variants": []
+        },
+        "heads_orc_male": {
+          "name": "Orc male",
+          "variants": []
+        }
+      }
+    },
+    "expression": {
+      "items": {
+        "face_sad": {
+          "name": "Sad",
+          "variants": []
+        },
+        "face_neutral": {
+          "name": "Neutral",
+          "variants": []
+        },
+        "face_look_r": {
+          "name": "Looking Right",
+          "variants": []
+        },
+        "face_eyeroll": {
+          "name": "Rolling Eyes",
+          "variants": []
+        },
+        "face_look_l": {
+          "name": "Looking Left",
+          "variants": []
+        },
+        "face_happy2": {
+          "name": "Happy Alt",
+          "variants": []
+        },
+        "face_angry2": {
+          "name": "Angry Alt",
+          "variants": []
+        },
+        "face_happy": {
+          "name": "Happy",
+          "variants": []
+        },
+        "face_closing": {
+          "name": "Closing Eyes",
+          "variants": []
+        },
+        "face_blush": {
+          "name": "Blush",
+          "variants": []
+        },
+        "face_closed": {
+          "name": "Closed Eyes",
+          "variants": []
+        },
+        "face_sad2": {
+          "name": "Sad Alt",
+          "variants": []
+        },
+        "face_angry": {
+          "name": "Angry",
+          "variants": []
+        },
+        "face_shame": {
+          "name": "Shame",
+          "variants": []
+        },
+        "face_shock": {
+          "name": "Shock",
+          "variants": []
+        }
+      }
+    },
+    "eyes": {
+      "items": {
+        "eyes_cyclops": {
+          "name": "Cyclops Eyes",
+          "variants": [
+            "cyclops",
+            "blue",
+            "brown",
+            "gray",
+            "green",
+            "orange",
+            "purple",
+            "red",
+            "yellow"
+          ]
+        }
+      }
+    },
+    "eyebrows": {
+      "items": {
+        "eyebrows_thin": {
+          "name": "Thin Eyebrows",
+          "variants": []
+        },
+        "eyebrows_thick": {
+          "name": "Thick Eyebrows",
+          "variants": []
+        }
+      }
+    },
+    "nose": {
+      "items": {
+        "head_nose_button": {
+          "name": "Button nose",
+          "variants": []
+        },
+        "head_nose_big": {
+          "name": "Big nose",
+          "variants": []
+        },
+        "head_nose_large": {
+          "name": "Large nose",
+          "variants": []
+        },
+        "head_nose_elderly": {
+          "name": "Elderly nose",
+          "variants": []
+        },
+        "head_nose_straight": {
+          "name": "Straight nose",
+          "variants": []
+        }
+      }
+    },
+    "wrinkles": {
+      "items": {
+        "head_wrinkles": {
+          "name": "Wrinkles",
+          "variants": []
+        }
+      }
+    },
+    "ears": {
+      "items": {
+        "head_ears_long": {
+          "name": "Long ears",
+          "variants": []
+        },
+        "head_ears_dragon": {
+          "name": "Dragon Ears",
+          "variants": []
+        },
+        "head_ears_hang": {
+          "name": "Hanging Elven Ears",
+          "variants": []
+        },
+        "head_ears_elven": {
+          "name": "Elven ears",
+          "variants": []
+        },
+        "head_ears_big": {
+          "name": "Big ears",
+          "variants": []
+        },
+        "head_ears_medium": {
+          "name": "Medium Elven Ears",
+          "variants": []
+        },
+        "head_ears_down": {
+          "name": "Downward Elven Ears",
+          "variants": []
+        },
+        "head_ears_zabos": {
+          "name": "Side Cat Ears",
+          "variants": [
+            "blonde",
+            "ash",
+            "sandy",
+            "platinum",
+            "strawberry",
+            "redhead",
+            "ginger",
+            "carrot",
+            "chestnut",
+            "light brown",
+            "dark brown",
+            "black",
+            "raven",
+            "dark gray",
+            "gray",
+            "white",
+            "red",
+            "orange",
+            "gold",
+            "green",
+            "blue",
+            "navy",
+            "violet",
+            "purple",
+            "pink",
+            "rose",
+            "fur_black",
+            "fur_brown",
+            "fur_tan",
+            "fur_copper",
+            "fur_gold",
+            "fur_grey",
+            "fur_white"
+          ]
+        },
+        "head_ears_lykon": {
+          "name": "Side Wolf Ears",
+          "variants": [
+            "blonde",
+            "ash",
+            "sandy",
+            "platinum",
+            "strawberry",
+            "redhead",
+            "ginger",
+            "carrot",
+            "chestnut",
+            "light brown",
+            "dark brown",
+            "black",
+            "raven",
+            "dark gray",
+            "gray",
+            "white",
+            "red",
+            "orange",
+            "gold",
+            "green",
+            "blue",
+            "navy",
+            "violet",
+            "purple",
+            "pink",
+            "rose",
+            "fur_black",
+            "fur_brown",
+            "fur_tan",
+            "fur_copper",
+            "fur_gold",
+            "fur_grey",
+            "fur_white"
+          ]
+        },
+        "head_ears_avyon": {
+          "name": "Feather Ears",
+          "variants": [
+            "blonde",
+            "ash",
+            "sandy",
+            "platinum",
+            "strawberry",
+            "redhead",
+            "ginger",
+            "carrot",
+            "chestnut",
+            "light brown",
+            "dark brown",
+            "black",
+            "raven",
+            "dark gray",
+            "gray",
+            "white",
+            "red",
+            "orange",
+            "gold",
+            "green",
+            "blue",
+            "navy",
+            "violet",
+            "purple",
+            "pink",
+            "rose",
+            "fur_black",
+            "fur_brown",
+            "fur_tan",
+            "fur_copper",
+            "fur_gold",
+            "fur_grey",
+            "fur_white"
+          ]
+        }
+      }
+    },
+    "hair": {
+      "items": {
+        "hair_braid": {
+          "name": "Braid",
+          "variants": []
+        },
+        "hair_ponytail2": {
+          "name": "Ponytail2",
+          "variants": []
+        },
+        "hair_long_tied": {
+          "name": "Long tied",
+          "variants": []
+        },
+        "hair_relm_xlong": {
+          "name": "Relm XLong",
+          "variants": []
+        },
+        "hair_ponytail": {
+          "name": "Ponytail",
+          "variants": []
+        },
+        "hair_shoulderr": {
+          "name": "Shoulderr",
+          "variants": []
+        },
+        "hair_topknot_short2": {
+          "name": "Short Topknot 2",
+          "variants": []
+        },
+        "hair_relm_ponytail": {
+          "name": "Relm w/Ponytail",
+          "variants": []
+        },
+        "hair_topknot_short": {
+          "name": "Short Topknot",
+          "variants": []
+        },
+        "hair_topknot_long": {
+          "name": "Long Topknot",
+          "variants": []
+        },
+        "hair_bangs_bun": {
+          "name": "Bangs bun",
+          "variants": []
+        },
+        "hair_braid2": {
+          "name": "Braid2",
+          "variants": []
+        },
+        "hair_high_ponytail": {
+          "name": "High ponytail",
+          "variants": []
+        },
+        "hair_half_up": {
+          "name": "Half up",
+          "variants": []
+        },
+        "hair_shoulderl": {
+          "name": "Shoulderl",
+          "variants": []
+        },
+        "hair_topknot_long2": {
+          "name": "Long Topknot 2",
+          "variants": []
+        },
+        "hair_flat_top_fade": {
+          "name": "Flat top fade",
+          "variants": []
+        },
+        "hair_twists_fade": {
+          "name": "Twists fade",
+          "variants": []
+        },
+        "hair_afro": {
+          "name": "Afro",
+          "variants": []
+        },
+        "hair_twists_straight": {
+          "name": "Twists straight",
+          "variants": []
+        },
+        "hair_natural": {
+          "name": "Natural",
+          "variants": []
+        },
+        "hair_flat_top_straight": {
+          "name": "Flat top straight",
+          "variants": []
+        },
+        "hair_dreadlocks_long": {
+          "name": "Dreadlocks long",
+          "variants": []
+        },
+        "hair_cornrows": {
+          "name": "Cornrows",
+          "variants": []
+        },
+        "hair_dreadlocks_short": {
+          "name": "Dreadlocks short",
+          "variants": []
+        },
+        "hair_bob_side_part": {
+          "name": "Bob side part",
+          "variants": []
+        },
+        "hair_bob": {
+          "name": "Bob",
+          "variants": []
+        },
+        "hair_lob": {
+          "name": "Lob",
+          "variants": []
+        },
+        "hair_relm_short": {
+          "name": "Relm Short",
+          "variants": []
+        },
+        "hair_pigtails": {
+          "name": "Pigtails",
+          "variants": []
+        },
+        "hair_bunches": {
+          "name": "Bunches",
+          "variants": []
+        },
+        "hair_pigtails_bangs": {
+          "name": "Pigtails bangs",
+          "variants": []
+        },
+        "hair_swoop": {
+          "name": "Swoop",
+          "variants": []
+        },
+        "hair_messy": {
+          "name": "Messy",
+          "variants": []
+        },
+        "hair_bangs": {
+          "name": "Bangs",
+          "variants": []
+        },
+        "hair_parted2": {
+          "name": "Parted 2",
+          "variants": []
+        },
+        "hair_parted3": {
+          "name": "Parted 3",
+          "variants": []
+        },
+        "hair_parted_side_bangs2": {
+          "name": "Side Parted w/Bangs 2",
+          "variants": []
+        },
+        "hair_plain": {
+          "name": "Plain",
+          "variants": []
+        },
+        "hair_pixie": {
+          "name": "Pixie",
+          "variants": []
+        },
+        "hair_messy3": {
+          "name": "Messy3",
+          "variants": []
+        },
+        "hair_page2": {
+          "name": "Page2",
+          "variants": []
+        },
+        "hair_curtains": {
+          "name": "Curtains",
+          "variants": []
+        },
+        "hair_messy2": {
+          "name": "Messy2",
+          "variants": []
+        },
+        "hair_cowlick": {
+          "name": "Cowlick",
+          "variants": []
+        },
+        "hair_parted_side_bangs": {
+          "name": "Side Parted w/Bangs",
+          "variants": []
+        },
+        "hair_unkempt": {
+          "name": "Unkempt",
+          "variants": []
+        },
+        "hair_page": {
+          "name": "Page",
+          "variants": []
+        },
+        "hair_bangsshort": {
+          "name": "Bangsshort",
+          "variants": []
+        },
+        "hair_messy1": {
+          "name": "Messy1",
+          "variants": []
+        },
+        "hair_mop": {
+          "name": "Mop",
+          "variants": []
+        },
+        "hair_swoop_side": {
+          "name": "Side Swoop",
+          "variants": []
+        },
+        "hair_bedhead": {
+          "name": "Bedhead",
+          "variants": []
+        },
+        "hair_idol": {
+          "name": "Idol",
+          "variants": []
+        },
+        "hair_parted": {
+          "name": "Parted",
+          "variants": []
+        },
+        "hair_cowlick_tall": {
+          "name": "Cowlick tall",
+          "variants": []
+        },
+        "hair_single": {
+          "name": "Single",
+          "variants": []
+        },
+        "hair_long_center_part": {
+          "name": "Long center part",
+          "variants": []
+        },
+        "hair_long_messy": {
+          "name": "Long messy",
+          "variants": []
+        },
+        "hair_long_messy2": {
+          "name": "Long messy2",
+          "variants": []
+        },
+        "hair_curtains_long": {
+          "name": "Curtains long",
+          "variants": []
+        },
+        "hair_wavy": {
+          "name": "Wavy",
+          "variants": []
+        },
+        "hair_long_straight": {
+          "name": "Long straight",
+          "variants": []
+        },
+        "hair_loose": {
+          "name": "Loose",
+          "variants": []
+        },
+        "hair_wavy_child": {
+          "name": "Child Wavy",
+          "variants": []
+        },
+        "hair_bangslong": {
+          "name": "Bangslong",
+          "variants": []
+        },
+        "hair_bangslong2": {
+          "name": "Bangslong2",
+          "variants": []
+        },
+        "hair_long": {
+          "name": "Long",
+          "variants": []
+        },
+        "hair_spiked": {
+          "name": "Spiked",
+          "variants": []
+        },
+        "hair_spiked_liberty2": {
+          "name": "Spiked liberty2",
+          "variants": []
+        },
+        "hair_halfmessy": {
+          "name": "Halfmessy",
+          "variants": []
+        },
+        "hair_spiked_porcupine": {
+          "name": "Spiked porcupine",
+          "variants": []
+        },
+        "hair_spiked_liberty": {
+          "name": "Spiked liberty",
+          "variants": []
+        },
+        "hair_spiked2": {
+          "name": "Spiked2",
+          "variants": []
+        },
+        "hair_spiked_beehive": {
+          "name": "Spiked beehive",
+          "variants": []
+        },
+        "hair_high_and_tight": {
+          "name": "High and tight",
+          "variants": []
+        },
+        "hair_longhawk": {
+          "name": "Longhawk",
+          "variants": []
+        },
+        "hair_shorthawk": {
+          "name": "Shorthawk",
+          "variants": []
+        },
+        "hair_balding": {
+          "name": "Balding",
+          "variants": []
+        },
+        "hair_buzzcut": {
+          "name": "Buzzcut",
+          "variants": []
+        },
+        "hair_curls_large_xlong": {
+          "name": "Large Curls XLong",
+          "variants": []
+        },
+        "hair_curly_long": {
+          "name": "Curly long",
+          "variants": []
+        },
+        "hair_curls_large": {
+          "name": "Large Curls",
+          "variants": []
+        },
+        "hair_curly_short": {
+          "name": "Curly short",
+          "variants": []
+        },
+        "hair_jewfro": {
+          "name": "Jewfro",
+          "variants": []
+        },
+        "hair_curly_short2": {
+          "name": "Curly short 2",
+          "variants": []
+        },
+        "hair_xlong": {
+          "name": "Xlong",
+          "variants": []
+        },
+        "hair_xlong_wavy": {
+          "name": "XLong Wavy",
+          "variants": []
+        },
+        "hair_princess": {
+          "name": "Princess",
+          "variants": []
+        },
+        "hair_sara": {
+          "name": "Sara",
+          "variants": []
+        },
+        "hair_long_band": {
+          "name": "Long band",
+          "variants": []
+        }
+      }
+    },
+    "beard": {
+      "items": {
+        "beards_winter": {
+          "name": "Winter Beard",
+          "variants": []
+        },
+        "beards_5oclock_shadow": {
+          "name": "5 O'clock Shadow",
+          "variants": []
+        },
+        "beards_trimmed": {
+          "name": "Trimmed Beard",
+          "variants": []
+        },
+        "beards_medium": {
+          "name": "Medium Beard",
+          "variants": []
+        },
+        "beards_beard": {
+          "name": "Basic Beard",
+          "variants": []
+        }
+      }
+    },
+    "mustache": {
+      "items": {
+        "beards_horseshoe": {
+          "name": "Horseshoe Mustache",
+          "variants": []
+        },
+        "beards_lampshade": {
+          "name": "Lampshade Mustache",
+          "variants": []
+        },
+        "beards_bigstache": {
+          "name": "Big Mustache",
+          "variants": []
+        },
+        "beards_walrus": {
+          "name": "Walrus Mustache",
+          "variants": []
+        },
+        "beards_handlebar": {
+          "name": "Handlebar Mustache",
+          "variants": []
+        },
+        "beards_mustache": {
+          "name": "Mustache",
+          "variants": []
+        },
+        "beards_chevron": {
+          "name": "Chevron Mustache",
+          "variants": []
+        },
+        "beards_french": {
+          "name": "French Mustache",
+          "variants": []
+        }
+      }
+    },
+    "ponytail": {
+      "items": {
+        "hairext_topknot_short": {
+          "name": "Short Topknot",
+          "variants": []
+        },
+        "hairext_topknot_relm": {
+          "name": "Relm Topknot",
+          "variants": []
+        },
+        "hairext_topknot_long": {
+          "name": "Long Topknot",
+          "variants": []
+        }
+      }
+    },
+    "updo": {
+      "items": {
+        "hairext_high_bun": {
+          "name": "High Bun",
+          "variants": []
+        }
+      }
+    },
+    "hat": {
+      "items": {
+        "hat_helmet_barbuta_simple": {
+          "name": "Simple barbuta",
+          "variants": []
+        },
+        "hat_helmet_flattop": {
+          "name": "Flattop",
+          "variants": []
+        },
+        "hat_helmet_kettle": {
+          "name": "Kettle helm",
+          "variants": []
+        },
+        "hat_helmet_legion": {
+          "name": "Legion",
+          "variants": []
+        },
+        "hat_helmet_barbarian": {
+          "name": "Barbarian",
+          "variants": []
+        },
+        "hat_helmet_pointed": {
+          "name": "Pointed helm",
+          "variants": []
+        },
+        "hat_helmet_sugarloaf_simple": {
+          "name": "Simple sugarloaf helm",
+          "variants": []
+        },
+        "hat_helmet_xeon": {
+          "name": "Xeon helmet",
+          "variants": []
+        },
+        "hat_helmet_bascinet": {
+          "name": "Bascinet",
+          "variants": []
+        },
+        "hat_helmet_barbarian_nasal": {
+          "name": "Barbarian nasal",
+          "variants": []
+        },
+        "hat_helmet_norman": {
+          "name": "Norman helm",
+          "variants": []
+        },
+        "hat_helmet_bascinet_round": {
+          "name": "Round bascinet",
+          "variants": []
+        },
+        "hat_helmet_bascinet_pigface_raised": {
+          "name": "Pigface bascinet raised",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "hat_helmet_spangenhelm": {
+          "name": "Spangenhelm",
+          "variants": []
+        },
+        "hat_helmet_close": {
+          "name": "Close helm",
+          "variants": []
+        },
+        "hat_helmet_greathelm": {
+          "name": "Greathelm",
+          "variants": []
+        },
+        "hat_helmet_morion": {
+          "name": "Morion",
+          "variants": []
+        },
+        "hat_helmet_spangenhelm_viking": {
+          "name": "Viking spangenhelm",
+          "variants": []
+        },
+        "hat_helmet_nasal": {
+          "name": "Nasal helm",
+          "variants": []
+        },
+        "hat_helmet_armet_simple": {
+          "name": "Simple Armet",
+          "variants": []
+        },
+        "hat_helmet_bascinet_pigface": {
+          "name": "Pigface bascinet",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "hat_helmet_armet": {
+          "name": "Armet",
+          "variants": []
+        },
+        "hat_helmet_sugarloaf": {
+          "name": "Sugarloaf greathelm",
+          "variants": []
+        },
+        "hat_helmet_maximus": {
+          "name": "Maximus",
+          "variants": []
+        },
+        "hat_helmet_barbuta": {
+          "name": "Barbuta",
+          "variants": []
+        },
+        "hat_helmet_horned": {
+          "name": "Horned helmet",
+          "variants": []
+        },
+        "hat_helmet_barbarian_viking": {
+          "name": "Barbarian Viking",
+          "variants": []
+        },
+        "hat_holiday_christmas": {
+          "name": "Christmas Hat",
+          "variants": [
+            "red",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_formal_tiara": {
+          "name": "Tiara",
+          "variants": [
+            "tiara_bronze",
+            "tiara_gold",
+            "tiara_iron",
+            "tiara_purple",
+            "tiara_silver",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "hat_formal_crown": {
+          "name": "Crown",
+          "variants": [
+            "crown_gold",
+            "crown_red",
+            "crown_blue",
+            "crown_gray",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "hat_formal_bowler": {
+          "name": "Formal Bowler Hat",
+          "variants": [
+            "base",
+            "base_brown",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_formal_tophat": {
+          "name": "Formal Tophat",
+          "variants": [
+            "base",
+            "base_brown",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_magic_large": {
+          "name": "Large Hat",
+          "variants": [
+            "brown"
+          ]
+        },
+        "hat_magic_wizard": {
+          "name": "Wizard Hat Base",
+          "variants": [
+            "base_black",
+            "base_brown",
+            "base_gray",
+            "base_red",
+            "base_teal",
+            "base_yellow",
+            "white",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "yellow"
+          ]
+        },
+        "hat_magic_celestial_moon": {
+          "name": "Celestial Wizard Moon Hat",
+          "variants": [
+            "white",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "yellow"
+          ]
+        },
+        "hat_magic_celestial": {
+          "name": "Celestial Wizard Hat",
+          "variants": [
+            "white",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "yellow"
+          ]
+        },
+        "hat_bicorne_athwart_commodore": {
+          "name": "Bicorne Athwart Commodore",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_bicorne_athwart_captain": {
+          "name": "Bicorne Athwart Captain",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_bicorne_athwart_basic": {
+          "name": "Bicorne Athwart",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_bicorne_athwart_admiral": {
+          "name": "Bicorne Athwart Admiral",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_cap_cavalier": {
+          "name": "Cavalier",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_cap_bonnie": {
+          "name": "Bonnie",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_cap_bonnie_tilt": {
+          "name": "Bonnie Alt Tilt",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_cap_leather": {
+          "name": "Leather Cap",
+          "variants": [
+            "base",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_bicorne_foreaft_commodore": {
+          "name": "Bicorne Foreaft Commodore",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_bicorne_foreaft": {
+          "name": "Bicorne foreaft",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_tricorne_captain": {
+          "name": "Tricorne Captain",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_tricorne": {
+          "name": "Tricorne",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_tricorne_lieutenant": {
+          "name": "Tricorne Lieutenant",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_hood_hijab": {
+          "name": "Hijab",
+          "variants": [
+            "base",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_hood_sack_cloth": {
+          "name": "Sack Cloth Hood",
+          "variants": [
+            "base",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "hat_hood_cloth": {
+          "name": "Hood",
+          "variants": [
+            "hood_black",
+            "hood_brown",
+            "hood_white",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        }
+      }
+    },
+    "facial_eyes": {
+      "items": {
+        "facial_glasses_secretary": {
+          "name": "Secretary Glasses",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "facial_glasses_round": {
+          "name": "Round Glasses",
+          "variants": [
+            "base",
+            "sunglasses",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "facial_glasses_sunglasses": {
+          "name": "Sunglasses",
+          "variants": [
+            "base",
+            "sunglasses",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "facial_glasses_nerd": {
+          "name": "Nerd Glasses",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "facial_glasses": {
+          "name": "Glasses",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "facial_glasses_halfmoon": {
+          "name": "Halfmoon Glasses",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "facial_glasses_shades": {
+          "name": "Shades",
+          "variants": [
+            "base",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "facial_eyepatch_right": {
+          "name": "Eyepatch Right",
+          "variants": [
+            "base",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "facial_eyepatch2_right": {
+          "name": "Eyepatch 2 Right",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "facial_eyepatch_left": {
+          "name": "Eyepatch Left",
+          "variants": [
+            "base",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "facial_eyepatch_ambi": {
+          "name": "Eyepatch Ambidextrous",
+          "variants": [
+            "base",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "facial_eyepatch_small_right": {
+          "name": "Small Eyepatch Right",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "facial_eyepatch_small_left": {
+          "name": "Small Eyepatch Left",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "facial_eyepatch2_left": {
+          "name": "Eyepatch 2 Left",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        }
+      }
+    },
+    "accessory": {
+      "items": {
+        "hat_accessory_wings": {
+          "name": "Helmet wings",
+          "variants": []
+        },
+        "hat_accessory_horns_short": {
+          "name": "Short Horns",
+          "variants": []
+        },
+        "hat_accessory_plumage_centurion": {
+          "name": "Centurion Plumage",
+          "variants": []
+        },
+        "hat_accessory_plumage_legion": {
+          "name": "Legion Plumage",
+          "variants": []
+        },
+        "hat_accessory_crest": {
+          "name": "Crest",
+          "variants": []
+        },
+        "hat_accessory_horns_upward": {
+          "name": "Upward Horns",
+          "variants": []
+        },
+        "hat_accessory_crest_centurion": {
+          "name": "Centurion Crest",
+          "variants": []
+        },
+        "hat_accessory_plumage": {
+          "name": "Plumage",
+          "variants": []
+        },
+        "hat_accessory_horns_downward": {
+          "name": "Downward Horns",
+          "variants": []
+        }
+      }
+    },
+    "earrings": {
+      "items": {
+        "facial_earrings_princess": {
+          "name": "Princess earrings",
+          "variants": [
+            "blue",
+            "green",
+            "orange",
+            "purple",
+            "red",
+            "yellow"
+          ]
+        },
+        "facial_earrings_emerald": {
+          "name": "Emerald earrings",
+          "variants": [
+            "blue",
+            "green",
+            "orange",
+            "purple",
+            "red",
+            "yellow"
+          ]
+        },
+        "facial_earrings_pear": {
+          "name": "Pear earrings",
+          "variants": [
+            "blue",
+            "green",
+            "orange",
+            "purple",
+            "red",
+            "yellow"
+          ]
+        },
+        "facial_earrings_moon": {
+          "name": "Moon earrings",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "facial_earrings_stud": {
+          "name": "Stud earrings",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        }
+      }
+    },
+    "necklace": {
+      "items": {
+        "neck_necklace_chain": {
+          "name": "Chain Necklace",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "neck_necklace_beaded_small": {
+          "name": "Small Beaded Necklace",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "neck_necklace_simple": {
+          "name": "Simple Necklace",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "neck_necklace_beaded_large": {
+          "name": "Large Beaded Necklace",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "neck_necklace": {
+          "name": "Necklace",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold",
+            "pirate"
+          ]
+        }
+      }
+    },
+    "clothes": {
+      "items": {
+        "torso_clothes_robe": {
+          "name": "Robe",
+          "variants": [
+            "black",
+            "blue",
+            "brown",
+            "dark brown",
+            "dark gray",
+            "forest green",
+            "light gray",
+            "purple",
+            "red",
+            "white"
+          ]
+        },
+        "torso_clothes_blouse": {
+          "name": "Blouse",
+          "variants": [
+            "black",
+            "blue",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "sky",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_tunic_sara": {
+          "name": "Sara Tunic",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_tunic": {
+          "name": "Tunic",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_blouse_longsleeve": {
+          "name": "Longsleeve blouse",
+          "variants": [
+            "black",
+            "blue",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "sky",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_child_shirt": {
+          "name": "Child shirts",
+          "variants": [
+            "black",
+            "blue",
+            "brown",
+            "gray",
+            "green",
+            "lavender",
+            "lightblue",
+            "pink",
+            "red",
+            "white"
+          ]
+        },
+        "torso_clothes_longsleeve2_vneck": {
+          "name": "Longsleeve 2 VNeck",
+          "variants": []
+        },
+        "torso_clothes_longsleeve_scoop": {
+          "name": "Scoop",
+          "variants": []
+        },
+        "torso_clothes_longsleeve": {
+          "name": "Longsleeve",
+          "variants": []
+        },
+        "torso_clothes_longsleeve2_scoop": {
+          "name": "Longsleeve 2 Scoop",
+          "variants": []
+        },
+        "torso_clothes_longsleeve_formal": {
+          "name": "Collared/Formal Longsleeve",
+          "variants": [
+            "white"
+          ]
+        },
+        "torso_clothes_longsleeve_formal_striped": {
+          "name": "Striped Collared/Formal Longsleeve",
+          "variants": [
+            "white"
+          ]
+        },
+        "torso_clothes_longsleeve2_polo": {
+          "name": "Longsleeve Polo",
+          "variants": []
+        },
+        "torso_clothes_longsleeve2": {
+          "name": "Longsleeve 2",
+          "variants": []
+        },
+        "torso_clothes_longsleeve2_buttoned": {
+          "name": "Longsleeve 2 Buttoned",
+          "variants": []
+        },
+        "torso_clothes_longsleeve2_cardigan": {
+          "name": "Cardigan",
+          "variants": []
+        },
+        "torso_clothes_longsleeve_laced": {
+          "name": "Longsleeve laced",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_sleeveless_laced": {
+          "name": "Sleeveless laced",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_sleeveless1": {
+          "name": "Original Sleeveless",
+          "variants": []
+        },
+        "torso_clothes_sleeveless_striped": {
+          "name": "Sleeveless striped",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_sleeveless2_polo": {
+          "name": "Sleeveless 2 Polo",
+          "variants": []
+        },
+        "torso_clothes_sleeveless2_buttoned": {
+          "name": "Sleeveless 2 Buttoned",
+          "variants": []
+        },
+        "torso_clothes_sleeveless_tanktop": {
+          "name": "Tanktop",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_sleeveless2_cardigan": {
+          "name": "Sleeveless 2 Cardigan",
+          "variants": []
+        },
+        "torso_clothes_sleeveless2_vneck": {
+          "name": "Sleeveless 2 VNeck",
+          "variants": []
+        },
+        "torso_clothes_sleeveless": {
+          "name": "Sleeveless",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_sleeveless2": {
+          "name": "Sleeveless 2",
+          "variants": []
+        },
+        "torso_clothes_sleeveless2_scoop": {
+          "name": "Sleeveless 2 Scoop",
+          "variants": []
+        },
+        "torso_clothes_shortsleeve_cardigan": {
+          "name": "Shortsleeve Cardigan",
+          "variants": []
+        },
+        "torso_clothes_tshirt_buttoned": {
+          "name": "TShirt Buttoned",
+          "variants": []
+        },
+        "torso_clothes_tshirt_vneck": {
+          "name": "TShirt VNeck",
+          "variants": []
+        },
+        "torso_clothes_tshirt_scoop": {
+          "name": "TShirt Scoop",
+          "variants": []
+        },
+        "torso_clothes_tshirt": {
+          "name": "TShirt",
+          "variants": []
+        },
+        "torso_clothes_shortsleeve": {
+          "name": "Shortsleeve",
+          "variants": []
+        },
+        "torso_clothes_shortsleeve_polo": {
+          "name": "Shortsleeve Polo",
+          "variants": []
+        }
+      }
+    },
+    "jacket": {
+      "items": {
+        "torso_jacket_iverness": {
+          "name": "Iverness cloak",
+          "variants": [
+            "black"
+          ]
+        },
+        "torso_jacket_frock": {
+          "name": "Frock coat",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_jacket_trench": {
+          "name": "Trench coat",
+          "variants": [
+            "dark gray",
+            "gray"
+          ]
+        },
+        "torso_jacket_collared": {
+          "name": "Collared coat",
+          "variants": [
+            "brown striped",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_jacket_tabard": {
+          "name": "Tabard",
+          "variants": [
+            "black",
+            "blue",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "sky",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_jacket_santa": {
+          "name": "Santa coat",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        }
+      }
+    },
+    "vest": {
+      "items": {
+        "torso_clothes_corset": {
+          "name": "Corset",
+          "variants": [
+            "black",
+            "blue",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "sky",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "dress_bodice": {
+          "name": "Bodice",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_vest_open": {
+          "name": "Vest open",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_clothes_vest": {
+          "name": "Vest",
+          "variants": [
+            "gray striped",
+            "green striped",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        }
+      }
+    },
+    "apron": {
+      "items": {
+        "legs_skirt_overskirt": {
+          "name": "Overskirt",
+          "variants": []
+        },
+        "torso_aprons_apron_half": {
+          "name": "Apron half",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_aprons_apron": {
+          "name": "Apron",
+          "variants": [
+            "leather",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_aprons_apron_full": {
+          "name": "Apron full",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        }
+      }
+    },
+    "legs": {
+      "items": {
+        "legs_armour": {
+          "name": "Armour",
+          "variants": []
+        },
+        "legs_skirt_straight": {
+          "name": "Straight skirt",
+          "variants": []
+        },
+        "legs_skirts_legion": {
+          "name": "Legion skirt",
+          "variants": []
+        },
+        "legs_skirts_slit": {
+          "name": "Slit skirt",
+          "variants": []
+        },
+        "legs_childskirts": {
+          "name": "Child skirts",
+          "variants": [
+            "black",
+            "blue",
+            "darkblue",
+            "green",
+            "lavender",
+            "lightblue",
+            "maroon",
+            "pink",
+            "red",
+            "white"
+          ]
+        },
+        "legs_skirt_belle": {
+          "name": "Belle skirt",
+          "variants": []
+        },
+        "legs_skirts_plain": {
+          "name": "Plain skirt",
+          "variants": []
+        },
+        "legs_fur": {
+          "name": "Fur Pants",
+          "variants": []
+        },
+        "legs_pants": {
+          "name": "Pants",
+          "variants": []
+        },
+        "legs_pants2": {
+          "name": "Long Pants",
+          "variants": []
+        },
+        "legs_widepants": {
+          "name": "Wide pants",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "legs_childpants": {
+          "name": "Child pants",
+          "variants": [
+            "black",
+            "blue",
+            "brown",
+            "darkblue",
+            "green",
+            "lightblue",
+            "maroon",
+            "red",
+            "white"
+          ]
+        },
+        "legs_formal_striped": {
+          "name": "Striped Formal Pants",
+          "variants": []
+        },
+        "legs_formal": {
+          "name": "Formal Pants",
+          "variants": []
+        },
+        "legs_pregnantpants": {
+          "name": "Pregnancy pants",
+          "variants": [
+            "black",
+            "blue",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "sky",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "legs_cuffed": {
+          "name": "Cuffed Pants",
+          "variants": []
+        },
+        "legs_pantaloons": {
+          "name": "Pantaloons",
+          "variants": []
+        },
+        "legs_shorts": {
+          "name": "Shorts",
+          "variants": []
+        },
+        "legs_shorts_short": {
+          "name": "Short Shorts",
+          "variants": []
+        },
+        "legs_leggings2": {
+          "name": "Leggings 2",
+          "variants": []
+        },
+        "legs_hose": {
+          "name": "Hose",
+          "variants": []
+        },
+        "legs_leggings": {
+          "name": "Leggings",
+          "variants": []
+        }
+      }
+    },
+    "overalls": {
+      "items": {
+        "torso_aprons_overalls": {
+          "name": "Overalls",
+          "variants": [
+            "leather",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "torso_aprons_suspenders": {
+          "name": "Suspenders",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        }
+      }
+    },
+    "shoes": {
+      "items": {
+        "feet_hoofs": {
+          "name": "Hoofs",
+          "variants": [
+            "light",
+            "amber",
+            "olive",
+            "taupe",
+            "bronze",
+            "brown",
+            "black",
+            "lavender",
+            "blue",
+            "zombie_green",
+            "green",
+            "pale_green",
+            "bright_green",
+            "dark_green",
+            "fur_black",
+            "fur_brown",
+            "fur_tan",
+            "fur_copper",
+            "fur_gold",
+            "fur_grey",
+            "fur_white"
+          ]
+        },
+        "feet_sandals": {
+          "name": "Sandals",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "feet_armour": {
+          "name": "Armour",
+          "variants": [
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "feet_slippers": {
+          "name": "Slippers",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "feet_boots_rim": {
+          "name": "Rimmed Boots",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "feet_boots_fold": {
+          "name": "Folded Rim Boots",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "feet_boots_revised": {
+          "name": "Revised Boots",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "feet_boots_basic": {
+          "name": "Basic Boots",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "feet_shoes_ghillies": {
+          "name": "Ghillies",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "feet_shoes_revised": {
+          "name": "Revised Shoes",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "feet_shoes_basic": {
+          "name": "Basic Shoes",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        },
+        "feet_shoes_sara": {
+          "name": "Sara Shoes",
+          "variants": [
+            "sara",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow",
+            "steel",
+            "iron",
+            "ceramic",
+            "brass",
+            "copper",
+            "bronze",
+            "silver",
+            "gold"
+          ]
+        }
+      }
+    },
+    "socks": {
+      "items": {
+        "feet_socks_ankle": {
+          "name": "Ankle Socks",
+          "variants": [
+            "leather",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "feet_socks_high": {
+          "name": "High Socks",
+          "variants": [
+            "leather",
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        },
+        "feet_socks_tabi": {
+          "name": "Tabi Socks",
+          "variants": [
+            "black",
+            "blue",
+            "bluegray",
+            "brown",
+            "charcoal",
+            "forest",
+            "gray",
+            "green",
+            "lavender",
+            "leather",
+            "maroon",
+            "navy",
+            "orange",
+            "pink",
+            "purple",
+            "red",
+            "rose",
+            "sky",
+            "slate",
+            "tan",
+            "teal",
+            "walnut",
+            "white",
+            "yellow"
+          ]
+        }
+      }
+    },
+    "belt": {
+      "items": {
+        "belt_formal": {
+          "name": "Formal Belt",
+          "variants": [
+            "brown"
+          ]
+        },
+        "belt_leather2": {
+          "name": "Leather Belt Alt",
+          "variants": [
+            "leather"
+          ]
+        },
+        "belt_mage": {
+          "name": "Mage Belt",
+          "variants": [
+            "black",
+            "bronze",
+            "brown",
+            "gold",
+            "iron",
+            "silver"
+          ]
+        },
+        "belt_robe": {
+          "name": "Robe Belt",
+          "variants": [
+            "teal",
+            "white"
+          ]
+        },
+        "belt_belly": {
+          "name": "Belly belt",
+          "variants": [
+            "brown",
+            "charcoal",
+            "leather",
+            "slate",
+            "tan",
+            "walnut",
+            "white"
+          ]
+        },
+        "belt_double": {
+          "name": "Double Belt",
+          "variants": [
+            "brown",
+            "charcoal",
+            "leather",
+            "slate",
+            "tan",
+            "walnut",
+            "white"
+          ]
+        },
+        "belt_leather": {
+          "name": "Leather Belt",
+          "variants": [
+            "brown",
+            "charcoal",
+            "leather",
+            "slate",
+            "tan",
+            "walnut",
+            "white"
+          ]
+        },
+        "belt_loose": {
+          "name": "Loose Belt",
+          "variants": [
+            "brown",
+            "charcoal",
+            "leather",
+            "slate",
+            "tan",
+            "walnut",
+            "white"
+          ]
+        }
+      }
+    },
+    "gloves": {
+      "items": {
+        "arms_gloves": {
+          "name": "Gloves",
+          "variants": []
+        }
+      }
+    },
+    "bracers": {
+      "items": {
+        "arms_bracers": {
+          "name": "Bracers",
+          "variants": []
+        }
+      }
+    }
+  },
+  "stats": {
+    "total_items": 373,
+    "selection_groups": 29,
+    "covered_groups": [
+      "accessory",
+      "apron",
+      "beard",
+      "belt",
+      "body",
+      "bracers",
+      "clothes",
+      "earrings",
+      "ears",
+      "expression",
+      "eyebrows",
+      "eyes",
+      "facial_eyes",
+      "gloves",
+      "hair",
+      "hat",
+      "head",
+      "jacket",
+      "legs",
+      "mustache",
+      "necklace",
+      "nose",
+      "overalls",
+      "ponytail",
+      "shoes",
+      "socks",
+      "updo",
+      "vest",
+      "wrinkles"
+    ],
+    "omitted_groups": [
+      "ammo",
+      "armour",
+      "arms",
+      "backpack",
+      "backpack_straps",
+      "bandages",
+      "bandana",
+      "bandana_overlay",
+      "bauldron",
+      "buckles",
+      "cape",
+      "cape_trim",
+      "cargo",
+      "chainmail",
+      "charm",
+      "dress",
+      "dress_sleeves",
+      "dress_sleeves_trim",
+      "dress_trim",
+      "earring_left",
+      "earring_right",
+      "ears_inner",
+      "expression_crying",
+      "facial_left",
+      "facial_left_trim",
+      "facial_mask",
+      "facial_right",
+      "facial_right_trim",
+      "fins",
+      "furry_ears",
+      "furry_ears_skin",
+      "hairextl",
+      "hairextr",
+      "hairtie",
+      "hairtie_rune",
+      "hat_accessory",
+      "hat_buckle",
+      "hat_overlay",
+      "hat_trim",
+      "headcover",
+      "headcover_rune",
+      "horns",
+      "jacket_collar",
+      "jacket_pockets",
+      "jacket_trim",
+      "neck",
+      "prosthesis_hand",
+      "prosthesis_leg",
+      "quiver",
+      "ring",
+      "sash",
+      "sash_tie",
+      "shadow",
+      "shield",
+      "shield_paint",
+      "shield_pattern",
+      "shield_trim",
+      "shoes_toe",
+      "shoulders",
+      "sleeves",
+      "tail",
+      "visor",
+      "weapon",
+      "weapon_magic_crystal",
+      "wheelchair",
+      "wings",
+      "wings_dots",
+      "wings_edge",
+      "wound_arm",
+      "wound_brain",
+      "wound_eye_left",
+      "wound_eye_right",
+      "wound_mouth",
+      "wound_ribs",
+      "wrists"
+    ]
+  }
+}
