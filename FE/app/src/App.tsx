@@ -7,13 +7,13 @@ import {
   WORLD_HEIGHT,
   WORLD_PADDING,
   WORLD_WIDTH,
+  buildWorldCharacter,
   clampToWorld,
-  createWorldCharacter,
   measureDistance,
-  type CharacterArchetype,
   type WorldCharacter,
 } from '@/game/characters'
 import { WorldCanvas } from '@/game/WorldCanvas'
+import { createAgent } from '@/services/agents'
 
 type DirectionKey = 'up' | 'down' | 'left' | 'right'
 
@@ -40,11 +40,10 @@ export default function App() {
   const currentCharacterRef = useRef<WorldCharacter | null>(null)
   const interactionTargetRef = useRef<WorldCharacter | null>(null)
 
-  const handleCreateCharacter = (name: string, archetype: CharacterArchetype) => {
-    setCharacters((current) => [
-      ...current,
-      createWorldCharacter(name, archetype, current.length),
-    ])
+  const handleCreateCharacter = async (personaSummary: string, backstoryPrompt: string) => {
+    const createdAgent = await createAgent({ personaSummary, backstoryPrompt })
+
+    setCharacters((current) => [...current, buildWorldCharacter(createdAgent, current.length)])
     setLastInteractionMessage(null)
   }
 
