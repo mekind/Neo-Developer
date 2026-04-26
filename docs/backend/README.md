@@ -32,9 +32,22 @@ GET    /items/:id
 POST   /items
 PATCH  /items/:id
 DELETE /items/:id
+POST   /memory/users/:userId/bootstrap
+GET    /memory/users/:userId
 ```
 
 ## 주의
 
 - 데이터는 서버리스 인스턴스의 **인메모리** 상태입니다. 영속성 없음 — 인스턴스가 새로 뜨면 mock 2건으로 리셋됩니다.
 - 프로덕션 영속성이 필요해지면 Vercel KV/Postgres/Upstash 등 외부 스토어 도입 필요.
+
+## Latest milestone
+
+Added the first **filesystem-backed user memory bootstrap** for onboarding-oriented flows.
+
+- code: `backend/src/memory/`
+- routes: `POST /memory/users/:userId/bootstrap`, `GET /memory/users/:userId`
+- default root: `~/.cmux/users/<userId>/`
+- override: `CMUX_MEMORY_ROOT`
+
+This slice only prepares the user memory skeleton (`profile.md`, `index.md`, `agents/`). It does not yet implement onboarding conversations, persona generation, or persistent database storage.
