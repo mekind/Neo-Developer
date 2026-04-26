@@ -202,31 +202,31 @@ export function WorldCanvas({
     <div className="world-surface">
       <div className="world-status">
         <div>
-          <p className="eyebrow">Room</p>
-          <h2>Agents: {agents.length}</h2>
+          <p className="eyebrow">공간</p>
+          <h2>에이전트 {agents.length}명</h2>
           <p className="world-helper world-helper-strong">
-            Controlling {player.label} at ({player.xPercent.toFixed(0)}%, {player.yPercent.toFixed(0)}%).
+            {player.label} 위치 · X {player.xPercent.toFixed(0)}% / Y {player.yPercent.toFixed(0)}%
           </p>
         </div>
         <p className="world-helper">
           {isLoading
-            ? 'Loading backend roster.'
+            ? '에이전트 배치를 불러오는 중입니다.'
             : errorMessage
-              ? 'Backend roster unavailable.'
+              ? '에이전트 배치를 불러오지 못했습니다.'
               : interactionTarget
-                ? `Press Space near ${interactionTarget.label} to interact.`
+                ? `스페이스바로 ${interactionTarget.label}와 대화할 수 있어요.`
                 : agents.length > 0
-                  ? 'Arrow keys move. Space interacts when a target enters range.'
-                  : 'No backend agents returned.'}
+                  ? '방향키로 이동하고, 가까이 가면 스페이스바로 상호작용할 수 있어요.'
+                  : '표시할 에이전트가 아직 없습니다.'}
         </p>
       </div>
 
       <div className="world-canvas-shell">
-        <div ref={mountRef} className="world-phaser-host" aria-label="Phaser map viewport" />
+        <div ref={mountRef} className="world-phaser-host" aria-label="Phaser 맵 화면" />
 
-        <section className="world-minimap" aria-label="World minimap">
+        <section className="world-minimap" aria-label="월드 미니맵">
           <div className="world-minimap__header">
-            <span>MINIMAP</span>
+            <span>미니맵</span>
             <strong>{agents.length + 1}</strong>
           </div>
           <div className="world-minimap__body">
@@ -266,13 +266,13 @@ export function WorldCanvas({
               ))
             : null}
 
-          {interactionTarget ? <div className="world-interaction-prompt">SPACE · Talk to {interactionTarget.label}</div> : null}
+          {interactionTarget ? <div className="world-interaction-prompt">SPACE · {interactionTarget.label}와 대화</div> : null}
         </div>
       </div>
 
       <div className="world-feedback" aria-live="polite">
-        <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
-        {distanceToTarget !== null ? <p>Distance to {interactionTarget?.label}: {distanceToTarget.toFixed(1)}%</p> : null}
+        <p>{lastInteractionMessage ?? '아직 상호작용이 시작되지 않았습니다.'}</p>
+        {distanceToTarget !== null ? <p>{interactionTarget?.label}까지 거리: {distanceToTarget.toFixed(1)}%</p> : null}
       </div>
     </div>
   )

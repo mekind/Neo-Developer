@@ -19,10 +19,10 @@ export function MapSection({
   lastInteractionMessage,
 }: MapSectionProps) {
   return (
-    <section className="world-stage panel-shell" aria-label="world stage">
+    <section className="world-stage panel-shell" aria-label="월드 스테이지">
       <div className="world-stage-copy">
-        <p className="eyebrow">Room</p>
-        <h2>Commons Floor</h2>
+        <p className="eyebrow">공간</p>
+        <h2>커먼즈 플로어</h2>
         <p className="description">NeoD처럼 상단 미니맵, 방향키 이동, 스페이스 상호작용을 갖춘 공유공간 데모입니다.</p>
       </div>
       <WorldCanvas
