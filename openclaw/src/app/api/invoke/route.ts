@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { InvokeRequestSchema } from '@/types/zod-schemas';
 import { verifyServiceToken } from '@/middleware/auth';
 import { runInvoke } from '@/runtime/run';
+import { matchesUnsafePattern, pickOutOfScopePhrase } from '@/runtime/guardrails';
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -15,6 +16,21 @@ export async function POST(req: NextRequest) {
     
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid request', details: parsed.error }, { status: 400 });
+    }
+
+    const { input, context } = parsed.data;
+    
+    // Guardrails check (extract formality from config if available, default to polite)
+    const formality = (context.config?.formality as 'polite' | 'casual') || 'polite';
+    if (matchesUnsafePattern(input)) {
+      return NextResponse.json({
+        reply: null,
+        used_skills: [],
+        refused: {
+          reason: "Unsafe input detected.",
+          phrase: pickOutOfScopePhrase(formality)
+        }
+      });
     }
 
     const response = await runInvoke(parsed.data);
