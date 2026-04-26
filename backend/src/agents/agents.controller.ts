@@ -20,4 +20,13 @@ export class AgentsController {
   ) {
     return await this.agentsService.createAgent(userId, body);
   }
+
+  @Post(':agentId/invoke')
+  async invoke(
+    @Param('userId') userId: string,
+    @Param('agentId') agentId: string,
+    @Body() body: { message: string },
+  ) {
+    return await this.agentsService.invokeAgent(userId, agentId, body.message);
+  }
 }

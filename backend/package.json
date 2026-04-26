@@ -13,12 +13,13 @@
     "@nestjs/common": "^10.4.15",
     "@nestjs/core": "^10.4.15",
     "@nestjs/platform-express": "^10.4.15",
+    "@prisma/client": "^5.22.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "openclaw": "file:../openclaw",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "uuid": "^10.0.0",
-    "openclaw": "file:../openclaw"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.9",
@@ -26,6 +27,7 @@
     "@types/express": "^4.17.21",
     "@types/node": "^20.17.10",
     "@types/uuid": "^10.0.0",
+    "prisma": "^5.22.0",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",

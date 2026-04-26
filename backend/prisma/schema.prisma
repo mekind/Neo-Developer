@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Agent {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  persona   String   // JSON stringified
+  soul      String   // JSON stringified
+  config    String   // JSON stringified
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
