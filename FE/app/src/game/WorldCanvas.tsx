@@ -20,11 +20,11 @@ const VIEWPORT_WIDTH = 1280
 const VIEWPORT_HEIGHT = 720
 const PLAYER_RADIUS = 24
 const AGENT_RADIUS = 22
-const MINIMAP_WIDTH = 180
-const MINIMAP_HEIGHT = 120
-const MINIMAP_MARGIN = 24
+const MINIMAP_WIDTH = 156
+const MINIMAP_HEIGHT = 156
+const MINIMAP_MARGIN = 16
 const CAMERA_LERP = 0.18
-const CAMERA_ZOOM = 1.18
+const CAMERA_ZOOM = 0.82
 const SPEECH_MS = 1200
 const ROOM_TEXTURE_KEY = 'office-room'
 const ROOM_TEXTURE_PATH = '/maps/office-room.png'
@@ -141,14 +141,14 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
           this.add.image(MAP_WIDTH / 2, MAP_HEIGHT / 2, ROOM_TEXTURE_KEY).setDisplaySize(MAP_WIDTH, MAP_HEIGHT)
 
           this.minimapLayer = this.add.graphics().setScrollFactor(0).setDepth(30)
-          this.playerHalo = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), PLAYER_RADIUS * 2.4, 0x22c55e, 0.12)
+          this.playerHalo = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), PLAYER_RADIUS * 2.1, 0x22c55e, 0.12)
           this.playerHalo.setStrokeStyle(3, 0x22c55e, 0.3)
           this.playerMarker = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), PLAYER_RADIUS, 0x22c55e)
           this.playerMarker.setStrokeStyle(4, 0xfffbeb, 1)
           this.playerLabel = this.add.text(0, 0, this.playerState.label, {
             color: '#f8fafc',
             fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
-            fontSize: '12px',
+            fontSize: '11px',
             backgroundColor: 'rgba(17,24,39,0.82)',
             padding: { x: 8, y: 4 },
           }).setDepth(20)
@@ -220,7 +220,7 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
 
           this.playerHalo.setPosition(playerX, playerY)
           this.playerMarker.setPosition(playerX, playerY)
-          this.playerLabel.setPosition(playerX - 24, playerY + 30).setText(this.playerState.label)
+          this.playerLabel.setPosition(playerX - 18, playerY + 22).setText(this.playerState.label)
 
           snapshot.forEach((agent) => {
             const existing = this.agentSprites.get(agent.id)
@@ -232,17 +232,17 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
             if (!existing) {
               const body = this.add.circle(x, y, AGENT_RADIUS, fillColor).setDepth(10)
               body.setStrokeStyle(4, 0xfffbeb, 1)
-              const label = this.add.text(x - 34, y + 28, agent.label, {
+              const label = this.add.text(x - 28, y + 20, agent.label, {
                 color: '#f8fafc',
                 fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
-                fontSize: '12px',
+                fontSize: '11px',
                 backgroundColor: 'rgba(17,24,39,0.78)',
                 padding: { x: 6, y: 3 },
               }).setDepth(20)
-              const speech = this.add.text(x, y - 42, '안녕', {
+              const speech = this.add.text(x, y - 28, '안녕', {
                 color: '#234035',
                 fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
-                fontSize: '14px',
+                fontSize: '12px',
                 backgroundColor: 'rgba(255,255,255,0.96)',
                 padding: { x: 10, y: 5 },
               }).setOrigin(0.5).setVisible(false).setDepth(20)
@@ -252,8 +252,8 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
 
             existing.body.setPosition(x, y)
             existing.body.setFillStyle(fillColor)
-            existing.label.setPosition(x - 34, y + 28).setText(agent.label)
-            existing.speech.setPosition(x, y - 42)
+            existing.label.setPosition(x - 28, y + 20).setText(agent.label)
+            existing.speech.setPosition(x, y - 28)
             existing.speech.setVisible((this.speechByAgent.get(agent.id) ?? 0) > time)
           })
 
@@ -309,7 +309,7 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
 
         private handleResize(gameSize: { width: number; height: number }) {
           this.cameras.main.setViewport(0, 0, gameSize.width, gameSize.height)
-          this.promptText.setPosition(gameSize.width / 2, Math.max(40, gameSize.height - 48))
+          this.promptText.setPosition(gameSize.width / 2, Math.max(32, gameSize.height - 36))
         }
       }
 
