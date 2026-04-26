@@ -85,6 +85,31 @@ curl -s http://localhost:3000/items | jq
 
 엔드포인트 전체 명세는 [api.md](./api.md) 참조.
 
+## E2E 테스트 (Jest + supertest)
+
+`backend/test/*.e2e-spec.ts` 가 BE-02 ~ BE-06 흐름 31개를 검증합니다 (Postgres 필요).
+
+```bash
+cd backend
+docker compose up postgres -d                # DB만 띄움
+DATABASE_URL='postgresql://myclaw:myclaw@localhost:5432/myclaw?schema=public' \
+DIRECT_URL='postgresql://myclaw:myclaw@localhost:5432/myclaw?schema=public' \
+npm run test:e2e                             # pretest:e2e 가 prisma migrate deploy 자동 실행
+```
+
+테스트 스위트:
+
+| 파일 | 검증 |
+|---|---|
+| `health.e2e-spec.ts` | `/health` + DB ping |
+| `users.e2e-spec.ts` | BE-02: POST/GET 사용자, PATCH profile, 검증 400, 404 |
+| `memory.e2e-spec.ts` | BE-03: PUT (frontmatter 자동 파싱), 인덱스, 단건 조회, log append 순서 |
+| `agents.e2e-spec.ts` | BE-04: 3-에이전트 제한 (4번째 409), persona/SOUL/config 라운드트립, DELETE 후 슬롯 회복 |
+| `skills.e2e-spec.ts` | BE-05: 시드 카탈로그 5종, `insane-search` 메타데이터 |
+| `greetings.e2e-spec.ts` | BE-06: alert/approach 랜덤 픽, 빈 배열 → null, 잘못된 type 400 |
+
+CI: `.github/workflows/test-backend.yml` 가 PR/push 시 GitHub Actions 환경에서 Postgres service container를 띄워 자동 실행합니다.
+
 ## 데이터 초기화
 
 서버를 재시작하면 `ItemsService`의 인메모리 배열이 초기 mock 2건으로 리셋됩니다 (`src/items/items.service.ts`).

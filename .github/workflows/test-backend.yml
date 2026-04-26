@@ -1,0 +1,58 @@
+name: Test Backend (e2e)
+
+on:
+  push:
+    branches: [main, kds]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/test-backend.yml'
+  pull_request:
+    branches: [main, kds]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/test-backend.yml'
+
+concurrency:
+  group: test-backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: myclaw
+          POSTGRES_PASSWORD: myclaw
+          POSTGRES_DB: myclaw
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U myclaw -d myclaw"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+
+    env:
+      DATABASE_URL: postgresql://myclaw:myclaw@localhost:5432/myclaw?schema=public
+      DIRECT_URL: postgresql://myclaw:myclaw@localhost:5432/myclaw?schema=public
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.13.1'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run e2e tests
+        run: npm run test:e2e
