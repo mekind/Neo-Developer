@@ -1,4 +1,5 @@
 # FE Vault Activity Log
+- 2026-04-26: Fixed the FE chat dialog so the user's own chat bubble aligns to the right by using flex-compatible self-alignment in the transcript stack.
 - 2026-04-26: Upgraded the FE NPC chat dialog into a more realistic conversation UI with larger transcript space, inline send action, Enter-to-send behavior, and local transcript updates.
 - 2026-04-26: Polished the NPC add dialog close control into a pill-style icon+label button so the dismiss action reads more clearly in the current FE-only dialog flow.
 - 2026-04-26: Updated the FE header chat trigger to fall back to a local mock NPC so the dialog always opens during testing even if no backend agent is currently loaded.
