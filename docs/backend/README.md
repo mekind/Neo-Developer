@@ -15,6 +15,7 @@ NestJS 기반 mock CRUD 백엔드. DB 없이 인메모리 데이터로 동작합
 | [api.md](./api.md) | 엔드포인트 명세 + 예시 (프론트 연동용) |
 | [deployment.md](./deployment.md) | Vercel + GitHub Actions 배포 파이프라인 |
 | [local-dev.md](./local-dev.md) | 로컬 실행 / 빌드 / 디버깅 |
+| [test/README.md](./test/README.md) | E2E 테스트 가이드 (Jest + supertest, 로컬 전용) |
 | [todo.md](./todo.md) | `docs/plan` 기반 작업 todo (우선순위/의존관계 포함) |
 
 ## TL;DR

@@ -85,6 +85,20 @@ curl -s http://localhost:3000/items | jq
 
 엔드포인트 전체 명세는 [api.md](./api.md) 참조.
 
+## E2E 테스트
+
+상세 가이드는 [test/README.md](./test/README.md) 참조. 빠른 실행:
+
+```bash
+cd backend
+docker compose up postgres -d
+DATABASE_URL='postgresql://myclaw:myclaw@localhost:5432/myclaw?schema=public' \
+DIRECT_URL='postgresql://myclaw:myclaw@localhost:5432/myclaw?schema=public' \
+npm run test:e2e
+```
+
+CI 자동 실행은 비활성화돼 있습니다 — 로컬 검증 전용입니다.
+
 ## 데이터 초기화
 
 서버를 재시작하면 `ItemsService`의 인메모리 배열이 초기 mock 2건으로 리셋됩니다 (`src/items/items.service.ts`).
