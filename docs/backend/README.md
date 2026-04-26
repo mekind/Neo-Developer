@@ -6,6 +6,8 @@ NestJS 기반 mock CRUD 백엔드. DB 없이 인메모리 데이터로 동작합
 
 - 코드: [`/backend`](../../backend)
 - Production: <https://backend-kappa-brown-63.vercel.app>
+- **인터랙티브 API 문서 (Swagger UI)**: <https://backend-kappa-brown-63.vercel.app/docs>
+- OpenAPI JSON (코드 생성용): <https://backend-kappa-brown-63.vercel.app/docs-json>
 
 ## 문서
 

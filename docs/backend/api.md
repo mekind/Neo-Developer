@@ -1,10 +1,16 @@
-# Items API
+# Backend API
 
 프론트 연동을 위한 엔드포인트 명세.
 
 - **Base URL:** `https://backend-kappa-brown-63.vercel.app`
 - **Content-Type:** `application/json`
 - **CORS:** 모든 origin 허용
+
+> 📚 **인터랙티브 문서**: `https://backend-kappa-brown-63.vercel.app/docs` 에서 Swagger UI를 통해 모든 엔드포인트 + 스키마를 직접 시험해볼 수 있습니다. OpenAPI JSON: `https://backend-kappa-brown-63.vercel.app/docs-json` (코드 생성에 사용 가능).
+>
+> 아래 본문은 Items 엔드포인트(데모용 mock)만 다룹니다. P0 도메인(`users` / `memory` / `agents` / `skills` / `greetings`) 명세는 위 Swagger UI를 참고하세요.
+
+---
 
 > ⚠️ 데이터는 서버리스 인스턴스 인메모리에만 존재합니다. 인스턴스가 새로 뜨거나 다른 콜드 인스턴스로 라우팅되면 초기 mock 2건으로 리셋됩니다. 연동 검증용으로만 사용하세요.
 
