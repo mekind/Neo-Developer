@@ -10,6 +10,24 @@ type ChatMessage = {
   meta?: string
 }
 
+type AmbientSpeechState = {
+  text: string
+  visibleUntil: number
+}
+
+const AMBIENT_GREETING_PROMPT = '첫인사 짧게 해줘'
+const AMBIENT_GREETING_MIN_MS = 5000
+const AMBIENT_GREETING_MAX_MS = 15000
+const AMBIENT_GREETING_VISIBLE_MS = 2800
+
+function nextAmbientGreetingDelay() {
+  return AMBIENT_GREETING_MIN_MS + Math.random() * (AMBIENT_GREETING_MAX_MS - AMBIENT_GREETING_MIN_MS)
+}
+
+function toSpeechPreview(text: string) {
+  return Array.from(text.trim()).slice(0, 10).join('')
+}
+
 function createChatMessage(role: ChatMessage['role'], text: string, meta?: string): ChatMessage {
   return {
     id: globalThis.crypto?.randomUUID?.() ?? `${role}-${Date.now()}-${Math.random()}`,
@@ -30,6 +48,7 @@ export function useAgentsPage() {
   const [isChatSubmitting, setIsChatSubmitting] = useState(false)
   const [chatErrorMessage, setChatErrorMessage] = useState<string | null>(null)
   const [focusRequest, setFocusRequest] = useState<{ agentId: string; requestId: number } | null>(null)
+  const [ambientSpeechByAgentId, setAmbientSpeechByAgentId] = useState<Record<string, AmbientSpeechState>>({})
 
   const agents = useMemo(() => backendAgents, [backendAgents])
   const activeChatMessages = activeChatAgent ? (chatMessagesByAgentId[activeChatAgent.id] ?? []) : []
@@ -59,6 +78,60 @@ export function useAgentsPage() {
       isMounted = false
     }
   }, [])
+
+  useEffect(() => {
+    if (import.meta.env.MODE === 'test' || agents.length === 0) return
+
+    let cancelled = false
+    const timeoutByAgentId = new Map<string, ReturnType<typeof setTimeout>>()
+    const inFlight = new Set<string>()
+
+    const schedule = (agentId: string, delay: number) => {
+      const existing = timeoutByAgentId.get(agentId)
+      if (existing) clearTimeout(existing)
+
+      const timeoutId = setTimeout(async () => {
+        if (cancelled || inFlight.has(agentId)) return
+        inFlight.add(agentId)
+
+        try {
+          const response = await invokeAgent(agentId, AMBIENT_GREETING_PROMPT)
+          if (cancelled) return
+
+          const preview = toSpeechPreview(response.reply)
+          if (preview) {
+            setAmbientSpeechByAgentId((current) => ({
+              ...current,
+              [agentId]: {
+                text: preview,
+                visibleUntil: Date.now() + AMBIENT_GREETING_VISIBLE_MS,
+              },
+            }))
+          }
+        } catch {
+          // best-effort ambient greeting only
+        } finally {
+          inFlight.delete(agentId)
+          if (!cancelled) schedule(agentId, nextAmbientGreetingDelay())
+        }
+      }, delay)
+
+      timeoutByAgentId.set(agentId, timeoutId)
+    }
+
+    const activeIds = new Set(agents.map((agent) => agent.id))
+    setAmbientSpeechByAgentId((current) => {
+      const nextEntries = Object.entries(current).filter(([agentId]) => activeIds.has(agentId))
+      return nextEntries.length === Object.keys(current).length ? current : Object.fromEntries(nextEntries)
+    })
+
+    agents.forEach((agent) => schedule(agent.id, nextAmbientGreetingDelay()))
+
+    return () => {
+      cancelled = true
+      timeoutByAgentId.forEach((timeoutId) => clearTimeout(timeoutId))
+    }
+  }, [agents])
 
   const handleCreateAgent = async (name: string, persona: string) => {
     const created = await createAgent({
@@ -139,5 +212,6 @@ export function useAgentsPage() {
     handleOpenChat,
     handleSendChatMessage,
     handleFocusAgent,
+    ambientSpeechByAgentId,
   }
 }

@@ -15,6 +15,7 @@ type WorldCanvasProps = {
   lpcSpriteCatalog: LpcSpriteCatalog
   onAgentInteraction: (agent: WorldAgent) => void
   focusRequest: { agentId: string; requestId: number } | null
+  ambientSpeechByAgentId: Record<string, { text: string; visibleUntil: number }>
 }
 
 type FacingDirection = 'n' | 's' | 'e' | 'w'
@@ -44,12 +45,8 @@ const MINIMAP_HEIGHT = 128
 const MINIMAP_MARGIN = 8
 const CAMERA_LERP = 0.18
 const CAMERA_ZOOM = 0.82
-const SPEECH_MS = 2200
-const AMBIENT_SPEECH_MIN_MS = 5000
-const AMBIENT_SPEECH_MAX_MS = 10000
 const OBSTACLE_COLLISION_INSET = 10
 const ROOM_TEXTURE_KEY = 'office-room'
-const AMBIENT_SPEECHES = ['안녕!', '좋은 하루!', '어서 와!', '같이 가자!', '반가워!'] as const
 const ROOM_TEXTURE_PATH = '/maps/office-room.png'
 
 const OBSTACLES = [
@@ -107,14 +104,6 @@ function circleIntersectsRect(cx: number, cy: number, radius: number, rect: (typ
 
 function circlesOverlap(ax: number, ay: number, ar: number, bx: number, by: number, br: number) {
   return Math.hypot(ax - bx, ay - by) < ar + br
-}
-
-function nextAmbientSpeechDelay() {
-  return AMBIENT_SPEECH_MIN_MS + Math.random() * (AMBIENT_SPEECH_MAX_MS - AMBIENT_SPEECH_MIN_MS)
-}
-
-function pickAmbientSpeech() {
-  return AMBIENT_SPEECHES[Math.floor(Math.random() * AMBIENT_SPEECHES.length)] ?? '안녕!'
 }
 
 function getMinimapViewport(gameWidth: number) {
@@ -184,16 +173,18 @@ function resolveAgentBundle(agent: WorldAgent, catalog: LpcSpriteCatalog): Resol
   return resolveLocalBundle(agent.spriteBundleId, catalog)
 }
 
-export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focusRequest }: WorldCanvasProps) {
+export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focusRequest, ambientSpeechByAgentId }: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
   const interactionCallbackRef = useRef(onAgentInteraction)
   const focusRequestRef = useRef(focusRequest)
+  const ambientSpeechRef = useRef(ambientSpeechByAgentId)
 
   agentsRef.current = agents
   interactionCallbackRef.current = onAgentInteraction
   focusRequestRef.current = focusRequest
+  ambientSpeechRef.current = ambientSpeechByAgentId
 
   useEffect(() => {
     let cancelled = false
@@ -223,9 +214,6 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
           velocity: { x: 0, y: 0 } as MovementVector,
         }
         private currentInteractionTarget: WorldAgent | null = null
-        private speechByAgent = new Map<string, number>()
-        private speechTextByAgent = new Map<string, string>()
-        private nextAmbientSpeechAtByAgent = new Map<string, number>()
         private lastHandledFocusRequestId = 0
         private autoMoveTarget: { x: number; y: number } | null = null
 
@@ -302,7 +290,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
             .setVisible(false)
 
           this.syncInteractionUi()
-          this.syncSprites(this.time.now)
+          this.syncSprites()
           this.cameras.main.setZoom(CAMERA_ZOOM)
           this.cameras.main.startFollow(this.playerMarker, true, CAMERA_LERP, CAMERA_LERP)
 
@@ -310,9 +298,6 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
           this.spaceKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
           this.spaceKey?.on(Phaser.Input.Keyboard.Events.DOWN, () => {
             if (this.currentInteractionTarget) {
-              this.speechTextByAgent.set(this.currentInteractionTarget.id, pickAmbientSpeech())
-              this.speechByAgent.set(this.currentInteractionTarget.id, this.time.now + SPEECH_MS)
-              this.nextAmbientSpeechAtByAgent.set(this.currentInteractionTarget.id, this.time.now + nextAmbientSpeechDelay())
               interactionCallbackRef.current(this.currentInteractionTarget)
             }
           })
@@ -335,26 +320,9 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
           this.playerState.xPercent = unprojectX(resolved.x)
           this.playerState.yPercent = unprojectY(resolved.y)
 
-          this.syncAmbientSpeech(time)
           this.syncInteractionUi()
-          this.syncSprites(time)
+          this.syncSprites()
           this.drawMinimap()
-        }
-
-        private syncAmbientSpeech(time: number) {
-          agentsRef.current.forEach((agent) => {
-            const nextAt = this.nextAmbientSpeechAtByAgent.get(agent.id)
-            if (nextAt === undefined) {
-              this.nextAmbientSpeechAtByAgent.set(agent.id, time + nextAmbientSpeechDelay())
-              return
-            }
-
-            if (time < nextAt) return
-
-            this.speechTextByAgent.set(agent.id, pickAmbientSpeech())
-            this.speechByAgent.set(agent.id, time + SPEECH_MS)
-            this.nextAmbientSpeechAtByAgent.set(agent.id, time + nextAmbientSpeechDelay())
-          })
         }
 
         private registerLpcAnimations(bundle: ResolvedSpriteBundle) {
@@ -474,7 +442,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
           }
         }
 
-        private syncSprites(time: number) {
+        private syncSprites() {
           const snapshot = agentsRef.current
           const ids = new Set(snapshot.map((agent) => agent.id))
           const playerX = projectX(this.playerState.xPercent)
@@ -513,7 +481,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
                 backgroundColor: 'rgba(17,24,39,0.78)',
                 padding: { x: 6, y: 3 },
               }).setDepth(20)
-              const speech = this.add.text(x, y - 42, this.speechTextByAgent.get(agent.id) ?? '안녕!', {
+              const speech = this.add.text(x, y - 42, '', {
                 color: '#234035',
                 fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
                 fontSize: '12px',
@@ -526,9 +494,10 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
 
             this.updateAgentBody(agent, existing.body, x, y, isTarget)
             existing.label.setPosition(x - 34, y + 28).setText(agent.label)
+            const ambientSpeech = ambientSpeechRef.current[agent.id]
             existing.speech.setPosition(x, y - 42)
-            existing.speech.setText(this.speechTextByAgent.get(agent.id) ?? '안녕!')
-            existing.speech.setVisible((this.speechByAgent.get(agent.id) ?? 0) > time)
+            existing.speech.setText(ambientSpeech?.text ?? '')
+            existing.speech.setVisible(Boolean(ambientSpeech && ambientSpeech.visibleUntil > Date.now()))
           })
 
           for (const [id, sprite] of this.agentSprites.entries()) {
@@ -536,9 +505,6 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
             sprite.body.destroy()
             sprite.label.destroy()
             sprite.speech.destroy()
-            this.speechByAgent.delete(id)
-            this.speechTextByAgent.delete(id)
-            this.nextAmbientSpeechAtByAgent.delete(id)
             this.agentSprites.delete(id)
           }
         }
@@ -621,7 +587,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
       gameRef.current?.destroy(true, false)
       gameRef.current = null
     }
-  }, [agents, lpcSpriteCatalog])
+  }, [agents, lpcSpriteCatalog, ambientSpeechByAgentId])
 
   return <div ref={mountRef} className="world-phaser-host" aria-label="Phaser map viewport" />
 }
