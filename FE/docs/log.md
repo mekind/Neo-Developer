@@ -1,4 +1,5 @@
 # FE Vault Activity Log
+- 2026-04-26: Polished the minimal sidebar into a cleaner card-style agent lobby while keeping only the Add agent action and agent list.
 - 2026-04-26: Simplified the sidebar so it only shows the Add agent entry point plus the backend agent list, removing extra sidebar summary blocks.
 
 - 2026-04-26: Updated the movement/interactions note to reflect the corrected FE contract: the user controls a dedicated player avatar while generated agents are separate NPCs.
