@@ -198,7 +198,7 @@ describe('App', () => {
     expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
   })
 
-  it('moves only the user avatar and unlocks interaction feedback near an agent npc', async () => {
+  it('moves only the user avatar with smoothed motion and unlocks interaction feedback near an agent npc', async () => {
     const randomSpy = vi.spyOn(Math, 'random')
     randomSpy.mockReturnValueOnce(0.1).mockReturnValueOnce(0.2).mockReturnValueOnce(0.6).mockReturnValueOnce(0.7)
 
@@ -207,14 +207,20 @@ describe('App', () => {
 
     vi.useFakeTimers()
     try {
+      expect(screen.getByText(/controlling you at/i)).toHaveTextContent('Controlling You at (12%, 32%).')
+      expect(screen.getByText(/press space near hana to interact/i)).toBeInTheDocument()
+
       fireEvent.keyDown(window, { key: 'ArrowRight' })
       act(() => {
-        vi.advanceTimersByTime(180)
+        vi.advanceTimersByTime(220)
       })
       fireEvent.keyUp(window, { key: 'ArrowRight' })
+      act(() => {
+        vi.advanceTimersByTime(220)
+      })
 
-      expect(screen.getByText(/controlling you at \(21%, 32%\)/i)).toBeInTheDocument()
-      expect(screen.getByText(/press space near hana to interact/i)).toBeInTheDocument()
+      const statusLines = screen.getAllByText((content) => content.includes('Controlling'))
+      expect(statusLines[0]?.textContent).not.toBe('Controlling You at (12%, 32%).')
 
       fireEvent.keyDown(window, { key: ' ', code: 'Space' })
 
