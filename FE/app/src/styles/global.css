@@ -187,13 +187,19 @@ ul {
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   width: 100%;
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid rgba(148, 163, 184, 0.2);
   background: rgba(15, 23, 42, 0.95);
   color: inherit;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 120px;
 }
 
 button {
@@ -210,6 +216,17 @@ button:hover {
   filter: brightness(1.05);
 }
 
+button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  filter: none;
+}
+
+.secondary-button {
+  background: rgba(51, 65, 85, 0.95);
+  color: #e2e8f0;
+}
+
 .muted-list {
   margin-top: 20px;
   color: #94a3b8;
@@ -219,6 +236,41 @@ button:hover {
   display: grid;
   gap: 8px;
   padding-left: 20px;
+}
+
+.helper-copy,
+.dialog-copy {
+  color: #cbd5e1;
+  margin-bottom: 0;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.72);
+}
+
+.dialog-panel {
+  width: min(100%, 560px);
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.98);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.45);
+}
+
+.dialog-header,
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 @media (max-width: 960px) {

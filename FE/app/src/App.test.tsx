@@ -14,37 +14,90 @@ describe('App', () => {
     render(<App />)
     expect(screen.getByRole('heading', { name: /gather-like world layout/i })).toBeInTheDocument()
     expect(screen.getByRole('complementary')).toHaveTextContent(/sidebar ui placeholder/i)
+    expect(screen.getByRole('button', { name: /open persona dialog/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     await screen.findByRole('list', { name: /live items list/i })
   })
 
-  it('creates a character from the side panel and reflects it in the world UI', async () => {
+  it('creates a character from the persona dialog and reflects it in the world UI', async () => {
+    vi.mocked(globalThis.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: 'agent-1',
+          name: 'Nova Guide',
+          archetype: 'maker',
+          personaSummary: 'Warm school guide',
+          backstoryPrompt: 'Helps every newcomer settle in.',
+          createdAt: '2026-04-26T00:00:00.000Z',
+        }),
+      } as Response)
+
     render(<App />)
 
-    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Nova' } })
-    fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'maker' } })
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Warm school guide' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), {
+      target: { value: 'Helps every newcomer settle in.' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
-    expect(screen.getByLabelText(/current character summary/i)).toHaveTextContent(/nova joined as a maker/i)
+    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/nova guide joined as a maker/i)
     expect(screen.getByRole('heading', { name: /spawned avatars: 1/i })).toBeInTheDocument()
-    expect(screen.getAllByText(/nova · maker/i)).toHaveLength(2)
+    expect(screen.getAllByText(/nova guide · maker/i)).toHaveLength(2)
     await screen.findByRole('list', { name: /live items list/i })
   })
 
   it('appends multiple created characters instead of replacing the current roster', async () => {
+    vi.mocked(globalThis.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: 'agent-1',
+          name: 'Nova Scout',
+          archetype: 'scout',
+          personaSummary: 'Nova scout',
+          backstoryPrompt: 'Explores the room.',
+          createdAt: '2026-04-26T00:00:00.000Z',
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: 'agent-2',
+          name: 'Milo Spark',
+          archetype: 'spark',
+          personaSummary: 'Milo spark',
+          backstoryPrompt: 'Energizes the room.',
+          createdAt: '2026-04-26T00:00:00.000Z',
+        }),
+      } as Response)
+
     render(<App />)
 
-    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Nova' } })
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Nova scout' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Explores the room.' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    await screen.findByRole('heading', { name: /spawned avatars: 1/i })
+
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Milo spark' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Energizes the room.' } })
     fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
-    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Milo' } })
-    fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'spark' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-
-    expect(screen.getByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
-    expect(screen.getByText(/milo is the latest character added to the canvas/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/nova · scout/i)).toHaveLength(2)
-    expect(screen.getAllByText(/milo · spark/i)).toHaveLength(2)
+    expect(await screen.findByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
+    expect(screen.getByText(/milo spark is the latest character added to the canvas/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/nova scout · scout/i)).toHaveLength(2)
+    expect(screen.getAllByText(/milo spark · spark/i)).toHaveLength(2)
     await screen.findByRole('list', { name: /live items list/i })
   })
 
@@ -77,6 +130,28 @@ describe('App', () => {
     } as Response)
 
     render(<App />)
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
+  })
+
+  it('shows submit errors inside the persona dialog when creation fails', async () => {
+    vi.mocked(globalThis.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: async () => ({}),
+      } as Response)
+
+    render(<App />)
+
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Warm guide' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Supports the class.' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
   })

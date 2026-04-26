@@ -1,29 +1,17 @@
 import { useMemo, useState } from 'react'
 
 import { InteractionPanel } from '@/components/InteractionPanel'
-import { archetypeOptions, type CharacterArchetype, type WorldCharacter } from '@/game/characters'
+import { buildWorldCharacter, type WorldCharacter } from '@/game/characters'
 import { WorldCanvas } from '@/game/WorldCanvas'
+import { createAgent } from '@/services/agents'
 
 export default function App() {
   const [characters, setCharacters] = useState<WorldCharacter[]>([])
 
-  const handleCreateCharacter = (name: string, archetype: CharacterArchetype) => {
-    setCharacters((current) => [
-      ...current,
-      (() => {
-        const palette = archetypeOptions.find((option) => option.value === archetype) ?? archetypeOptions[0]
-        const index = current.length
+  const handleCreateCharacter = async (personaSummary: string, backstoryPrompt: string) => {
+    const createdAgent = await createAgent({ personaSummary, backstoryPrompt })
 
-        return {
-          id: `${name}-${index + 1}`,
-          name,
-          archetype,
-          color: palette.color,
-          x: 160 + (index % 4) * 180,
-          y: 180 + Math.floor(index / 4) * 110,
-        }
-      })(),
-    ])
+    setCharacters((current) => [...current, buildWorldCharacter(createdAgent, current.length)])
   }
 
   const currentCharacter = useMemo(() => characters.at(-1) ?? null, [characters])
