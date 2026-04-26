@@ -7,8 +7,12 @@ import { Prisma } from '@prisma/client';
 import { AgentRepository } from '../repositories/agent.repository';
 import { MemoryDocumentRepository } from '../repositories/memory-document.repository';
 import { UserRepository } from '../repositories/user.repository';
+import { ProfileRepository } from '../repositories/profile.repository';
+import { OpenclawClient } from '../openclaw/openclaw.client';
+import { MemorySnapshot } from '../openclaw/openclaw.types';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
+import { InvokeAgentDto } from './dto/invoke-agent.dto';
 
 const MAX_AGENTS = 3;
 
@@ -20,6 +24,8 @@ export class AgentsService {
     private readonly agents: AgentRepository,
     private readonly docs: MemoryDocumentRepository,
     private readonly users: UserRepository,
+    private readonly profiles: ProfileRepository,
+    private readonly openclaw: OpenclawClient,
   ) {}
 
   private paths(agentId: string) {
@@ -147,5 +153,65 @@ export class AgentsService {
       this.docs.delete(userId, p.config),
     ]);
     return { id: agentId, deleted: true as const };
+  }
+
+  async invoke(userId: string, agentId: string, dto: InvokeAgentDto) {
+    await this.ensureUser(userId);
+    await this.ensureAgent(userId, agentId);
+
+    const p = this.paths(agentId);
+    const [soul, config] = await Promise.all([
+      this.loadDoc(userId, p.soul),
+      this.loadDoc(userId, p.config),
+    ]);
+
+    const profile = await this.profiles.findByUserId(userId);
+    const [prefDoc, interestDoc] = await Promise.all([
+      this.loadDoc(userId, 'profile/preferences'),
+      this.loadDoc(userId, 'profile/interests'),
+    ]);
+
+    let interests: string[] | undefined;
+    if (Array.isArray(interestDoc)) {
+      interests = interestDoc as string[];
+    } else if (interestDoc && typeof interestDoc === 'object') {
+      interests = (interestDoc as any).items ?? (interestDoc as any).interests;
+    }
+
+    const logDoc = await this.docs.findOne(userId, 'log');
+    const recent_history = this.parseRecentLogs(logDoc?.body);
+
+    const snapshot: MemorySnapshot = {
+      profile: profile ? { nickname: profile.nickname, purpose: profile.purpose, techLevel: profile.techLevel } : null,
+      preferences: prefDoc as Record<string, unknown> | null,
+      interests,
+      recent_history,
+    };
+
+    return this.openclaw.invoke({
+      user_id: userId,
+      agent_id: agentId,
+      input: dto.message,
+      trigger: 'message',
+      context: {
+        soul: (soul as Record<string, unknown>) || {},
+        config: (config as Record<string, unknown>) || {},
+        memory_snapshot: snapshot,
+      },
+    });
+  }
+
+  private parseRecentLogs(body?: string): Array<{ ts: string; event: string; meta?: unknown }> {
+    if (!body) return [];
+    const lines = body.split('\n');
+    const history: Array<{ ts: string; event: string }> = [];
+    for (const line of lines) {
+      const match = line.match(/^- (.*?): (.*)$/);
+      if (match) {
+        history.push({ ts: match[1], event: match[2] });
+        if (history.length >= 10) break;
+      }
+    }
+    return history;
   }
 }
