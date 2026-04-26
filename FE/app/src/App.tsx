@@ -1,11 +1,21 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { AddAgentDialogSection } from '@/sections/dialog/AddAgentDialogSection'
 import { AgentChatDialogSection } from '@/sections/dialog/AgentChatDialogSection'
 import { MapSection } from '@/sections/map/MapSection'
 import { SidebarSection } from '@/sections/sidebar/SidebarSection'
 import { TitleSection } from '@/sections/title/TitleSection'
+import { PLACEHOLDER_AGENT_IMAGE, type WorldAgent } from '@/game/agents'
 import { useAgentsPage } from '@/hooks/useAgentsPage'
+
+const MOCK_CHAT_AGENT: WorldAgent = {
+  id: 'mock-chat-agent',
+  label: 'Noa',
+  imageSrc: PLACEHOLDER_AGENT_IMAGE,
+  usesPlaceholder: true,
+  xPercent: 50,
+  yPercent: 50,
+}
 
 export default function App() {
   const {
@@ -22,16 +32,15 @@ export default function App() {
   } = useAgentsPage()
   const [isChatDialogOpen, setIsChatDialogOpen] = useState(false)
 
+  const activeChatAgent = useMemo(() => agents[0] ?? MOCK_CHAT_AGENT, [agents])
+
   const handleOpenTestChat = () => {
-    if (agents.length === 0) return
     setIsChatDialogOpen(true)
   }
 
-  const activeChatAgent = agents[0] ?? null
-
   return (
     <main className="app-shell">
-      <TitleSection liveCount={agents.length} onOpenTestChat={handleOpenTestChat} isChatDisabled={agents.length === 0} />
+      <TitleSection liveCount={agents.length} onOpenTestChat={handleOpenTestChat} isChatDisabled={false} />
 
       <div className="app-body">
         <SidebarSection
@@ -53,7 +62,7 @@ export default function App() {
       <AddAgentDialogSection isOpen={isDialogOpen} onClose={closeDialog} onCreateAgent={handleCreateAgent} />
       <AgentChatDialogSection
         agent={activeChatAgent}
-        isOpen={isChatDialogOpen && activeChatAgent !== null}
+        isOpen={isChatDialogOpen}
         onClose={() => setIsChatDialogOpen(false)}
       />
     </main>
