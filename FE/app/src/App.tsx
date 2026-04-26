@@ -1,20 +1,47 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { InteractionPanel } from '@/components/InteractionPanel'
-import { appendCreatedAgent, buildWorldAgents, type WorldAgent } from '@/game/agents'
-import { WorldCanvas, type CurrentUser } from '@/game/WorldCanvas'
+import {
+  INTERACTION_RADIUS_PERCENT,
+  PLAYER_STEP_PERCENT,
+  appendCreatedAgent,
+  buildWorldAgents,
+  buildWorldPlayer,
+  clampPercent,
+  measurePercentDistance,
+  type WorldAgent,
+  type WorldPlayer,
+} from '@/game/agents'
+import { WorldCanvas } from '@/game/WorldCanvas'
 import { createAgent, listAgents } from '@/services/agents'
+
+type DirectionKey = 'up' | 'down' | 'left' | 'right'
+
+const MOVEMENT_KEYS: Record<string, DirectionKey> = {
+  ArrowUp: 'up',
+  w: 'up',
+  W: 'up',
+  ArrowDown: 'down',
+  s: 'down',
+  S: 'down',
+  ArrowLeft: 'left',
+  a: 'left',
+  A: 'left',
+  ArrowRight: 'right',
+  d: 'right',
+  D: 'right',
+}
 
 export default function App() {
   const [agents, setAgents] = useState<WorldAgent[]>([])
-  const [currentUser, setCurrentUser] = useState<CurrentUser>({
-    id: 'current-user',
-    label: 'You',
-    x: 1200,
-    y: 760,
-  })
+  const [player, setPlayer] = useState<WorldPlayer>(() => buildWorldPlayer())
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [lastInteractionMessage, setLastInteractionMessage] = useState<string | null>(null)
+  const pressedKeysRef = useRef<Set<DirectionKey>>(new Set())
+  const movementIntervalRef = useRef<number | null>(null)
+  const playerRef = useRef<WorldPlayer>(player)
+  const interactionTargetRef = useRef<WorldAgent | null>(null)
 
   useEffect(() => {
     let isMounted = true
@@ -46,6 +73,94 @@ export default function App() {
     }
   }, [])
 
+  const interactionTarget = useMemo(() => {
+    return agents
+      .map((agent) => ({ agent, distance: measurePercentDistance(player, agent) }))
+      .filter(({ distance }) => distance <= INTERACTION_RADIUS_PERCENT)
+      .sort((left, right) => left.distance - right.distance)[0]?.agent ?? null
+  }, [agents, player])
+
+  useEffect(() => {
+    playerRef.current = player
+    interactionTargetRef.current = interactionTarget
+  }, [player, interactionTarget])
+
+  const movePlayer = () => {
+    const pressedKeys = pressedKeysRef.current
+    if (pressedKeys.size === 0) return
+
+    setPlayer((currentPlayer) => {
+      let nextX = currentPlayer.xPercent
+      let nextY = currentPlayer.yPercent
+
+      if (pressedKeys.has('up')) nextY -= PLAYER_STEP_PERCENT
+      if (pressedKeys.has('down')) nextY += PLAYER_STEP_PERCENT
+      if (pressedKeys.has('left')) nextX -= PLAYER_STEP_PERCENT
+      if (pressedKeys.has('right')) nextX += PLAYER_STEP_PERCENT
+
+      return {
+        ...currentPlayer,
+        xPercent: clampPercent(nextX, 8, 92),
+        yPercent: clampPercent(nextY, 18, 78),
+      }
+    })
+  }
+
+  useEffect(() => {
+    const pressedKeys = pressedKeysRef.current
+
+    const stopMovementLoop = () => {
+      if (movementIntervalRef.current !== null) {
+        window.clearInterval(movementIntervalRef.current)
+        movementIntervalRef.current = null
+      }
+    }
+
+    const startMovementLoop = () => {
+      if (movementIntervalRef.current !== null || pressedKeysRef.current.size === 0) return
+      movementIntervalRef.current = window.setInterval(movePlayer, 90)
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const movementKey = MOVEMENT_KEYS[event.key]
+
+      if (movementKey) {
+        event.preventDefault()
+
+        if (!pressedKeys.has(movementKey)) {
+          pressedKeys.add(movementKey)
+          movePlayer()
+        }
+
+        startMovementLoop()
+        return
+      }
+
+      if (event.key.toLowerCase() === 'e' && interactionTargetRef.current) {
+        event.preventDefault()
+        setLastInteractionMessage(`${playerRef.current.label} greeted ${interactionTargetRef.current.label}.`)
+      }
+    }
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      const movementKey = MOVEMENT_KEYS[event.key]
+      if (!movementKey) return
+
+      pressedKeys.delete(movementKey)
+      if (pressedKeys.size === 0) stopMovementLoop()
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+
+    return () => {
+      stopMovementLoop()
+      pressedKeys.clear()
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [])
+
   const handleCreateAgent = async (personaSummary: string, backstoryPrompt: string) => {
     const created = await createAgent({ personaSummary, backstoryPrompt })
     setAgents((current) => appendCreatedAgent(current, created))
@@ -60,7 +175,7 @@ export default function App() {
         </div>
         <div className="topbar-summary" aria-label="Room summary">
           <span className="status-pill">Live</span>
-          <strong>{agents.length + 1}</strong>
+          <strong>{agents.length}</strong>
         </div>
       </header>
 
@@ -68,10 +183,10 @@ export default function App() {
         <aside className="sidebar panel-shell">
           <InteractionPanel
             agents={agents}
-            currentUser={currentUser}
             isLoading={isLoading}
             errorMessage={errorMessage}
             onCreateAgent={handleCreateAgent}
+            player={player}
           />
         </aside>
 
@@ -79,17 +194,15 @@ export default function App() {
           <div className="world-stage-copy">
             <p className="eyebrow">Room</p>
             <h2>Commons Floor</h2>
-            <p className="description">
-              NeoD처럼 Phaser가 월드 surface를 직접 렌더링하고 React는 외곽 UI를 맡습니다. 기본적으로 현재 사용자
-              1명이 화면에 있고, WASD/방향키로 움직일 수 있습니다.
-            </p>
+            <p className="description">NeoD처럼 Phaser가 월드 surface를 직접 렌더링하고 React는 외곽 UI를 맡습니다.</p>
           </div>
           <WorldCanvas
             agents={agents}
-            currentUser={currentUser}
-            onCurrentUserChange={setCurrentUser}
+            player={player}
             isLoading={isLoading}
             errorMessage={errorMessage}
+            interactionTarget={interactionTarget}
+            lastInteractionMessage={lastInteractionMessage}
           />
         </section>
       </div>

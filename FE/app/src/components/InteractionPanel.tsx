@@ -1,17 +1,16 @@
 import { useState } from 'react'
 
-import type { WorldAgent } from '@/game/agents'
-import type { CurrentUser } from '@/game/WorldCanvas'
+import type { WorldAgent, WorldPlayer } from '@/game/agents'
 
 type InteractionPanelProps = {
   agents: WorldAgent[]
-  currentUser: CurrentUser
   isLoading: boolean
   errorMessage: string | null
   onCreateAgent: (personaSummary: string, backstoryPrompt: string) => Promise<void>
+  player: WorldPlayer
 }
 
-export function InteractionPanel({ agents, currentUser, isLoading, errorMessage, onCreateAgent }: InteractionPanelProps) {
+export function InteractionPanel({ agents, isLoading, errorMessage, onCreateAgent, player }: InteractionPanelProps) {
   const [personaSummary, setPersonaSummary] = useState('')
   const [backstoryPrompt, setBackstoryPrompt] = useState('')
   const [submitState, setSubmitState] = useState<'idle' | 'submitting'>('idle')
@@ -44,17 +43,15 @@ export function InteractionPanel({ agents, currentUser, isLoading, errorMessage,
         <h2>Agents</h2>
       </div>
 
-      <section className="panel-section panel-highlight" aria-label="Current user summary">
+      <section className="panel-section panel-highlight" aria-label="Current player summary">
         <div className="panel-label-row">
           <span className="panel-kicker">Player</span>
           <span className="panel-count">1</span>
         </div>
         <p>
-          <strong>{currentUser.label}</strong> is active in the room.
+          <strong>{player.label}</strong> is the controllable user avatar.
         </p>
-        <p>
-          Position: {Math.round(currentUser.x)}, {Math.round(currentUser.y)}
-        </p>
+        <p>Move with WASD or arrow keys. Press E near an agent NPC to interact.</p>
       </section>
 
       <form className="panel-section creation-form" onSubmit={handleSubmit} aria-label="Add agent form">

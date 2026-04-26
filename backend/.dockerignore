@@ -1,0 +1,14 @@
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+.vercel
+.omc
+*.log
+README.md
+.DS_Store
+coverage
+test
