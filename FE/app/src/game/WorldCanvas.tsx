@@ -1,12 +1,15 @@
 import { useEffect, useRef } from 'react'
 import type Phaser from 'phaser'
 
-import { type WorldAgent } from './agents'
+import { INTERACTION_RADIUS_PERCENT, measurePercentDistance, type WorldAgent, type WorldPlayer } from './agents'
 
 type WorldCanvasProps = {
   agents: WorldAgent[]
+  player: WorldPlayer
   isLoading: boolean
   errorMessage: string | null
+  interactionTarget: WorldAgent | null
+  lastInteractionMessage: string | null
 }
 
 const MAP_WIDTH = 2400
@@ -22,12 +25,21 @@ const OBSTACLES = [
   { x: 1820, y: 860, width: 220, height: 220, color: 0x8ea275 },
 ] as const
 
-export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProps) {
+export function WorldCanvas({
+  agents,
+  player,
+  isLoading,
+  errorMessage,
+  interactionTarget,
+  lastInteractionMessage,
+}: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
+  const playerRef = useRef<WorldPlayer>(player)
 
   agentsRef.current = agents
+  playerRef.current = player
 
   useEffect(() => {
     let cancelled = false
@@ -41,30 +53,48 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
       class BackendRosterScene extends Phaser.Scene {
         private background!: Phaser.GameObjects.Graphics
         private obstacleLayer!: Phaser.GameObjects.Graphics
+        private playerMarker!: Phaser.GameObjects.Arc
+        private playerLabel!: Phaser.GameObjects.Text
         private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }>()
 
         create() {
           this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
-          this.cameras.main.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2)
           this.cameras.main.setBackgroundColor('#ece6da')
 
           this.background = this.add.graphics()
           this.obstacleLayer = this.add.graphics()
+          this.playerMarker = this.add.circle(0, 0, AGENT_RADIUS + 4, 0x22c55e)
+          this.playerMarker.setStrokeStyle(5, 0xfffbeb, 1)
+          this.playerLabel = this.add.text(0, 0, playerRef.current.label, {
+            color: '#234035',
+            fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+            fontSize: '14px',
+            backgroundColor: 'rgba(255,247,237,0.92)',
+            padding: { x: 8, y: 4 },
+          })
+
           this.drawBackground()
           this.drawObstacles()
-          this.syncAgents()
+          this.syncSprites()
 
           this.scale.on('resize', this.handleResize, this)
           this.handleResize({ width: this.scale.width, height: this.scale.height })
         }
 
         update() {
-          this.syncAgents()
+          this.syncSprites()
         }
 
-        private syncAgents() {
+        private syncSprites() {
           const snapshot = agentsRef.current
           const ids = new Set(snapshot.map((agent) => agent.id))
+          const playerSnapshot = playerRef.current
+          const playerX = (playerSnapshot.xPercent / 100) * MAP_WIDTH
+          const playerY = (playerSnapshot.yPercent / 100) * MAP_HEIGHT
+
+          this.playerMarker.setPosition(playerX, playerY)
+          this.playerLabel.setPosition(playerX - 30, playerY + 40).setText(playerSnapshot.label)
+          this.cameras.main.centerOn(playerX, playerY)
 
           snapshot.forEach((agent) => {
             const existing = this.agentSprites.get(agent.id)
@@ -166,26 +196,83 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
     }
   }, [])
 
+  const distanceToTarget = interactionTarget ? measurePercentDistance(player, interactionTarget) : null
+
   return (
     <div className="world-surface">
       <div className="world-status">
         <div>
           <p className="eyebrow">Room</p>
           <h2>Agents: {agents.length}</h2>
+          <p className="world-helper world-helper-strong">
+            Controlling {player.label} at ({player.xPercent.toFixed(0)}%, {player.yPercent.toFixed(0)}%).
+          </p>
         </div>
         <p className="world-helper">
           {isLoading
             ? 'Loading backend roster.'
             : errorMessage
               ? 'Backend roster unavailable.'
-              : agents.length > 0
-                ? 'Phaser-mounted once per load.'
-                : 'No backend agents returned.'}
+              : interactionTarget
+                ? `Press Space near ${interactionTarget.label} to interact.`
+                : agents.length > 0
+                  ? 'Arrow keys move. Space interacts when a target enters range.'
+                  : 'No backend agents returned.'}
         </p>
       </div>
 
       <div className="world-canvas-shell">
         <div ref={mountRef} className="world-phaser-host" aria-label="Phaser map viewport" />
+
+        <section className="world-minimap" aria-label="World minimap">
+          <div className="world-minimap__header">
+            <span>MINIMAP</span>
+            <strong>{agents.length + 1}</strong>
+          </div>
+          <div className="world-minimap__body">
+            <div className="world-minimap__viewport" style={{ left: `${player.xPercent - 7}%`, top: `${player.yPercent - 7}%` }} />
+            <div className="world-minimap__dot world-minimap__dot--player" style={{ left: `${player.xPercent}%`, top: `${player.yPercent}%` }} />
+            {agents.map((agent) => (
+              <div
+                key={agent.id}
+                className={`world-minimap__dot${interactionTarget?.id === agent.id ? ' world-minimap__dot--target' : ''}`}
+                style={{ left: `${agent.xPercent}%`, top: `${agent.yPercent}%` }}
+                title={agent.label}
+              />
+            ))}
+          </div>
+        </section>
+
+        <div className="world-agent-layer" aria-hidden="true">
+          <figure className="world-agent world-player" style={{ left: `${player.xPercent}%`, top: `${player.yPercent}%` }}>
+            <div
+              className="world-agent-ring"
+              style={{ width: `${INTERACTION_RADIUS_PERCENT * 2}%`, height: `${INTERACTION_RADIUS_PERCENT * 2}%` }}
+            />
+            <img src={player.imageSrc} alt={`${player.label} avatar`} className="world-agent-avatar" />
+            <figcaption>{player.label}</figcaption>
+          </figure>
+
+          {!isLoading && !errorMessage && agents.length > 0
+            ? agents.map((agent) => (
+                <figure
+                  key={agent.id}
+                  className={`world-agent${interactionTarget?.id === agent.id ? ' world-agent-target' : ''}`}
+                  style={{ left: `${agent.xPercent}%`, top: `${agent.yPercent}%` }}
+                >
+                  <img src={agent.imageSrc} alt={`${agent.label} avatar`} className="world-agent-avatar" />
+                  <figcaption>{agent.label}</figcaption>
+                </figure>
+              ))
+            : null}
+
+          {interactionTarget ? <div className="world-interaction-prompt">SPACE · Talk to {interactionTarget.label}</div> : null}
+        </div>
+      </div>
+
+      <div className="world-feedback" aria-live="polite">
+        <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
+        {distanceToTarget !== null ? <p>Distance to {interactionTarget?.label}: {distanceToTarget.toFixed(1)}%</p> : null}
       </div>
     </div>
   )

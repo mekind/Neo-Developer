@@ -17,3 +17,4 @@ Generated and time-bound frontend artifacts live here.
 - date-stamp generated artifacts when they capture a moment in time
 - keep durable guidance in `wiki/`, not here
 - link outputs back to the topic pages or sources they depend on
+- [[NeoD-style Minimap Controls Note]] ([NeoD-style Minimap Controls Note](neod-style-minimap-controls-note-2026-04-26.md))

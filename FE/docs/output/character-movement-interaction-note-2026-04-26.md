@@ -2,35 +2,39 @@
 
 ## Summary
 
-Extended the FE world prototype from spawn-only avatars to a first playable loop:
-create a character, move the latest-created avatar, then interact with nearby generated characters.
-The world stage now behaves more like the NeoD reference direction: React frames the page, while the map itself is treated as a dedicated game canvas surface.
+Adjusted the FE world prototype so the controllable avatar is always the user player,
+while backend-provided agents stay separate NPCs inside the Phaser-backed commons map.
 
 ## What changed
 
 - `FE/app/src/App.tsx`
-  - keeps the latest created character as the controllable player
-  - treats the world area as a Phaser-backed map host instead of a React-drawn canvas
-- `FE/app/src/game/characters.ts`
-  - centralizes larger world sizing, spawn points, interaction range, and obstacle helpers
+  - separates player-avatar state from backend agent-roster state
+  - keeps keyboard movement attached only to the user avatar
+  - preserves the add-agent flow without handing player control to created NPCs
+- `FE/app/src/game/agents.ts`
+  - adds a dedicated player-avatar builder plus player-movement helpers
+  - keeps backend agent placement/randomization helpers for NPCs
 - `FE/app/src/game/WorldCanvas.tsx`
-  - mounts a Phaser game into the world viewport
-  - renders a larger map surface, camera-follow movement, and proximity interaction feedback
+  - keeps the Phaser-backed world host
+  - overlays the controllable player and NPC markers with nearby-interaction feedback
+- `FE/app/src/components/InteractionPanel.tsx`
+  - reframes the sidebar around “current player + backend agent roster + add agent”
 - `FE/app/src/App.test.tsx`
-  - preserves spawn/append behavior tests
-  - mocks the Phaser world host while keeping movement + interaction loop coverage
-- `FE/app/package.json`
-  - adds Phaser as the dedicated world/canvas runtime
+  - locks the player-only movement contract
+  - covers created agents appending as NPCs instead of replacing the player avatar
 
 ## Intent
 
-The prototype should now feel like a tiny Gather-style playable slice rather than a static character placement demo, and the map should be architecturally closer to a real game surface than a UI-only drawing effect.
+The prototype should feel closer to the intended model:
+the person entering the space controls their own avatar,
+and backend-provided agents appear as NPCs rather than hijacking player input.
 
 ## Behavior contract
 
-- the latest created character is the active player
-- the player moves with WASD or arrow keys inside a larger camera-follow map
-- interaction becomes available near another generated character
+- the user avatar is always the active player
+- the player moves with WASD or arrow keys
+- generated agents are NPCs, not direct input targets
+- interaction becomes available near a nearby agent NPC
 - pressing `E` triggers visible interaction feedback
 
 ## Explicit scope boundary
@@ -44,5 +48,5 @@ Still intentionally excludes:
 ## Follow-up notes
 
 - movement responsiveness is the most important success bar for this pass
-- Phaser currently ships as a large build chunk; if bundle size becomes important, consider chunk-splitting or lazy route isolation
+- Phaser currently remains the world surface owner; if deeper movement rules arrive later, keep player control state separate from backend agent roster state
 - if richer world simulation appears later, consider extracting the local loop into dedicated world-state logic or scene-specific modules
