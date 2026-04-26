@@ -24,29 +24,30 @@
 
 ## Phase 1 — 스캐폴드 (OC-01)
 
-- [ ] repo 초기화 (monorepo 폴더 채택 — D-01 참조)
+- [x] repo 초기화 (monorepo 폴더 — `AIM/openclaw/`, Next.js 16 + Turbopack)
   ```bash
   cd /path/to/AIM    # monorepo root
   npx create-next-app@latest openclaw \
-    --ts --app --no-tailwind --src-dir --import-alias "@/*"
+    --ts --app --no-tailwind --src-dir --import-alias "@/*" \
+    --no-eslint --use-pnpm --turbopack
   cd openclaw
   pnpm add ai zod @ai-sdk/gateway
-  pnpm add -D @types/node
   ```
-- [ ] `package.json` scripts: `dev` 포트 3001로 변경
-- [ ] `vercel.ts` 작성 (`framework: nextjs`, crons placeholder)
-- [ ] `.env.example` 작성 (5개 키, 값 없이)
-- [ ] `app/api/health/route.ts` — 헬스체크 응답
-- [ ] `app/page.tsx` — 빌드용 stub (서비스 안내 한 줄)
-- [ ] `vercel link`
+- [x] `package.json` scripts: `dev`/`start` 포트 3001, `typecheck` 추가
+- [x] `vercel.json` 작성 (`framework: nextjs`, `crons: []` placeholder) — `vercel.ts`는 `@vercel/config` 안정화 후 전환 검토
+- [x] `.env.example` 작성 (`AI_GATEWAY_API_KEY`, `DEFAULT_MODEL`, `BACKEND_BASE_URL`, `BACKEND_SERVICE_TOKEN`, `CRON_SECRET`)
+- [x] `src/app/api/health/route.ts` — 헬스체크 (backend ping + ai_gateway/default_model 표시)
+- [x] `src/app/page.tsx` — API 안내 stub
+- [x] 빌드 통과 확인 (`pnpm build` — `/api/health` 라우트 등록됨)
+- [ ] `vercel link` (사용자 액션 — Vercel 프로젝트 root directory = `AIM/openclaw`)
 - [ ] 5개 env 등록 (preview/prod 분리)
-  - [ ] `AI_GATEWAY_API_KEY`
+  - [ ] `AI_GATEWAY_API_KEY` (AI Gateway 활성 시 자동)
   - [ ] `BACKEND_BASE_URL`
   - [ ] `BACKEND_SERVICE_TOKEN`
   - [ ] `CRON_SECRET`
   - [ ] `DEFAULT_MODEL` = `anthropic/claude-haiku-4-5`
 - [ ] 첫 preview 배포 성공
-- [ ] **AC**: `curl https://<preview>/api/health` → 200 + `{ ok: true }`
+- [ ] **AC**: `curl https://<preview>/api/health` → 200 + `{ ok: true, service: 'openclaw' }`
 
 ---
 
