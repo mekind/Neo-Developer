@@ -139,12 +139,16 @@
 
 OpenClaw 런타임이 정상 동작하려면 NestJS 측 추가 엔드포인트/모듈이 필요. 상세 계약은 `docs/openclaw/api.md` 참조.
 
-### [BE-18] `OpenclawClient` 모듈
-- [ ] HTTP client 래퍼 (`fetch` 또는 `undici`)
-- [ ] `Authorization: Bearer ${BACKEND_SERVICE_TOKEN}` 자동 주입
-- [ ] timeout(15s), retry(1회), exponential backoff
-- [ ] env: `OPENCLAW_BASE_URL`, `BACKEND_SERVICE_TOKEN`
-- [ ] AC: `OpenclawClient.invoke(req)` / `.tick(req)` 로 타입 안전 호출
+### [BE-18] `OpenclawClient` 모듈 ✅
+- [x] HTTP client 래퍼 (`fetch` 기반, `backend/src/openclaw/openclaw.client.ts`)
+- [x] `Authorization: Bearer ${BACKEND_SERVICE_TOKEN}` 자동 주입
+- [x] timeout(15s, AbortController) + retry(1회, 250ms exponential backoff) — 5xx/네트워크 오류만 재시도
+- [x] env 미설정 시 `ServiceUnavailableException` + 부팅 시 warn 로그
+- [x] 글로벌 모듈(`OpenclawModule`)로 export → BE-19/20 등에서 주입 가능
+- [x] env 추가: `OPENCLAW_BASE_URL`, `BACKEND_SERVICE_TOKEN` (`.env.example`)
+- [x] 단위 테스트 4건 (`backend/test/openclaw-client.e2e-spec.ts`)
+- [x] AC: `OpenclawClient.invoke(req)` / `.tick(req)` / `.health()` 타입 안전 호출
+- [ ] **사용자 작업**: Vercel + GitHub Secrets에 `OPENCLAW_BASE_URL`, `BACKEND_SERVICE_TOKEN` 등록 (BE-19 머지 전)
 
 ### [BE-19] `POST /agents/:agentId/invoke` (Frontend → NestJS → OpenClaw proxy)
 - [ ] x-user-id auth 적용

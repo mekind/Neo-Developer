@@ -1,71 +1,56 @@
-import type { WorldAgent, WorldPlayer } from '@/game/agents'
+import type { WorldAgent } from '@/game/agents'
 
 type SidebarSectionProps = {
   agents: WorldAgent[]
-  player: WorldPlayer
   isLoading: boolean
   errorMessage: string | null
   onOpenDialog: () => void
 }
 
-export function SidebarSection({ agents, player, isLoading, errorMessage, onOpenDialog }: SidebarSectionProps) {
+export function SidebarSection({ agents, isLoading, errorMessage, onOpenDialog }: SidebarSectionProps) {
   return (
     <aside className="sidebar panel-shell">
-      <section className="sidebar-content">
-        <div className="sidebar-head">
-          <p className="eyebrow">Room panel</p>
-          <h2>Agents</h2>
-        </div>
-
-        <section className="panel-section panel-highlight" aria-label="Current player summary">
-          <div className="panel-label-row">
-            <span className="panel-kicker">Player</span>
-            <span className="panel-count">1</span>
+      <section className="sidebar-content sidebar-content-polished">
+        <section className="sidebar-card sidebar-cta" aria-label="Add agent entry">
+          <div className="sidebar-card-head">
+            <div>
+              <p className="eyebrow">에이전트</p>
+              <h2>에이전트 라운지</h2>
+            </div>
+            <span className="panel-count">{agents.length}</span>
           </div>
-          <p>
-            <strong>{player.label}</strong> is the controllable user avatar.
-          </p>
-          <p>Move with arrow keys. Press Space near an agent NPC to interact.</p>
-        </section>
 
-        <section className="panel-section creation-launcher" aria-label="Add agent entry">
-          <div className="panel-label-row">
-            <h3>Add agent</h3>
-            <span className="panel-count">+</span>
-          </div>
-          <button type="button" onClick={onOpenDialog}>
-            Add agent
+          <button type="button" className="sidebar-primary-button" onClick={onOpenDialog}>
+            <span className="sidebar-primary-button__icon" aria-hidden="true">
+              +
+            </span>
+            <span>에이전트 추가</span>
           </button>
         </section>
 
-        <section className="panel-section panel-highlight" aria-label="Backend agent summary">
-          <div className="panel-label-row">
-            <span className="panel-kicker">Status</span>
-            <span className="panel-count">{agents.length}</span>
-          </div>
-          {isLoading ? <p>Loading backend agents…</p> : null}
-          {errorMessage ? <p role="alert">{errorMessage}</p> : null}
-          {!isLoading && !errorMessage ? <p>{agents.length} agents ready.</p> : null}
-        </section>
-
-        <section className="panel-section" aria-label="Backend agent list">
-          <div className="panel-label-row">
-            <h3>Roster</h3>
+        <section className="sidebar-card sidebar-roster" aria-label="Backend agent list">
+          <div className="sidebar-card-head">
+            <h3>에이전트 목록</h3>
             <span className="panel-count">{agents.length}</span>
           </div>
 
-          {!isLoading && !errorMessage && agents.length > 0 ? (
-            <ul className="agent-list" aria-label="Backend agent list">
-              {agents.map((agent) => (
+          {isLoading ? <p className="sidebar-state-copy">에이전트 목록을 불러오는 중…</p> : null}
+          {errorMessage ? <p className="sidebar-state-copy" role="alert">{errorMessage}</p> : null}
+
+          {!isLoading && agents.length > 0 ? (
+            <ul className="agent-list agent-list-polished" aria-label="Backend agent list">
+              {agents.map((agent, index) => (
                 <li key={agent.id}>
+                  <span className="agent-list-rank" aria-hidden="true">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
                   <strong>{agent.label}</strong>
-                  <span>{agent.usesPlaceholder ? 'placeholder' : 'asset'}</span>
                 </li>
               ))}
             </ul>
           ) : null}
 
-          {!isLoading && !errorMessage && agents.length === 0 ? <p>No backend agents were returned.</p> : null}
+          {!isLoading && agents.length === 0 ? <p className="sidebar-state-copy">표시할 에이전트가 아직 없습니다.</p> : null}
         </section>
       </section>
     </aside>

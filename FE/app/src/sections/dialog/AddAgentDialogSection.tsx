@@ -1,35 +1,51 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type AddAgentDialogSectionProps = {
   isOpen: boolean
   onClose: () => void
-  onCreateAgent: (personaSummary: string, backstoryPrompt: string) => Promise<void>
+  onCreateAgent: (name: string, persona: string) => Promise<void>
+}
+
+const nameLeft = ['Warm', 'Sunny', 'Kind', 'Brave', 'Calm', 'Bright']
+const nameRight = ['Guide', 'Buddy', 'Helper', 'Scout', 'Friend', 'Keeper']
+
+function createRandomAgentName() {
+  const left = nameLeft[Math.floor(Math.random() * nameLeft.length)]
+  const right = nameRight[Math.floor(Math.random() * nameRight.length)]
+  return `${left} ${right}`
 }
 
 export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAgentDialogSectionProps) {
-  const [personaSummary, setPersonaSummary] = useState('')
-  const [backstoryPrompt, setBackstoryPrompt] = useState('')
+  const [name, setName] = useState('')
+  const [persona, setPersona] = useState('')
   const [submitState, setSubmitState] = useState<'idle' | 'submitting'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    setName(createRandomAgentName())
+    setPersona('')
+    setSubmitError(null)
+    setSubmitState('idle')
+  }, [isOpen])
 
   if (!isOpen) return null
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const trimmedPersonaSummary = personaSummary.trim()
-    const trimmedBackstoryPrompt = backstoryPrompt.trim()
-    if (!trimmedPersonaSummary || !trimmedBackstoryPrompt) return
+    const trimmedName = name.trim()
+    const trimmedPersona = persona.trim()
+    if (!trimmedName || !trimmedPersona) return
 
     try {
       setSubmitState('submitting')
       setSubmitError(null)
-      await onCreateAgent(trimmedPersonaSummary, trimmedBackstoryPrompt)
-      setPersonaSummary('')
-      setBackstoryPrompt('')
+      await onCreateAgent(trimmedName, trimmedPersona)
       onClose()
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Failed to create agent.')
+      setSubmitError(error instanceof Error ? error.message : '에이전트 생성에 실패했습니다.')
     } finally {
       setSubmitState('idle')
     }
@@ -40,34 +56,35 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
       <div className="dialog-panel" role="dialog" aria-modal="true" aria-labelledby="add-agent-dialog-title">
         <div className="dialog-header">
           <div>
-            <p className="eyebrow">Agent dialog</p>
-            <h3 id="add-agent-dialog-title">Add agent</h3>
+            <p className="eyebrow">NPC 추가</p>
+            <h3 id="add-agent-dialog-title">에이전트 NPC 추가</h3>
           </div>
-          <button type="button" className="secondary-button" onClick={onClose} disabled={submitState === 'submitting'}>
-            Close
+          <button
+            type="button"
+            className="dialog-close-button"
+            onClick={onClose}
+            disabled={submitState === 'submitting'}
+            aria-label="에이전트 NPC 추가 창 닫기"
+          >
+            <span aria-hidden="true">✕</span>
+            <span>닫기</span>
           </button>
         </div>
 
-        <form className="creation-form" onSubmit={handleSubmit} aria-label="Add agent form">
+        <form className="creation-form" onSubmit={handleSubmit} aria-label="에이전트 추가 폼">
           <label className="field">
-            <span>Persona</span>
-            <input
-              name="personaSummary"
-              placeholder="Warm school guide"
-              value={personaSummary}
-              onChange={(event) => setPersonaSummary(event.target.value)}
-              required
-            />
+            <span>이름</span>
+            <input name="name" value={name} onChange={(event) => setName(event.target.value)} required />
           </label>
 
           <label className="field">
-            <span>Backstory</span>
+            <span>페르소나</span>
             <textarea
-              name="backstoryPrompt"
-              placeholder="Helps every newcomer settle in."
+              name="persona"
+              placeholder="처음 온 사용자가 편하게 적응하도록 돕는 따뜻한 가이드"
               rows={4}
-              value={backstoryPrompt}
-              onChange={(event) => setBackstoryPrompt(event.target.value)}
+              value={persona}
+              onChange={(event) => setPersona(event.target.value)}
               required
             />
           </label>
@@ -75,7 +92,7 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
           {submitError ? <p role="alert">{submitError}</p> : null}
 
           <button type="submit" disabled={submitState === 'submitting'}>
-            {submitState === 'submitting' ? 'Adding…' : 'Add agent'}
+            {submitState === 'submitting' ? '추가 중…' : '에이전트 추가'}
           </button>
         </form>
       </div>
