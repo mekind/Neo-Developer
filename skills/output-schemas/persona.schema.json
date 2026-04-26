@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "persona.schema.json",
+  "title": "Persona Output Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["frontmatter", "content"],
+  "properties": {
+    "frontmatter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "agent_id", "created"],
+      "properties": {
+        "type": {
+          "const": "agent-persona"
+        },
+        "agent_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["visual_description", "pixel_art_prompt", "color_palette"],
+      "properties": {
+        "visual_description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pixel_art_prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "color_palette": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["primary", "secondary", "accent"],
+          "properties": {
+            "primary": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            "secondary": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            },
+            "accent": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

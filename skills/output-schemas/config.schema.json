@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "config.schema.json",
+  "title": "Config Output Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["frontmatter", "content"],
+  "properties": {
+    "frontmatter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "agent_id"],
+      "properties": {
+        "type": {
+          "const": "agent-config"
+        },
+        "agent_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skills", "schedule", "channels", "memory"],
+      "properties": {
+        "skills": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "enabled", "purpose", "triggers"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "purpose": {
+                "type": "string",
+                "minLength": 1
+              },
+              "triggers": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              }
+            }
+          }
+        },
+        "schedule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "expression", "action"],
+          "properties": {
+            "type": {
+              "const": "cron"
+            },
+            "expression": {
+              "type": "string",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "channels": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["primary", "fallback"],
+          "properties": {
+            "primary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fallback": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "memory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["user_context", "agent_memory"],
+          "properties": {
+            "user_context": {
+              "type": "string",
+              "minLength": 1
+            },
+            "agent_memory": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

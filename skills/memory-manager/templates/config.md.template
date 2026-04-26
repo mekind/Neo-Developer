@@ -1,0 +1,24 @@
+---
+type: agent-config
+agent_id: {{agent_id}}
+---
+
+# Agent Config
+
+## Skills
+- {{primary_skill}}: enabled
+  - purpose: {{purpose}}
+  - triggers: ["{{trigger_1}}", "{{trigger_2}}"]
+
+## Schedule
+- type: cron
+- expression: "{{schedule_expression}}"
+- action: "{{schedule_action}}"
+
+## Channels
+- primary: {{primary_channel}}
+- fallback: {{fallback_channel}}
+
+## Memory
+- user_context: ../Memory.md
+- agent_memory: ./{{agent_id}}/memory.md
