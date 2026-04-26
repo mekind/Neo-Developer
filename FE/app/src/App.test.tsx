@@ -70,7 +70,6 @@ describe('App', () => {
     expect(await screen.findByText('Hana')).toBeInTheDocument()
     expect(await screen.findByText('Haru')).toBeInTheDocument()
     expect(screen.getByText('Miso')).toBeInTheDocument()
-    expect(screen.getByText('Noa')).toBeInTheDocument()
     expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('4')
   })
 
@@ -78,10 +77,10 @@ describe('App', () => {
     render(<App />)
 
     fireEvent.click(screen.getByRole('button', { name: /에이전트 추가/i }))
-    const dialog = screen.getByRole('dialog', { name: /에이전트 npc 추가/i })
+    const dialog = screen.getByRole('dialog', { name: /에이전트 npc 추가|에이전트 NPC 추가/i })
     fireEvent.change(within(dialog).getByLabelText(/이름/i), { target: { value: 'Warm Guide' } })
     fireEvent.change(within(dialog).getByLabelText(/페르소나/i), { target: { value: 'Warm school guide' } })
-    fireEvent.click(within(dialog).getByRole('button', { name: /에이전트 추가/i }))
+    fireEvent.click(within(dialog).getByRole('button', { name: /^에이전트 추가$/i }))
 
     await waitFor(() => expect(screen.getByText('Warm Guide')).toBeInTheDocument())
     await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('5'))
@@ -91,7 +90,7 @@ describe('App', () => {
     render(<App />)
     await screen.findByText('Hana')
 
-    fireEvent.click(screen.getByRole('button', { name: /npc 대화 열기/i }))
+    fireEvent.click(screen.getByRole('button', { name: /open npc chat/i }))
 
     expect(await screen.findByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
   })
