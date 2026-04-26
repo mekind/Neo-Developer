@@ -76,7 +76,7 @@ describe('App', () => {
   it('adds a local npc from the dialog', async () => {
     render(<App />)
 
-    fireEvent.click(screen.getByRole('button', { name: /^add agent$/i }))
+    fireEvent.click(screen.getByRole('button', { name: /에이전트 추가/i }))
     const dialog = screen.getByRole('dialog', { name: /add agent npc/i })
     fireEvent.change(within(dialog).getByLabelText(/name/i), { target: { value: 'Warm Guide' } })
     fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })

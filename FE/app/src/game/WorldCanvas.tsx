@@ -198,13 +198,10 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
           }
 
           if (tryPoint(attempted)) return attempted
-
           const xOnly = { x: attempted.x, y: current.y }
           if (tryPoint(xOnly)) return xOnly
-
           const yOnly = { x: current.x, y: attempted.y }
           if (tryPoint(yOnly)) return yOnly
-
           return current
         }
 
