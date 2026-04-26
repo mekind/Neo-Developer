@@ -1,215 +1,192 @@
 import { useEffect, useRef } from 'react'
+import type Phaser from 'phaser'
 
-import { INTERACTION_RADIUS, WORLD_HEIGHT, WORLD_WIDTH, measureDistance, type WorldCharacter } from './characters'
+import { type WorldAgent } from './agents'
 
 type WorldCanvasProps = {
-  characters: WorldCharacter[]
-  currentCharacter: WorldCharacter | null
-  interactionTarget: WorldCharacter | null
-  playerStatusCopy: string
-  interactionStatusCopy: string
-  lastInteractionMessage: string | null
+  agents: WorldAgent[]
+  isLoading: boolean
+  errorMessage: string | null
 }
 
-export function WorldCanvas({
-  characters,
-  currentCharacter,
-  interactionTarget,
-  playerStatusCopy,
-  interactionStatusCopy,
-  lastInteractionMessage,
-}: WorldCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+const MAP_WIDTH = 2400
+const MAP_HEIGHT = 1350
+const VIEWPORT_WIDTH = 1280
+const VIEWPORT_HEIGHT = 720
+const AGENT_RADIUS = 28
+const OBSTACLES = [
+  { x: 300, y: 350, width: 320, height: 140, color: 0xcfaf84 },
+  { x: 980, y: 460, width: 360, height: 150, color: 0xd7b88c },
+  { x: 1680, y: 320, width: 280, height: 140, color: 0xcfaf84 },
+  { x: 620, y: 920, width: 540, height: 110, color: 0xd6b48b },
+  { x: 1820, y: 860, width: 220, height: 220, color: 0x8ea275 },
+] as const
+
+export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProps) {
+  const mountRef = useRef<HTMLDivElement | null>(null)
+  const gameRef = useRef<Phaser.Game | null>(null)
+  const agentsRef = useRef<WorldAgent[]>(agents)
+
+  agentsRef.current = agents
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    let cancelled = false
 
-    const context = canvas.getContext('2d')
-    if (!context) return
+    async function mountGame() {
+      if (!mountRef.current || gameRef.current) return
 
-    const width = canvas.width
-    const height = canvas.height
+      const Phaser = (await import('phaser')).default
+      if (cancelled || !mountRef.current) return
 
-    context.clearRect(0, 0, width, height)
+      class BackendRosterScene extends Phaser.Scene {
+        private background!: Phaser.GameObjects.Graphics
+        private obstacleLayer!: Phaser.GameObjects.Graphics
+        private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }>()
 
-    const wallGradient = context.createLinearGradient(0, 0, 0, height)
-    wallGradient.addColorStop(0, '#f7efe3')
-    wallGradient.addColorStop(0.5, '#efe3d2')
-    wallGradient.addColorStop(1, '#e4d2bc')
-    context.fillStyle = wallGradient
-    context.fillRect(0, 0, width, height)
+        create() {
+          this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
+          this.cameras.main.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2)
+          this.cameras.main.setBackgroundColor('#ece6da')
 
-    context.fillStyle = '#d9b792'
-    context.fillRect(0, height - 170, width, 170)
+          this.background = this.add.graphics()
+          this.obstacleLayer = this.add.graphics()
+          this.drawBackground()
+          this.drawObstacles()
+          this.syncAgents()
 
-    context.fillStyle = '#c39868'
-    for (let x = 0; x < width; x += 64) {
-      context.fillRect(x, height - 170, 4, 170)
-    }
-
-    context.fillStyle = '#9b7959'
-    context.fillRect(56, 72, width - 112, 22)
-
-    const windows = [150, 390, 630, 870]
-    windows.forEach((x) => {
-      context.fillStyle = '#a47b59'
-      context.fillRect(x, 104, 150, 168)
-      context.fillStyle = '#dcedef'
-      context.fillRect(x + 12, 116, 126, 144)
-      context.strokeStyle = 'rgba(255,255,255,0.55)'
-      context.lineWidth = 4
-      context.beginPath()
-      context.moveTo(x + 75, 116)
-      context.lineTo(x + 75, 260)
-      context.moveTo(x + 12, 188)
-      context.lineTo(x + 138, 188)
-      context.stroke()
-    })
-
-    context.fillStyle = '#78916d'
-    context.fillRect(1020, 124, 38, 118)
-    context.beginPath()
-    context.arc(1039, 104, 42, 0, Math.PI * 2)
-    context.fill()
-
-    context.fillStyle = '#d0ae80'
-    context.fillRect(176, 342, 220, 86)
-    context.fillRect(480, 360, 250, 96)
-    context.fillRect(834, 334, 200, 82)
-
-    context.fillStyle = '#936846'
-    ;[
-      [200, 428, 12, 76],
-      [360, 428, 12, 76],
-      [510, 456, 12, 70],
-      [688, 456, 12, 70],
-      [860, 416, 12, 74],
-      [1010, 416, 12, 74],
-    ].forEach(([x, y, w, h]) => {
-      context.fillRect(x, y, w, h)
-    })
-
-    context.fillStyle = '#efd48a'
-    context.beginPath()
-    context.arc(1116, 124, 28, 0, Math.PI * 2)
-    context.fill()
-    context.fillStyle = 'rgba(239, 212, 138, 0.2)'
-    context.beginPath()
-    context.arc(1116, 124, 78, 0, Math.PI * 2)
-    context.fill()
-
-    context.fillStyle = '#4d463f'
-    context.font = 'bold 18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-    context.fillText('Warm school commons prototype', 28, 42)
-    context.font = '16px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-    context.fillText('새 에이전트는 생성 중 상태를 거쳐 완료 후 월드에서 움직이고 상호작용할 수 있습니다.', 28, 68)
-
-    if (characters.length === 0) {
-      context.fillStyle = 'rgba(77, 70, 63, 0.72)'
-      context.font = '18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-      context.fillText('아직 생성된 에이전트가 없습니다.', 28, 120)
-      return
-    }
-
-    characters.forEach((character, index) => {
-      const isCurrent = currentCharacter?.id === character.id
-      const isInteractionTarget = interactionTarget?.id === character.id
-
-      context.save()
-
-      if (character.status === 'pending') {
-        context.setLineDash([6, 4])
-        context.strokeStyle = '#9b6a4f'
-        context.lineWidth = 3
-        context.beginPath()
-        context.arc(character.x, character.y, 18, 0, Math.PI * 2)
-        context.stroke()
-        context.setLineDash([])
-
-        context.fillStyle = 'rgba(217, 178, 106, 0.22)'
-        context.beginPath()
-        context.arc(character.x, character.y, 18, 0, Math.PI * 2)
-        context.fill()
-
-        context.fillStyle = '#7a5b45'
-        context.font = '12px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-        context.fillText('Generating…', character.x - 34, character.y - 28)
-      } else {
-        if (isCurrent) {
-          context.strokeStyle = 'rgba(34, 197, 94, 0.4)'
-          context.lineWidth = 10
-          context.beginPath()
-          context.arc(character.x, character.y, INTERACTION_RADIUS, 0, Math.PI * 2)
-          context.stroke()
+          this.scale.on('resize', this.handleResize, this)
+          this.handleResize({ width: this.scale.width, height: this.scale.height })
         }
 
-        context.fillStyle = character.color
-        context.beginPath()
-        context.arc(character.x, character.y, 18, 0, Math.PI * 2)
-        context.fill()
+        update() {
+          this.syncAgents()
+        }
 
-        context.strokeStyle = isCurrent ? '#f8fafc' : isInteractionTarget ? '#facc15' : 'rgba(226,232,240,0.45)'
-        context.lineWidth = isCurrent || isInteractionTarget ? 3 : 1
-        context.stroke()
+        private syncAgents() {
+          const snapshot = agentsRef.current
+          const ids = new Set(snapshot.map((agent) => agent.id))
+
+          snapshot.forEach((agent) => {
+            const existing = this.agentSprites.get(agent.id)
+            const x = (agent.xPercent / 100) * MAP_WIDTH
+            const y = (agent.yPercent / 100) * MAP_HEIGHT
+
+            if (!existing) {
+              const body = this.add.circle(x, y, AGENT_RADIUS, agent.usesPlaceholder ? 0xfde68a : 0x93c5fd)
+              body.setStrokeStyle(4, 0xfffbeb, 1)
+
+              const label = this.add.text(x - 40, y + 36, agent.label, {
+                color: '#4d463f',
+                fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+                fontSize: '14px',
+                backgroundColor: 'rgba(255,247,237,0.88)',
+                padding: { x: 8, y: 4 },
+              })
+
+              this.agentSprites.set(agent.id, { body, label })
+              return
+            }
+
+            existing.body.setPosition(x, y)
+            existing.body.setFillStyle(agent.usesPlaceholder ? 0xfde68a : 0x93c5fd)
+            existing.label.setPosition(x - 40, y + 36).setText(agent.label)
+          })
+
+          for (const [id, sprite] of this.agentSprites.entries()) {
+            if (ids.has(id)) continue
+            sprite.body.destroy()
+            sprite.label.destroy()
+            this.agentSprites.delete(id)
+          }
+        }
+
+        private drawBackground() {
+          this.background.clear()
+          this.background.fillStyle(0xf7efe3, 1)
+          this.background.fillRect(0, 0, MAP_WIDTH, MAP_HEIGHT)
+          this.background.fillStyle(0xe4d2bc, 1)
+          this.background.fillRect(0, MAP_HEIGHT - 220, MAP_WIDTH, 220)
+          this.background.fillStyle(0x9b7959, 1)
+          this.background.fillRect(80, 88, MAP_WIDTH - 160, 28)
+
+          for (let x = 0; x < MAP_WIDTH; x += 120) {
+            this.background.fillStyle(x % 240 === 0 ? 0xc8a883 : 0xd8baa0, 0.2)
+            this.background.fillRect(x, 0, 6, MAP_HEIGHT)
+          }
+
+          const windowXs = [180, 520, 860, 1200, 1540, 1880]
+          windowXs.forEach((x) => {
+            this.background.fillStyle(0xa47b59, 1)
+            this.background.fillRect(x, 130, 180, 180)
+            this.background.fillStyle(0xdcedef, 1)
+            this.background.fillRect(x + 14, 144, 152, 152)
+          })
+
+          this.background.fillStyle(0x78916d, 1)
+          this.background.fillRect(2130, 160, 42, 160)
+          this.background.fillCircle(2150, 130, 56)
+        }
+
+        private drawObstacles() {
+          this.obstacleLayer.clear()
+          OBSTACLES.forEach((obstacle) => {
+            this.obstacleLayer.fillStyle(obstacle.color, 1)
+            this.obstacleLayer.fillRoundedRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height, 20)
+            this.obstacleLayer.lineStyle(3, 0x8c6d52, 0.7)
+            this.obstacleLayer.strokeRoundedRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height, 20)
+          })
+        }
+
+        private handleResize(gameSize: { width: number; height: number }) {
+          this.cameras.main.setViewport(0, 0, gameSize.width, gameSize.height)
+        }
       }
 
-      context.fillStyle = '#4d463f'
-      context.font = '14px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-      context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
-      context.restore()
-    })
-
-    if (currentCharacter?.status === 'ready' && interactionTarget) {
-      context.fillStyle = '#facc15'
-      context.font = '15px sans-serif'
-      context.fillText(
-        `Interaction ready: ${currentCharacter.name} ↔ ${interactionTarget.name}`,
-        24,
-        height - 32,
-      )
+      gameRef.current = new Phaser.Game({
+        type: Phaser.AUTO,
+        parent: mountRef.current,
+        backgroundColor: '#ece6da',
+        scale: {
+          mode: Phaser.Scale.RESIZE,
+          parent: mountRef.current,
+          width: VIEWPORT_WIDTH,
+          height: VIEWPORT_HEIGHT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+        },
+        scene: [BackendRosterScene],
+      })
     }
-  }, [characters, currentCharacter, interactionTarget])
+
+    void mountGame()
+
+    return () => {
+      cancelled = true
+      gameRef.current?.destroy(true, false)
+      gameRef.current = null
+    }
+  }, [])
 
   return (
     <div className="world-surface">
       <div className="world-status">
         <div>
-          <p className="eyebrow">Live world state</p>
-          <h2>Spawned avatars: {characters.length}</h2>
-          <p className="world-helper world-helper-strong">{playerStatusCopy}</p>
+          <p className="eyebrow">Room</p>
+          <h2>Agents: {agents.length}</h2>
         </div>
-        <p className="world-helper">{interactionStatusCopy}</p>
+        <p className="world-helper">
+          {isLoading
+            ? 'Loading backend roster.'
+            : errorMessage
+              ? 'Backend roster unavailable.'
+              : agents.length > 0
+                ? 'Phaser-mounted once per load.'
+                : 'No backend agents returned.'}
+        </p>
       </div>
-      <canvas ref={canvasRef} width={WORLD_WIDTH} height={WORLD_HEIGHT} aria-label="2D world prototype canvas" />
-      <div className="world-feedback" aria-live="polite">
-        <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
-        {currentCharacter?.status === 'ready' && interactionTarget ? (
-          <p>
-            Distance to {interactionTarget.name}: {Math.round(measureDistance(currentCharacter, interactionTarget))}px
-          </p>
-        ) : (
-          <p>Bring your player close to another ready avatar to unlock the interaction prompt.</p>
-        )}
+
+      <div className="world-canvas-shell">
+        <div ref={mountRef} className="world-phaser-host" aria-label="Phaser map viewport" />
       </div>
-      {characters.length > 0 ? (
-        <ul className="world-roster" aria-label="World roster">
-          {characters.map((character) => (
-            <li key={character.id} className={character.status === 'pending' ? 'world-roster-pending' : undefined}>
-              {character.imageUrl ? (
-                <img className="world-roster-avatar" src={character.imageUrl} alt={`${character.name} generated avatar`} />
-              ) : (
-                <span className="world-roster-avatar world-roster-avatar-placeholder" aria-hidden="true">
-                  …
-                </span>
-              )}
-              <span className="world-roster-dot" style={{ backgroundColor: character.color }} aria-hidden="true" />
-              {character.name} · {character.archetype}
-              {character.status === 'pending' ? ' · pending' : ''}
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   )
 }

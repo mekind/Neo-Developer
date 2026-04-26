@@ -12,7 +12,6 @@ Generated and time-bound frontend artifacts live here.
 - [[Frontend Vercel Deploy Note]] ([Frontend Vercel Deploy Note](frontend-vercel-deploy-note-2026-04-26.md))
 - [[Character Creation Flow Note]] ([Character Creation Flow Note](character-creation-flow-note-2026-04-26.md))
 - [[Persona Dialog Agent Create Note]] ([Persona Dialog Agent Create Note](persona-dialog-agent-create-note-2026-04-26.md))
-- [[Backend-Driven Agent Creation Note]] ([Backend-Driven Agent Creation Note](backend-driven-agent-creation-note-2026-04-26.md))
 
 ## Output Conventions
 - date-stamp generated artifacts when they capture a moment in time

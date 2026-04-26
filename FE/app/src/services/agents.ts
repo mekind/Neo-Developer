@@ -1,34 +1,24 @@
-import { type CreatedAgent } from '@/game/characters'
-import { postJson } from '@/lib/api-client'
+import { getJson } from '@/lib/api-client'
+import type { BackendAgentRecord } from '@/game/agents'
 
-export interface CreateAgentPayload {
-  personaSummary: string
-  backstoryPrompt: string
-}
-
-function isCreatedAgent(value: unknown): value is CreatedAgent {
+function isBackendAgentRecord(value: unknown): value is BackendAgentRecord {
   if (typeof value !== 'object' || value === null) return false
 
   const candidate = value as Record<string, unknown>
 
   return (
     typeof candidate.id === 'string' &&
-    typeof candidate.name === 'string' &&
-    (candidate.archetype === 'scout' || candidate.archetype === 'maker' || candidate.archetype === 'spark') &&
-    typeof candidate.personaSummary === 'string' &&
-    typeof candidate.backstoryPrompt === 'string' &&
-    (candidate.imageUrl === undefined || typeof candidate.imageUrl === 'string') &&
-    typeof candidate.createdAt === 'string' &&
-    (candidate.updatedAt === undefined || typeof candidate.updatedAt === 'string')
+    (candidate.name === undefined || typeof candidate.name === 'string') &&
+    (candidate.imageAsset === undefined || candidate.imageAsset === null || typeof candidate.imageAsset === 'string')
   )
 }
 
-export async function createAgent(payload: CreateAgentPayload) {
-  const response = await postJson('/agents', payload)
+export async function listAgents() {
+  const payload = await getJson('/agents')
 
-  if (!isCreatedAgent(response)) {
+  if (!Array.isArray(payload) || !payload.every(isBackendAgentRecord)) {
     throw new Error('Agent API response shape was invalid.')
   }
 
-  return response
+  return payload
 }

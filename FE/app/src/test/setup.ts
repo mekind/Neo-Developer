@@ -11,9 +11,6 @@ Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
     fill: () => {},
     arc: () => {},
     fillText: () => {},
-    save: () => {},
-    restore: () => {},
-    setLineDash: () => {},
     createLinearGradient: () => ({
       addColorStop: () => {},
     }),

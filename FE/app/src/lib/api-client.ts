@@ -1,13 +1,7 @@
 import { getApiBaseUrl } from '@/config/env'
 
-async function requestJson(path: string, init?: RequestInit): Promise<unknown> {
-  const response = await fetch(`${getApiBaseUrl()}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-    },
-    ...init,
-  })
+export async function getJson(path: string): Promise<unknown> {
+  const response = await fetch(`${getApiBaseUrl()}${path}`)
 
   if (!response.ok) {
     throw new Error(`API request failed: ${response.status}`)
@@ -16,13 +10,18 @@ async function requestJson(path: string, init?: RequestInit): Promise<unknown> {
   return response.json()
 }
 
-export async function getJson(path: string): Promise<unknown> {
-  return requestJson(path)
-}
-
 export async function postJson(path: string, body: unknown): Promise<unknown> {
-  return requestJson(path, {
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(body),
   })
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`)
+  }
+
+  return response.json()
 }
