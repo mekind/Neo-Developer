@@ -81,11 +81,12 @@ vi.mock('@/game/WorldCanvas', () => ({
           : errorMessage
             ? 'Backend roster unavailable.'
             : interactionTarget
-              ? `Press E near ${interactionTarget.label} to interact.`
+              ? `Press Space near ${interactionTarget.label} to interact.`
               : agents.length > 0
-                ? 'Phaser-mounted once per load.'
+                ? 'Arrow keys move. Space interacts when a target enters range.'
                 : 'No backend agents returned.'}
       </p>
+      <p>Minimap visible.</p>
       <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
       <img src={player.imageSrc} alt={`${player.label} avatar`} />
       {agents.map((agent) => (
@@ -115,9 +116,11 @@ describe('App', () => {
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/current player summary/i)).toHaveTextContent(/you is the controllable user avatar/i)
+    expect(screen.getByLabelText(/current player summary/i)).toHaveTextContent(/move with arrow keys\. press space near an agent npc to interact/i)
     expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
+    expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
@@ -211,9 +214,9 @@ describe('App', () => {
       fireEvent.keyUp(window, { key: 'ArrowRight' })
 
       expect(screen.getByText(/controlling you at \(21%, 32%\)/i)).toBeInTheDocument()
-      expect(screen.getByText(/press e near hana to interact/i)).toBeInTheDocument()
+      expect(screen.getByText(/press space near hana to interact/i)).toBeInTheDocument()
 
-      fireEvent.keyDown(window, { key: 'e' })
+      fireEvent.keyDown(window, { key: ' ', code: 'Space' })
 
       expect(screen.getByText(/you greeted hana/i)).toBeInTheDocument()
     } finally {
