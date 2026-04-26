@@ -1,7 +1,21 @@
+import {
+  DEFAULT_LPC_BUNDLE_ID,
+  getLocalLpcCharacterPngUrl,
+  isLpcFrameMap,
+  isLpcState,
+  resolveLpcBundleId,
+  type LpcFrameMap,
+  type LpcState,
+} from './lpcSprite'
+
 export interface BackendAgentRecord {
   id: string
   name?: string
   imageAsset?: string | null
+  characterPngUrl?: string | null
+  frameMap?: LpcFrameMap | null
+  creditsText?: string | null
+  lpcState?: LpcState | null
 }
 
 export interface CreatedAgentRecord {
@@ -18,6 +32,14 @@ export interface WorldAgent {
   label: string
   imageSrc: string
   usesPlaceholder: boolean
+  spriteBundleId: string | null
+  apiSprite: {
+    bundleKey: string
+    characterPngUrl: string
+    frameMap: LpcFrameMap
+    creditsText: string
+    lpcState?: LpcState
+  } | null
   xPercent: number
   yPercent: number
 }
@@ -26,6 +48,7 @@ export interface WorldPlayer {
   id: string
   label: string
   imageSrc: string
+  spriteBundleId: string
   xPercent: number
   yPercent: number
 }
@@ -67,30 +90,73 @@ export const PLAYER_IMAGE = createAvatarDataUri({
   initials: 'YOU',
 })
 
-
 const DEFAULT_DUMMY_AGENT: BackendAgentRecord = {
   id: 'dummy-agent-noa',
   name: 'Noa',
-  imageAsset: null,
+  imageAsset: `lpc:${DEFAULT_LPC_BUNDLE_ID}`,
+}
+
+const LOCAL_LPC_AGENT_BUNDLE_BY_ID: Record<string, string> = {
+  'dummy-agent-noa': DEFAULT_LPC_BUNDLE_ID,
+  'dummy-haru': DEFAULT_LPC_BUNDLE_ID,
+  'dummy-miso': DEFAULT_LPC_BUNDLE_ID,
 }
 
 function isAllowedImageAsset(value: string) {
   return value.startsWith('data:image/') || value.startsWith('https://')
 }
 
-function resolveAgentImage(imageAsset: string | null | undefined) {
-  const trimmed = imageAsset?.trim()
+function resolveApiSprite(record: BackendAgentRecord) {
+  const characterPngUrl = record.characterPngUrl?.trim()
+  const creditsText = record.creditsText?.trim()
 
+  if (!characterPngUrl || !creditsText || !isLpcFrameMap(record.frameMap)) return null
+
+  return {
+    bundleKey: `api-agent-${record.id}`,
+    characterPngUrl,
+    frameMap: record.frameMap,
+    creditsText,
+    lpcState: isLpcState(record.lpcState) ? record.lpcState : undefined,
+  }
+}
+
+function resolveAgentImage(record: BackendAgentRecord) {
+  const apiSprite = resolveApiSprite(record)
+  if (apiSprite) {
+    return {
+      imageSrc: apiSprite.characterPngUrl,
+      usesPlaceholder: false,
+      spriteBundleId: null,
+      apiSprite,
+    }
+  }
+
+  const spriteBundleId = resolveLpcBundleId(record.imageAsset) ?? LOCAL_LPC_AGENT_BUNDLE_BY_ID[record.id] ?? DEFAULT_LPC_BUNDLE_ID
+  if (spriteBundleId) {
+    return {
+      imageSrc: getLocalLpcCharacterPngUrl(spriteBundleId),
+      usesPlaceholder: false,
+      spriteBundleId,
+      apiSprite: null,
+    }
+  }
+
+  const trimmed = record.imageAsset?.trim()
   if (!trimmed || !isAllowedImageAsset(trimmed)) {
     return {
       imageSrc: PLACEHOLDER_AGENT_IMAGE,
       usesPlaceholder: true,
+      spriteBundleId: null,
+      apiSprite: null,
     }
   }
 
   return {
     imageSrc: trimmed,
     usesPlaceholder: false,
+    spriteBundleId: null,
+    apiSprite: null,
   }
 }
 
@@ -127,7 +193,7 @@ function buildWorldAgentBase(record: BackendAgentRecord, occupied: Array<{ xPerc
   const position = nextPosition(occupied)
   occupied.push(position)
 
-  const resolvedImage = resolveAgentImage(record.imageAsset)
+  const resolvedImage = resolveAgentImage(record)
 
   return {
     id: record.id,
@@ -139,16 +205,14 @@ function buildWorldAgentBase(record: BackendAgentRecord, occupied: Array<{ xPerc
 
 export function buildWorldAgents(records: BackendAgentRecord[]): WorldAgent[] {
   const occupied: Array<{ xPercent: number; yPercent: number }> = []
-  const withDummy = records.some((record) => record.id === DEFAULT_DUMMY_AGENT.id)
-    ? records
-    : [...records, DEFAULT_DUMMY_AGENT]
+  const withDummy = records.some((record) => record.id === DEFAULT_DUMMY_AGENT.id) ? records : [...records, DEFAULT_DUMMY_AGENT]
 
   return withDummy.map((record) => buildWorldAgentBase(record, occupied))
 }
 
 export function createLocalWorldAgent(existingAgents: WorldAgent[], record: CreatedAgentRecord): WorldAgent {
   const occupied = existingAgents.map((agent) => ({ xPercent: agent.xPercent, yPercent: agent.yPercent }))
-  return buildWorldAgentBase({ id: record.id, name: record.name, imageAsset: null }, occupied)
+  return buildWorldAgentBase({ id: record.id, name: record.name, imageAsset: `lpc:${DEFAULT_LPC_BUNDLE_ID}` }, occupied)
 }
 
 export function clampPercent(value: number, min: number, max: number) {
@@ -160,6 +224,7 @@ export function buildWorldPlayer(): WorldPlayer {
     id: 'user-player',
     label: 'You',
     imageSrc: PLAYER_IMAGE,
+    spriteBundleId: DEFAULT_LPC_BUNDLE_ID,
     xPercent: 50,
     yPercent: 50,
   }

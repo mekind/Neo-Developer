@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 
-import { loadLocalLpcSpriteBundle, type LpcSpriteBundle } from '@/game/lpcSprite'
+import { loadLocalLpcSpriteCatalog, type LpcSpriteCatalog } from '@/game/lpcSprite'
 
 export function useLpcSpriteBundle() {
-  const [bundle, setBundle] = useState<LpcSpriteBundle | null>(null)
+  const [catalog, setCatalog] = useState<LpcSpriteCatalog>({})
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -12,9 +12,9 @@ export function useLpcSpriteBundle() {
     async function loadBundle() {
       try {
         setErrorMessage(null)
-        const nextBundle = await loadLocalLpcSpriteBundle()
+        const nextCatalog = await loadLocalLpcSpriteCatalog()
         if (!isMounted) return
-        setBundle(nextBundle)
+        setCatalog(nextCatalog)
       } catch (error) {
         if (!isMounted) return
         setErrorMessage(error instanceof Error ? error.message : 'Failed to load local LPC sprite bundle.')
@@ -29,7 +29,10 @@ export function useLpcSpriteBundle() {
   }, [])
 
   return {
-    bundle,
+    catalog,
+    creditsText: Object.values(catalog)
+      .map((bundle) => `# ${bundle.bundleId}\n${bundle.creditsText}`)
+      .join('\n\n'),
     errorMessage,
   }
 }

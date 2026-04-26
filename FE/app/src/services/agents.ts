@@ -1,5 +1,6 @@
-import { getJson, postJson } from '@/lib/api-client'
 import type { BackendAgentRecord, CreatedAgentRecord } from '@/game/agents'
+import { isLpcFrameMap, isLpcState } from '@/game/lpcSprite'
+import { getJson, postJson } from '@/lib/api-client'
 
 function isBackendAgentRecord(value: unknown): value is BackendAgentRecord {
   if (typeof value !== 'object' || value === null) return false
@@ -9,7 +10,11 @@ function isBackendAgentRecord(value: unknown): value is BackendAgentRecord {
   return (
     typeof candidate.id === 'string' &&
     (candidate.name === undefined || typeof candidate.name === 'string') &&
-    (candidate.imageAsset === undefined || candidate.imageAsset === null || typeof candidate.imageAsset === 'string')
+    (candidate.imageAsset === undefined || candidate.imageAsset === null || typeof candidate.imageAsset === 'string') &&
+    (candidate.characterPngUrl === undefined || candidate.characterPngUrl === null || typeof candidate.characterPngUrl === 'string') &&
+    (candidate.frameMap === undefined || candidate.frameMap === null || isLpcFrameMap(candidate.frameMap)) &&
+    (candidate.creditsText === undefined || candidate.creditsText === null || typeof candidate.creditsText === 'string') &&
+    (candidate.lpcState === undefined || candidate.lpcState === null || isLpcState(candidate.lpcState))
   )
 }
 

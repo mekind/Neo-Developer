@@ -8,34 +8,40 @@ type AgentPayload = {
   id: string
   name?: string
   imageAsset?: string | null
+  characterPngUrl?: string | null
+  frameMap?: LpcSpriteBundle['frameMap'] | null
+  creditsText?: string | null
+}
+
+const apiFrameMap: LpcSpriteBundle['frameMap'] = {
+  frameSize: 64,
+  animations: {
+    walk_n: { y: 512, frames: [1, 2, 3, 4, 5, 6, 7, 8], fps: 8 },
+    walk_w: { y: 576, frames: [1, 2, 3, 4, 5, 6, 7, 8], fps: 8 },
+    walk_s: { y: 640, frames: [1, 2, 3, 4, 5, 6, 7, 8], fps: 8 },
+    walk_e: { y: 704, frames: [1, 2, 3, 4, 5, 6, 7, 8], fps: 8 },
+    idle_n: { y: 1408, frames: [0, 0, 1], fps: 4 },
+    idle_w: { y: 1472, frames: [0, 0, 1], fps: 4 },
+    idle_s: { y: 1536, frames: [0, 0, 1], fps: 4 },
+    idle_e: { y: 1600, frames: [0, 0, 1], fps: 4 },
+  },
 }
 
 const backendAgents: AgentPayload[] = [
   {
     id: 'mentor-hana',
     name: 'Hana',
-    imageAsset: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22/%3E',
+    characterPngUrl: 'https://cdn.example.com/hana-character.png',
+    frameMap: apiFrameMap,
+    creditsText: 'Hana credits from API',
   },
 ]
 
 const lpcSpriteBundle: LpcSpriteBundle = {
+  bundleId: 'cafe-bot',
   characterPngUrl: '/lpc-character-pipeline/.example/cafe-bot/character.png',
   creditsText: 'Made with LPC assets',
-  sheetWidth: 832,
-  sheetHeight: 3456,
-  frameMap: {
-    frameSize: 64,
-    animations: {
-      walk_n: { y: 512, frames: [1, 2, 3, 4, 5, 6, 7, 8], fps: 8 },
-      walk_w: { y: 576, frames: [1, 2, 3, 4, 5, 6, 7, 8], fps: 8 },
-      walk_s: { y: 640, frames: [1, 2, 3, 4, 5, 6, 7, 8], fps: 8 },
-      walk_e: { y: 704, frames: [1, 2, 3, 4, 5, 6, 7, 8], fps: 8 },
-      idle_n: { y: 1408, frames: [0, 0, 1], fps: 4 },
-      idle_w: { y: 1472, frames: [0, 0, 1], fps: 4 },
-      idle_s: { y: 1536, frames: [0, 0, 1], fps: 4 },
-      idle_e: { y: 1600, frames: [0, 0, 1], fps: 4 },
-    },
-  },
+  frameMap: apiFrameMap,
 }
 
 function installFetchMock(overrides: Record<string, { ok?: boolean; status?: number; json: unknown }> = {}) {
@@ -54,7 +60,8 @@ function installFetchMock(overrides: Record<string, { ok?: boolean; status?: num
 
 vi.mock('@/hooks/useLpcSpriteBundle', () => ({
   useLpcSpriteBundle: () => ({
-    bundle: lpcSpriteBundle,
+    catalog: { 'cafe-bot': lpcSpriteBundle },
+    creditsText: lpcSpriteBundle.creditsText,
     errorMessage: null,
   }),
 }))
@@ -69,7 +76,7 @@ vi.mock('@/game/WorldCanvas', () => ({
             id: 'mentor-hana',
             label: 'Hana',
             usesPlaceholder: false,
-            imageSrc: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22/%3E',
+            imageSrc: 'https://cdn.example.com/hana-character.png',
           })
         }
       >
@@ -91,7 +98,7 @@ describe('App', () => {
     vi.unstubAllEnvs()
   })
 
-  it('renders the shell with the game viewport, seeded dummy npcs, and visible LPC credits', async () => {
+  it('renders the shell with the game viewport, seeded dummy npcs, and combined LPC credits', async () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
@@ -100,6 +107,7 @@ describe('App', () => {
     expect(await screen.findByText('Haru')).toBeInTheDocument()
     expect(screen.getByText('Miso')).toBeInTheDocument()
     expect(screen.getByText(/made with lpc assets/i)).toBeInTheDocument()
+    expect(screen.getByText(/hana credits from api/i)).toBeInTheDocument()
     await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('4'))
   })
 

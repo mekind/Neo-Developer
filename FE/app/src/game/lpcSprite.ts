@@ -18,34 +18,37 @@ export type LpcState = {
 }
 
 export type LpcSpriteBundle = {
+  bundleId: string
   characterPngUrl: string
   frameMap: LpcFrameMap
   creditsText: string
   lpcState?: LpcState
-  sheetWidth: number
-  sheetHeight: number
 }
 
-const LOCAL_LPC_BASE_PATH = '/lpc-character-pipeline/.example/cafe-bot'
+export type LpcSpriteCatalog = Record<string, LpcSpriteBundle>
 
+export const LOCAL_LPC_BUNDLE_IDS = ['cafe-bot'] as const
+export const DEFAULT_LPC_BUNDLE_ID = 'cafe-bot'
+
+const LOCAL_LPC_BASE_PATH = '/lpc-character-pipeline/.example'
 const REQUIRED_ANIMATIONS: LpcAnimationName[] = ['idle_s', 'walk_s', 'idle_w', 'walk_w', 'idle_e', 'walk_e', 'idle_n', 'walk_n']
 
-function isAnimationDefinition(value: unknown): value is LpcAnimationDefinition {
+export function isLpcAnimationDefinition(value: unknown): value is LpcAnimationDefinition {
   if (typeof value !== 'object' || value === null) return false
   const candidate = value as Record<string, unknown>
   return typeof candidate.y === 'number' && typeof candidate.fps === 'number' && Array.isArray(candidate.frames) && candidate.frames.every((frame) => typeof frame === 'number')
 }
 
-function isFrameMap(value: unknown): value is LpcFrameMap {
+export function isLpcFrameMap(value: unknown): value is LpcFrameMap {
   if (typeof value !== 'object' || value === null) return false
   const candidate = value as Record<string, unknown>
   const animations = candidate.animations
   if (typeof candidate.frameSize !== 'number' || typeof animations !== 'object' || animations === null) return false
 
-  return REQUIRED_ANIMATIONS.every((name) => isAnimationDefinition((animations as Record<string, unknown>)[name]))
+  return REQUIRED_ANIMATIONS.every((name) => isLpcAnimationDefinition((animations as Record<string, unknown>)[name]))
 }
 
-function isLpcState(value: unknown): value is LpcState {
+export function isLpcState(value: unknown): value is LpcState {
   if (typeof value !== 'object' || value === null) return false
   const candidate = value as Record<string, unknown>
   return typeof candidate.version === 'number'
@@ -63,38 +66,48 @@ async function fetchText(url: string) {
   return response.text()
 }
 
-async function measureImage(url: string) {
-  return await new Promise<{ width: number; height: number }>((resolve, reject) => {
-    const image = new Image()
-    image.onload = () => resolve({ width: image.naturalWidth, height: image.naturalHeight })
-    image.onerror = () => reject(new Error('Failed to load local LPC character.png'))
-    image.src = url
-  })
+export function getLocalLpcBundleBasePath(bundleId: string) {
+  return `${LOCAL_LPC_BASE_PATH}/${bundleId}`
 }
 
-export async function loadLocalLpcSpriteBundle(): Promise<LpcSpriteBundle> {
-  const characterPngUrl = `${LOCAL_LPC_BASE_PATH}/character.png`
-  const [frameMapPayload, creditsText, lpcStatePayload, sheetSize] = await Promise.all([
-    fetchJson(`${LOCAL_LPC_BASE_PATH}/frame-map.json`),
-    fetchText(`${LOCAL_LPC_BASE_PATH}/CREDITS.txt`),
-    fetchJson(`${LOCAL_LPC_BASE_PATH}/lpc-state.json`).catch(() => null),
-    measureImage(characterPngUrl),
+export function getLocalLpcCharacterPngUrl(bundleId: string) {
+  return `${getLocalLpcBundleBasePath(bundleId)}/character.png`
+}
+
+export function resolveLpcBundleId(imageAsset: string | null | undefined) {
+  const trimmed = imageAsset?.trim()
+  if (!trimmed?.startsWith('lpc:')) return null
+  const bundleId = trimmed.slice(4).trim()
+  return bundleId || null
+}
+
+export async function loadLocalLpcSpriteBundle(bundleId: string): Promise<LpcSpriteBundle> {
+  const basePath = getLocalLpcBundleBasePath(bundleId)
+  const characterPngUrl = `${basePath}/character.png`
+  const [frameMapPayload, creditsText, lpcStatePayload] = await Promise.all([
+    fetchJson(`${basePath}/frame-map.json`),
+    fetchText(`${basePath}/CREDITS.txt`),
+    fetchJson(`${basePath}/lpc-state.json`).catch(() => null),
   ])
 
-  if (!isFrameMap(frameMapPayload)) {
-    throw new Error('Local LPC frame-map.json shape was invalid.')
+  if (!isLpcFrameMap(frameMapPayload)) {
+    throw new Error(`Local LPC frame-map.json shape was invalid for bundle ${bundleId}.`)
   }
 
   if (!creditsText.trim()) {
-    throw new Error('Local LPC credits text was empty.')
+    throw new Error(`Local LPC credits text was empty for bundle ${bundleId}.`)
   }
 
   return {
+    bundleId,
     characterPngUrl,
     frameMap: frameMapPayload,
     creditsText,
     lpcState: isLpcState(lpcStatePayload) ? lpcStatePayload : undefined,
-    sheetWidth: sheetSize.width,
-    sheetHeight: sheetSize.height,
   }
+}
+
+export async function loadLocalLpcSpriteCatalog(bundleIds = [...LOCAL_LPC_BUNDLE_IDS]): Promise<LpcSpriteCatalog> {
+  const bundles = await Promise.all(bundleIds.map((bundleId) => loadLocalLpcSpriteBundle(bundleId)))
+  return Object.fromEntries(bundles.map((bundle) => [bundle.bundleId, bundle]))
 }

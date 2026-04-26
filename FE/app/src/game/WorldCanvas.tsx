@@ -471,7 +471,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction }: Wo
           agentsRef.current.forEach((agent) => {
             const point = projectMiniMapPoint(agent.xPercent, agent.yPercent, viewport)
             this.minimapLayer.fillStyle(agent.apiSprite || agent.spriteBundleId ? 0x2563eb : agent.usesPlaceholder ? 0xf59e0b : 0x2563eb, 1)
-            this.minimapLayer.fillCircle(point.x, point.y, 3.5)
+            this.minimapLayer.fillCircle(point.x, point.y, 4)
           })
           const playerPoint = projectMiniMapPoint(this.playerState.xPercent, this.playerState.yPercent, viewport)
           this.minimapLayer.fillStyle(0x22c55e, 1)
