@@ -1,0 +1,44 @@
+{
+  "version": 2,
+  "bodyType": "male",
+  "selections": {
+    "body": {
+      "itemId": "body",
+      "recolor": "light",
+      "name": "Body Color"
+    },
+    "head": {
+      "itemId": "heads_human_male",
+      "recolor": "light",
+      "name": "Human Male"
+    },
+    "expression": {
+      "itemId": "face_happy",
+      "variant": "",
+      "name": "Happy"
+    },
+    "hair": {
+      "itemId": "hair_plain",
+      "recolor": "dark brown",
+      "name": "Plain"
+    },
+    "hat": null,
+    "facial_eyes": null,
+    "clothes": {
+      "itemId": "torso_clothes_blouse_longsleeve",
+      "variant": "orange",
+      "name": "Longsleeve blouse"
+    },
+    "legs": {
+      "itemId": "legs_pants",
+      "variant": "",
+      "name": "Pants"
+    },
+    "shoes": {
+      "itemId": "feet_shoes_basic",
+      "variant": "black",
+      "name": "Basic Shoes"
+    }
+  },
+  "selectedAnimation": "walk"
+}

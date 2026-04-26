@@ -1,0 +1,85 @@
+{
+  "form_fallback_note": null,
+  "trace": [
+    {
+      "selectionGroup": "body",
+      "itemId": "body",
+      "variant": "",
+      "recolor": "light",
+      "reason": "Visual Description의 '친근한 신문기자' — 인간형 기본 신체. 밝은 피부톤(light)으로 따뜻하고 친근한 인상 표현."
+    },
+    {
+      "selectionGroup": "head",
+      "itemId": "heads_human_male",
+      "variant": "",
+      "recolor": "light",
+      "reason": "Visual Description의 '친근한 신문기자' — 표준 인간 남성 머리형. 둥근 안경을 얹기 위한 인간형 필수."
+    },
+    {
+      "selectionGroup": "expression",
+      "itemId": "face_happy",
+      "variant": "",
+      "recolor": "",
+      "reason": "Visual Description의 '표정은 호기심 많고 친근함' — face_happy가 가장 근접한 친근·긍정 표정."
+    },
+    {
+      "selectionGroup": "hair",
+      "itemId": "hair_parted",
+      "variant": "",
+      "recolor": "",
+      "reason": "베레모 착용 전제이므로 모자 아래로 자연스럽게 보이는 단정한 가르마 스타일 채택."
+    },
+    {
+      "selectionGroup": "hat",
+      "itemId": "hat_cap_bonnie",
+      "variant": "blue",
+      "recolor": "",
+      "reason": "Visual Description의 '파란 베레모'. 카탈로그에 beret 전용 itemId 없음. hat_cap_bonnie(Bonnie Cap)이 소프트 캡 실루엣으로 베레모에 가장 근접. variant=blue로 Primary #4A90D9 매칭."
+    },
+    {
+      "selectionGroup": "facial_eyes",
+      "itemId": "facial_glasses_round",
+      "variant": "black",
+      "recolor": "",
+      "reason": "Visual Description의 '둥근 안경 착용'. facial_glasses_round가 정확히 round glasses. 규칙상 glasses는 facial_eyes 그룹에 배치."
+    },
+    {
+      "selectionGroup": "clothes",
+      "itemId": "torso_clothes_longsleeve_formal",
+      "variant": "white",
+      "recolor": "",
+      "reason": "Color Palette Accent #FFFFFF '흰색 — 셔츠/내부'. 포멀 롱슬리브는 기자 캐릭터의 내부 셔츠로 적합. variant=white 고정(카탈로그상 white만 지원)."
+    },
+    {
+      "selectionGroup": "jacket",
+      "itemId": "torso_jacket_trench",
+      "variant": "gray",
+      "recolor": "",
+      "reason": "Visual Description의 '가벼운 코트 차림'. torso_jacket_trench(Trench coat)가 기자 이미지의 클래식 코트. variant=gray로 중립적·현장감 표현."
+    },
+    {
+      "selectionGroup": "legs",
+      "itemId": "legs_widepants",
+      "variant": "charcoal",
+      "recolor": "",
+      "reason": "기자 캐릭터의 단정한 하의. legs_widepants는 다양한 색상 지원. charcoal로 코트와 통일감 있는 다크 톤."
+    },
+    {
+      "selectionGroup": "shoes",
+      "itemId": "feet_boots_rim",
+      "variant": "brown",
+      "recolor": "",
+      "reason": "동네를 부지런히 뛰어다니는 기자 인상. 림드 부츠(brown)는 클래식하고 실용적인 현장용 신발."
+    }
+  ],
+  "color_palette_check": {
+    "persona_palette": ["#4A90D9", "#F5A623", "#FFFFFF"],
+    "applied_lpc_colors": [
+      "hat=blue (Primary #4A90D9 매칭 — hat_cap_bonnie variant:blue)",
+      "clothes=white (Accent #FFFFFF 매칭 — torso_clothes_longsleeve_formal variant:white)"
+    ],
+    "missing_palette_colors": [
+      "#F5A623 (Secondary 주황색 — 신문/포인트): LPC 카탈로그에 orange variant 존재하나, 코트·셔츠 레이어에 적용 시 기자 외형 일관성 저하 우려로 미적용. 향후 accessory(신문 prop)로 표현 권장."
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "bodyType": "male",
+  "selections": {
+    "body": {
+      "itemId": "body",
+      "variant": "",
+      "recolor": "peach",
+      "name": "Body Color"
+    },
+    "head": {
+      "itemId": "heads_human_male",
+      "variant": "",
+      "recolor": "peach",
+      "name": "Human Male"
+    },
+    "expression": {
+      "itemId": "face_neutral",
+      "variant": "",
+      "recolor": "peach",
+      "name": "Neutral"
+    },
+    "hair": {
+      "itemId": "hair_plain",
+      "variant": "",
+      "recolor": "dark_brown",
+      "name": "Plain"
+    },
+    "facial_eyes": {
+      "itemId": "facial_glasses_round",
+      "variant": "charcoal",
+      "recolor": "",
+      "name": "Round Glasses"
+    },
+    "clothes": {
+      "itemId": "torso_clothes_longsleeve_formal",
+      "variant": "white",
+      "recolor": "",
+      "name": "Collared/Formal Longsleeve"
+    },
+    "apron": {
+      "itemId": "torso_aprons_apron",
+      "variant": "brown",
+      "recolor": "",
+      "name": "Apron"
+    },
+    "legs": {
+      "itemId": "legs_pants",
+      "variant": "",
+      "recolor": "charcoal",
+      "name": "Pants"
+    },
+    "shoes": {
+      "itemId": "feet_shoes_basic",
+      "variant": "black",
+      "recolor": "",
+      "name": "Basic Shoes"
+    }
+  },
+  "selectedAnimation": "walk"
+}
