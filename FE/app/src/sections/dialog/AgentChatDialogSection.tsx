@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { WorldAgent } from '@/game/agents'
 
@@ -41,6 +41,7 @@ function buildNpcReply(agent: WorldAgent, message: string) {
 export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDialogSectionProps) {
   const [draft, setDraft] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
+  const transcriptRef = useRef<HTMLDivElement | null>(null)
 
   const seededMessages = useMemo<ChatMessage[]>(() => {
     if (!agent) return []
@@ -55,19 +56,26 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
 
   const transcript = messages.length > 0 ? messages : seededMessages
 
+  useEffect(() => {
+    const node = transcriptRef.current
+    if (!node) return
+    node.scrollTop = node.scrollHeight
+  }, [transcript, isOpen])
+
   if (!isOpen || !agent) return null
 
   const submitMessage = () => {
     const trimmed = draft.trim()
     if (!trimmed) return
 
+    const now = Date.now()
     const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: `user-${now}`,
       speaker: 'user',
       text: trimmed,
     }
     const agentReply: ChatMessage = {
-      id: `agent-${Date.now() + 1}`,
+      id: `agent-${now + 1}`,
       speaker: 'agent',
       text: buildNpcReply(agent, trimmed),
     }
@@ -83,7 +91,7 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
           <div className="chat-dialog-title-wrap">
             <p className="eyebrow">NPC 대화</p>
             <h3 id="npc-chat-title">{agent.label}와 대화하기</h3>
-            <p className="chat-dialog-subtitle">필요한 내용을 바로 묻고 답을 이어갈 수 있는 대화창입니다.</p>
+            <p className="chat-dialog-subtitle">필요한 내용을 바로 묻고 답을 이어가세요.</p>
           </div>
           <button type="button" className="secondary-button" onClick={onClose}>
             닫기
@@ -101,16 +109,18 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
           <span className="chat-agent-status">온라인</span>
         </section>
 
-        <div className="chat-transcript" aria-label="NPC 대화 내용">
-          {transcript.map((message) => (
-            <article
-              key={message.id}
-              className={`chat-bubble ${message.speaker === 'agent' ? 'chat-bubble-agent' : 'chat-bubble-user'}`}
-            >
-              <span className="chat-bubble-speaker">{message.speaker === 'agent' ? agent.label : '나'}</span>
-              <p>{message.text}</p>
-            </article>
-          ))}
+        <div ref={transcriptRef} className="chat-transcript" aria-label="NPC 대화 내용">
+          <div className="chat-transcript-stack">
+            {transcript.map((message) => (
+              <article
+                key={message.id}
+                className={`chat-bubble ${message.speaker === 'agent' ? 'chat-bubble-agent' : 'chat-bubble-user'}`}
+              >
+                <span className="chat-bubble-speaker">{message.speaker === 'agent' ? agent.label : '나'}</span>
+                <p>{message.text}</p>
+              </article>
+            ))}
+          </div>
         </div>
 
         <section className="chat-starter-prompts" aria-label="추천 질문">
@@ -134,8 +144,8 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
             <div className="chat-composer-row">
               <textarea
                 name="message"
-                rows={5}
-                placeholder="메시지를 입력하고 Enter로 보내세요. Shift+Enter는 줄바꿈입니다."
+                rows={4}
+                placeholder="메시지를 입력하세요"
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
