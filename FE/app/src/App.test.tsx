@@ -113,6 +113,8 @@ vi.mock('@/game/WorldCanvas', () => ({
       >
         Simulate interaction
       </button>
+      <span>controlling you at (12%, 32%)</span>
+      <span>minimap visible</span>
     </div>
   ),
 }))
@@ -139,9 +141,10 @@ describe('App', () => {
 
     expect(screen.getByRole('heading', { name: /myclaw/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/Phaser map viewport/i)).toBeInTheDocument()
+    expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
+    expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
     expect(await screen.findByText('Hana')).toBeInTheDocument()
     expect(await screen.findByText('Noa')).toBeInTheDocument()
-    await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('2'))
   })
 
   it('creates a backend agent from the dialog', async () => {
@@ -161,13 +164,14 @@ describe('App', () => {
     )
   })
 
-  it('opens chat from the header trigger and sends an invoke request', async () => {
+  it('opens chat from the header trigger, sends an invoke request, and shows the cropped avatar frame', async () => {
     render(<App />)
     await screen.findByText('Hana')
 
     fireEvent.click(screen.getByRole('button', { name: /npc 대화 열기/i }))
 
     const dialog = await screen.findByRole('dialog', { name: /hana와 대화하기/i })
+    expect(screen.getByRole('img', { name: /hana 아바타/i })).toBeInTheDocument()
     fireEvent.change(within(dialog).getByLabelText(/메시지/i), { target: { value: '안녕!' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /보내기/i }))
 

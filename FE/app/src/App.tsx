@@ -54,6 +54,7 @@ export default function App() {
       <AgentChatDialogSection
         agent={activeChatAgent}
         isOpen={isChatOpen}
+        lpcSpriteCatalog={lpcSpriteCatalog}
         onClose={closeChatDialog}
         messages={chatMessages}
         isSubmitting={isChatSubmitting}

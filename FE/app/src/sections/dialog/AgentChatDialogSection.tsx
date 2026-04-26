@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { WorldAgent } from '@/game/agents'
+import type { LpcFrameMap, LpcSpriteCatalog } from '@/game/lpcSprite'
 
 type ChatMessage = {
   id: string
@@ -12,6 +13,7 @@ type ChatMessage = {
 type AgentChatDialogSectionProps = {
   agent: WorldAgent | null
   isOpen: boolean
+  lpcSpriteCatalog: LpcSpriteCatalog
   onClose: () => void
   messages: ChatMessage[]
   isSubmitting: boolean
@@ -19,11 +21,59 @@ type AgentChatDialogSectionProps = {
   onSendMessage: (message: string) => Promise<void>
 }
 
+type PortraitSprite = {
+  src: string
+  frameMap: LpcFrameMap
+}
+
 const starterPrompts = ['오늘 일정 알려줘', '이 공간 설명해줘', '처음 온 사람에게 팁 있어?']
+const CHAT_AVATAR_SIZE = 52
+
+function resolvePortraitSprite(agent: WorldAgent, lpcSpriteCatalog: LpcSpriteCatalog): PortraitSprite | null {
+  if (agent.apiSprite) {
+    return {
+      src: agent.apiSprite.characterPngUrl,
+      frameMap: agent.apiSprite.frameMap,
+    }
+  }
+
+  if (!agent.spriteBundleId) return null
+  const bundle = lpcSpriteCatalog[agent.spriteBundleId]
+  if (!bundle) return null
+
+  return {
+    src: bundle.characterPngUrl,
+    frameMap: bundle.frameMap,
+  }
+}
+
+function SpritePortrait({ agent, portraitSprite }: { agent: WorldAgent; portraitSprite: PortraitSprite }) {
+  const idleAnimation = portraitSprite.frameMap.animations.idle_s
+  const frameIndex = idleAnimation.frames[Math.min(1, idleAnimation.frames.length - 1)] ?? 0
+  const scale = CHAT_AVATAR_SIZE / portraitSprite.frameMap.frameSize
+  const offsetX = frameIndex * portraitSprite.frameMap.frameSize
+  const offsetY = idleAnimation.y
+
+  return (
+    <div className="chat-agent-avatar-sprite-shell" role="img" aria-label={`${agent.label} 아바타`}>
+      <img
+        src={portraitSprite.src}
+        alt=""
+        aria-hidden="true"
+        className="chat-agent-avatar-sprite"
+        style={{
+          transform: `translate(${-offsetX * scale}px, ${-offsetY * scale}px) scale(${scale})`,
+          transformOrigin: 'top left',
+        }}
+      />
+    </div>
+  )
+}
 
 export function AgentChatDialogSection({
   agent,
   isOpen,
+  lpcSpriteCatalog,
   onClose,
   messages,
   isSubmitting,
@@ -34,6 +84,11 @@ export function AgentChatDialogSection({
   const transcriptRef = useRef<HTMLDivElement | null>(null)
   const formRef = useRef<HTMLFormElement | null>(null)
   const isComposingRef = useRef(false)
+
+  const portraitSprite = useMemo(() => {
+    if (!agent) return null
+    return resolvePortraitSprite(agent, lpcSpriteCatalog)
+  }, [agent, lpcSpriteCatalog])
 
   useEffect(() => {
     const node = transcriptRef.current
@@ -85,7 +140,11 @@ export function AgentChatDialogSection({
 
         <section className="chat-agent-summary" aria-label="NPC 요약 카드">
           <div className="chat-agent-avatar-shell">
-            <img src={agent.imageSrc} alt={`${agent.label} 아바타`} className="chat-agent-avatar" />
+            {portraitSprite ? (
+              <SpritePortrait agent={agent} portraitSprite={portraitSprite} />
+            ) : (
+              <img src={agent.imageSrc} alt={`${agent.label} 아바타`} className="chat-agent-avatar" />
+            )}
           </div>
           <div className="chat-agent-meta">
             <strong>{agent.label}</strong>
@@ -150,9 +209,8 @@ export function AgentChatDialogSection({
                 {isSubmitting ? '보내는 중…' : '보내기'}
               </button>
             </div>
+            {errorMessage ? <p role="alert">{errorMessage}</p> : null}
           </label>
-
-          {errorMessage ? <p role="alert">{errorMessage}</p> : null}
         </form>
       </section>
     </div>
