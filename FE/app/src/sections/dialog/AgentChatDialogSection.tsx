@@ -42,6 +42,7 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
   const [draft, setDraft] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const transcriptRef = useRef<HTMLDivElement | null>(null)
+  const formRef = useRef<HTMLFormElement | null>(null)
 
   const seededMessages = useMemo<ChatMessage[]>(() => {
     if (!agent) return []
@@ -132,6 +133,7 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
         </section>
 
         <form
+          ref={formRef}
           className="chat-composer"
           onSubmit={(event) => {
             event.preventDefault()
@@ -151,7 +153,7 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault()
-                    submitMessage()
+                    formRef.current?.requestSubmit()
                   }
                 }}
               />
