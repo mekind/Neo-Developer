@@ -70,11 +70,12 @@ describe('App', () => {
     expect(await screen.findByText('Hana')).toBeInTheDocument()
     expect(await screen.findByText('Haru')).toBeInTheDocument()
     expect(screen.getByText('Miso')).toBeInTheDocument()
-    expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('4')
+    await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('4'))
   })
 
   it('adds a local npc from the dialog', async () => {
     render(<App />)
+    await screen.findByText('Haru')
 
     fireEvent.click(screen.getByRole('button', { name: /에이전트 추가/i }))
     const dialog = screen.getByRole('dialog', { name: /에이전트 npc 추가|에이전트 NPC 추가/i })
@@ -90,7 +91,7 @@ describe('App', () => {
     render(<App />)
     await screen.findByText('Hana')
 
-    fireEvent.click(screen.getByRole('button', { name: /open npc chat/i }))
+    fireEvent.click(screen.getByRole('button', { name: /npc 대화 열기/i }))
 
     expect(screen.getByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
   })
