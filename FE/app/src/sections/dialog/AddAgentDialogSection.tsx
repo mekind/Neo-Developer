@@ -59,8 +59,15 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
             <p className="eyebrow">NPC 추가</p>
             <h3 id="add-agent-dialog-title">에이전트 NPC 추가</h3>
           </div>
-          <button type="button" className="secondary-button" onClick={onClose} disabled={submitState === 'submitting'}>
-            닫기
+          <button
+            type="button"
+            className="dialog-close-button"
+            onClick={onClose}
+            disabled={submitState === 'submitting'}
+            aria-label="에이전트 NPC 추가 창 닫기"
+          >
+            <span aria-hidden="true">✕</span>
+            <span>닫기</span>
           </button>
         </div>
 
