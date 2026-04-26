@@ -1,11 +1,13 @@
 # Backend Docs
 
-NestJS 기반 mock CRUD 백엔드. DB 없이 인메모리 데이터로 동작합니다.
+NestJS + Prisma + Postgres 기반 MyClaw 백엔드. P0 도메인 (User, Profile, Agent, MemoryDocument, Skill, Greeting) + Vercel 서버리스 배포 + Jest e2e.
 
 ## 위치
 
 - 코드: [`/backend`](../../backend)
 - Production: <https://backend-kappa-brown-63.vercel.app>
+- **인터랙티브 API 문서 (Swagger UI)**: <https://backend-kappa-brown-63.vercel.app/docs>
+- OpenAPI JSON (코드 생성용): <https://backend-kappa-brown-63.vercel.app/docs-json>
 
 ## 문서
 
@@ -22,21 +24,15 @@ NestJS 기반 mock CRUD 백엔드. DB 없이 인메모리 데이터로 동작합
 
 ```bash
 cd backend
-npm install
-npm run start:dev      # http://localhost:3000
+docker compose up --build -d           # Postgres + backend 한 번에
+curl http://localhost:3000/health       # {"status":"ok","db":"ok"}
+open http://localhost:3000/docs         # Swagger UI
 ```
 
-엔드포인트:
-
-```
-GET    /items
-GET    /items/:id
-POST   /items
-PATCH  /items/:id
-DELETE /items/:id
-```
+엔드포인트는 `/docs` Swagger UI 또는 [api.md](./api.md) 참고.
 
 ## 주의
 
-- 데이터는 서버리스 인스턴스의 **인메모리** 상태입니다. 영속성 없음 — 인스턴스가 새로 뜨면 mock 2건으로 리셋됩니다.
-- 프로덕션 영속성이 필요해지면 Vercel KV/Postgres/Upstash 등 외부 스토어 도입 필요.
+- `MemoryDocument`(Postgres)는 plan의 llm-wiki 패턴(폴더-경로) 을 그대로 재현합니다. 폴더가 아닌 `(userId, path)` 복합 PK로 저장.
+- 영속성은 Vercel Postgres / Neon에 위임. 로컬은 `docker compose` 의 `postgres:16-alpine`.
+- 옛 mock `/items`는 BE-17 에서 제거 예정 (현재는 데모용으로 유지).

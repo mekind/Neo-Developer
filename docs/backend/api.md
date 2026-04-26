@@ -249,3 +249,8 @@ curl -s -X PATCH $BASE/items/<id> \
   -d '{"price":3500}'
 curl -s -X DELETE $BASE/items/<id>
 ```
+
+
+---
+
+> 이 문서는 데모용 `/items` mock 만 다룹니다. P0 도메인(`users`, `memory`, `agents`, `skills`, `greetings`) 의 전체 명세는 Swagger UI(`/docs`) 또는 OpenAPI JSON(`/docs-json`) 을 참고하세요.

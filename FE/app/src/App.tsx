@@ -1,23 +1,71 @@
+import { useEffect, useState } from 'react'
+
 import { InteractionPanel } from '@/components/InteractionPanel'
+import { buildWorldAgents, type WorldAgent } from '@/game/agents'
 import { WorldCanvas } from '@/game/WorldCanvas'
+import { listAgents } from '@/services/agents'
 
 export default function App() {
+  const [agents, setAgents] = useState<WorldAgent[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadAgents() {
+      try {
+        setIsLoading(true)
+        setErrorMessage(null)
+        const nextAgents = await listAgents()
+        if (isMounted) {
+          setAgents(buildWorldAgents(nextAgents))
+        }
+      } catch (error) {
+        if (isMounted) {
+          setErrorMessage(error instanceof Error ? error.message : 'Failed to load backend agents.')
+          setAgents([])
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    void loadAgents()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   return (
     <main className="app-shell">
-      <section className="world-column">
-        <header className="world-header">
-          <p className="eyebrow">FE bootstrap</p>
-          <h1>Gather-like Frontend Starter</h1>
-          <p className="description">
-            Fast-start baseline: React UI shell + Canvas world placeholder on top of Vite + TypeScript.
-          </p>
-        </header>
-        <WorldCanvas />
-      </section>
+      <header className="topbar panel-shell">
+        <div>
+          <p className="eyebrow">Neo Commons</p>
+          <h1>스쿨 커먼즈</h1>
+        </div>
+        <div className="topbar-summary" aria-label="Room summary">
+          <span className="status-pill">Live</span>
+          <strong>{agents.length}</strong>
+        </div>
+      </header>
 
-      <aside className="side-column">
-        <InteractionPanel />
-      </aside>
+      <div className="app-body">
+        <aside className="sidebar panel-shell">
+          <InteractionPanel agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
+        </aside>
+
+        <section className="world-stage panel-shell" aria-label="world stage">
+          <div className="world-stage-copy">
+            <p className="eyebrow">Room</p>
+            <h2>Commons Floor</h2>
+          </div>
+          <WorldCanvas agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
+        </section>
+      </div>
     </main>
   )
 }

@@ -6,6 +6,8 @@ Karpathy-style local markdown vault for organizing frontend docs in this reposit
 - [[Vault Config]] ([Vault Config](config.md))
 - [[Frontend Workspace Overview]] ([Frontend Workspace Overview](wiki/topics/frontend-workspace-overview.md))
 - [[Frontend Architecture — MVVM + Clean Architecture]] ([Frontend Architecture — MVVM + Clean Architecture](wiki/topics/frontend-architecture-mvvm-clean.md))
+- [[Frontend API Integration Baseline]] ([Frontend API Integration Baseline](wiki/topics/frontend-api-integration-baseline.md))
+- [[Frontend Backend Agent Roster]] ([Frontend Backend Agent Roster](wiki/topics/frontend-backend-agent-roster.md))
 - [[Frontend Source Index]] ([Frontend Source Index](raw/_index.md))
 - [[Frontend Wiki Index]] ([Frontend Wiki Index](wiki/_index.md))
 - [[Frontend Outputs Index]] ([Frontend Outputs Index](output/_index.md))

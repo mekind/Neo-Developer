@@ -1,19 +1,48 @@
-const initialActions = ['Move with arrow keys later', 'Open chat panel later', 'Interact with nearby objects later']
+import type { WorldAgent } from '@/game/agents'
 
-export function InteractionPanel() {
+type InteractionPanelProps = {
+  agents: WorldAgent[]
+  isLoading: boolean
+  errorMessage: string | null
+}
+
+export function InteractionPanel({ agents, isLoading, errorMessage }: InteractionPanelProps) {
   return (
-    <section className="panel">
-      <h2>Interaction UI Placeholder</h2>
-      <p>
-        This shell reserves space for the gather-like interaction layer without committing to realtime,
-        auth, or voice features yet.
-      </p>
+    <section className="sidebar-content">
+      <div className="sidebar-head">
+        <p className="eyebrow">Room panel</p>
+        <h2>Agents</h2>
+      </div>
 
-      <ul className="action-list">
-        {initialActions.map((action) => (
-          <li key={action}>{action}</li>
-        ))}
-      </ul>
+      <section className="panel-section panel-highlight" aria-label="Backend agent summary">
+        <div className="panel-label-row">
+          <span className="panel-kicker">Status</span>
+          <span className="panel-count">{agents.length}</span>
+        </div>
+        {isLoading ? <p>Loading backend agents…</p> : null}
+        {errorMessage ? <p role="alert">{errorMessage}</p> : null}
+        {!isLoading && !errorMessage ? <p>{agents.length} agents ready.</p> : null}
+      </section>
+
+      <section className="panel-section" aria-label="Backend agent list">
+        <div className="panel-label-row">
+          <h3>Roster</h3>
+          <span className="panel-count">{agents.length}</span>
+        </div>
+
+        {!isLoading && !errorMessage && agents.length > 0 ? (
+          <ul className="agent-list" aria-label="Backend agent list">
+            {agents.map((agent) => (
+              <li key={agent.id}>
+                <strong>{agent.label}</strong>
+                <span>{agent.usesPlaceholder ? 'placeholder' : 'asset'}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        {!isLoading && !errorMessage && agents.length === 0 ? <p>No backend agents were returned.</p> : null}
+      </section>
     </section>
   )
 }
