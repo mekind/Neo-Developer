@@ -2,7 +2,8 @@
 
 - type: local llm wiki vault
 - scope: `FE/docs/`
-- purpose: persistent markdown knowledge base for frontend context in `Neo-Developer`
+- purpose: persistent markdown knowledge base for demo-oriented frontend context in `Neo-Developer`
+- product stage: demo / prototype only; document choices with demo scope in mind
 - source policy: raw sources remain intact; annotate rather than rewrite
 - article policy: wiki pages synthesize, normalize, and cross-link facts from sources
 - output policy: generated plans, briefs, and snapshots live under `output/`

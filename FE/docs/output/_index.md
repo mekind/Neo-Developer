@@ -3,6 +3,7 @@
 Generated and time-bound frontend artifacts live here.
 
 ## Current Outputs
+- [[Demo Scope Note]] ([Demo Scope Note](demo-scope-note-2026-04-26.md))
 - [[Gather-like Layout Note]] ([Gather-like Layout Note](gather-like-layout-note-2026-04-26.md))
 - [[Initial Vault Setup Note]] ([Initial Vault Setup Note](initial-vault-setup-note-2026-04-26.md))
 - [[Frontend Architecture Note]] ([Frontend Architecture Note](frontend-architecture-note-2026-04-26.md))
