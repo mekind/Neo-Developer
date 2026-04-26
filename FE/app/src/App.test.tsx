@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { vi } from 'vitest'
 import App from './App'
 
 describe('App', () => {
@@ -10,10 +11,10 @@ describe('App', () => {
     } as Response)
   })
 
-  it('renders the gather-like world layout shell', async () => {
+  it('renders the warm demo-friendly world layout shell', async () => {
     render(<App />)
-    expect(screen.getByRole('heading', { name: /gather-like world layout/i })).toBeInTheDocument()
-    expect(screen.getByRole('complementary')).toHaveTextContent(/sidebar ui placeholder/i)
+    expect(screen.getByRole('heading', { name: /편하게 둘러보는 데모 공간/i })).toBeInTheDocument()
+    expect(screen.getByRole('complementary')).toHaveTextContent(/낯설지 않게 시작하는 안내/i)
     expect(screen.getByRole('button', { name: /open persona dialog/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     await screen.findByRole('list', { name: /live items list/i })
@@ -95,7 +96,7 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
     expect(await screen.findByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
-    expect(screen.getByText(/milo spark is the latest character added to the canvas/i)).toBeInTheDocument()
+    expect(screen.getByText(/controlling milo spark at \(340, 180\)/i)).toBeInTheDocument()
     expect(screen.getAllByText(/nova scout · scout/i)).toHaveLength(2)
     expect(screen.getAllByText(/milo spark · spark/i)).toHaveLength(2)
     await screen.findByRole('list', { name: /live items list/i })
@@ -163,5 +164,69 @@ describe('App', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
     expect(globalThis.fetch).not.toHaveBeenCalled()
+  })
+
+  it('moves the latest created character and unlocks interaction feedback nearby', async () => {
+    vi.mocked(globalThis.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: 'agent-1',
+          name: 'Nova Scout',
+          archetype: 'scout',
+          personaSummary: 'Nova scout',
+          backstoryPrompt: 'Explores the room.',
+          createdAt: '2026-04-26T00:00:00.000Z',
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: 'agent-2',
+          name: 'Milo Spark',
+          archetype: 'spark',
+          personaSummary: 'Milo spark',
+          backstoryPrompt: 'Energizes the room.',
+          createdAt: '2026-04-26T00:00:00.000Z',
+        }),
+      } as Response)
+
+    render(<App />)
+    await screen.findByRole('list', { name: /live items list/i })
+
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Nova scout' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Explores the room.' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    await screen.findByRole('heading', { name: /spawned avatars: 1/i })
+
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Milo spark' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Energizes the room.' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    await screen.findByRole('heading', { name: /spawned avatars: 2/i })
+
+    vi.useFakeTimers()
+    try {
+      fireEvent.keyDown(window, { key: 'ArrowLeft' })
+      act(() => {
+        vi.advanceTimersByTime(180)
+      })
+      fireEvent.keyUp(window, { key: 'ArrowLeft' })
+
+      expect(screen.getByText(/controlling milo spark at \(268, 180\)/i)).toBeInTheDocument()
+      expect(screen.getByText(/press e near nova scout to interact/i)).toBeInTheDocument()
+
+      fireEvent.keyDown(window, { key: 'e' })
+
+      expect(screen.getByText(/milo spark greeted nova scout/i)).toBeInTheDocument()
+      expect(screen.getByText(/distance to nova scout: 108px/i)).toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

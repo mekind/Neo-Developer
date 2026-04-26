@@ -9,6 +9,12 @@ export type WorldCharacter = {
   color: string
 }
 
+export const WORLD_WIDTH = 1280
+export const WORLD_HEIGHT = 720
+export const WORLD_PADDING = 28
+export const PLAYER_MOVE_STEP = 24
+export const INTERACTION_RADIUS = 120
+
 export const archetypeOptions: Array<{
   value: CharacterArchetype
   label: string
@@ -48,3 +54,14 @@ export function buildWorldCharacter(
     y: 180 + Math.floor(index / 4) * 110,
   }
 }
+
+export const clampToWorld = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+
+export const createWorldCharacter = (
+  name: string,
+  archetype: CharacterArchetype,
+  index: number,
+): WorldCharacter => buildWorldCharacter({ id: `${name}-${index + 1}`, name, archetype }, index)
+
+export const measureDistance = (from: Pick<WorldCharacter, 'x' | 'y'>, to: Pick<WorldCharacter, 'x' | 'y'>) =>
+  Math.hypot(from.x - to.x, from.y - to.y)

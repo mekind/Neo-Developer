@@ -1,9 +1,19 @@
 :root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  line-height: 1.5;
+  font-family:
+    'Pretendard',
+    'SUIT',
+    'Noto Sans KR',
+    'Apple SD Gothic Neo',
+    'Malgun Gothic',
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  line-height: 1.6;
   font-weight: 400;
-  color: #e2e8f0;
-  background: #020617;
+  color: #2f372d;
+  background: #ece8e1;
 }
 
 * {
@@ -13,13 +23,17 @@
 html,
 body,
 #root {
+  width: 100%;
   min-width: 320px;
-  min-height: 100vh;
+  height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
 }
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #111827, #020617 70%);
+  background:
+    radial-gradient(circle at top, rgba(255, 251, 245, 0.96), rgba(230, 224, 214, 0.96) 54%, #d8d0c4 100%);
 }
 
 button,
@@ -37,12 +51,21 @@ ul {
   margin-top: 0;
 }
 
+h1,
+h2,
+h3 {
+  color: #2f372d;
+  letter-spacing: -0.02em;
+}
+
 .app-shell {
-  min-height: 100vh;
+  width: 100vw;
+  height: 100dvh;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 20px;
   padding: 20px;
+  overflow: hidden;
 }
 
 .app-body {
@@ -50,14 +73,15 @@ ul {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
   gap: 20px;
+  overflow: hidden;
 }
 
 .panel-shell,
 .world-surface {
-  border: 1px solid rgba(148, 163, 184, 0.15);
-  background: rgba(15, 23, 42, 0.82);
-  backdrop-filter: blur(8px);
-  border-radius: 20px;
+  border: 1px solid rgba(114, 104, 90, 0.14);
+  background: rgba(255, 252, 247, 0.88);
+  box-shadow: 0 18px 40px rgba(88, 76, 58, 0.08);
+  border-radius: 24px;
 }
 
 .topbar {
@@ -70,17 +94,21 @@ ul {
 
 .topbar h1 {
   margin-bottom: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.15;
 }
 
 .topbar-copy {
-  max-width: 52ch;
+  max-width: 42ch;
   margin-bottom: 0;
-  color: #cbd5e1;
+  color: #5a544c;
   text-align: right;
 }
 
 .sidebar {
+  min-height: 0;
   padding: 20px;
+  overflow: auto;
 }
 
 .world-stage {
@@ -89,6 +117,7 @@ ul {
   flex-direction: column;
   gap: 16px;
   padding: 20px;
+  overflow: hidden;
 }
 
 .world-stage-copy {
@@ -97,24 +126,33 @@ ul {
   gap: 8px;
 }
 
-.eyebrow {
+.eyebrow,
+.section-label {
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   font-size: 12px;
-  color: #6ee7b7;
+  font-weight: 700;
+  color: #9b6a4f;
 }
 
 .description,
 .action-list,
-.sidebar p {
-  color: #cbd5e1;
+.sidebar p,
+.world-helper,
+.field span,
+.panel-section h3,
+.field input,
+.field select,
+.field textarea {
+  color: #4c5648;
 }
 
 .world-surface {
   flex: 1;
   min-height: 0;
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 16px;
   padding: 12px;
   overflow: hidden;
@@ -123,10 +161,11 @@ ul {
 .world-surface canvas {
   width: 100%;
   height: 100%;
-  min-height: 420px;
+  min-height: 0;
   display: block;
-  border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 18px;
+  border: 1px solid rgba(114, 104, 90, 0.12);
+  background: #eef1eb;
 }
 
 .world-status {
@@ -138,8 +177,28 @@ ul {
 
 .world-helper {
   max-width: 30ch;
-  color: #cbd5e1;
   margin-bottom: 0;
+}
+
+.world-helper-strong {
+  color: #f8fafc;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.world-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.world-feedback p {
+  margin-bottom: 0;
+  color: #cbd5e1;
 }
 
 .world-roster {
@@ -157,7 +216,8 @@ ul {
   gap: 8px;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(30, 41, 59, 0.85);
+  background: rgba(234, 225, 214, 0.92);
+  color: #4d463f;
 }
 
 .world-roster-dot {
@@ -181,20 +241,14 @@ ul {
   gap: 8px;
 }
 
-.field span,
-.panel-section h3 {
-  color: #f8fafc;
-}
-
 .field input,
 .field select,
 .field textarea {
   width: 100%;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(15, 23, 42, 0.95);
-  color: inherit;
+  border: 1px solid rgba(114, 104, 90, 0.18);
+  background: rgba(255, 250, 244, 0.95);
 }
 
 .field textarea {
@@ -206,14 +260,14 @@ button {
   padding: 12px 14px;
   border: 0;
   border-radius: 12px;
-  background: linear-gradient(135deg, #22c55e, #14b8a6);
-  color: #022c22;
+  background: linear-gradient(135deg, #d88a5d, #d9b26a);
+  color: #3d3025;
   font-weight: 700;
   cursor: pointer;
 }
 
 button:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.03);
 }
 
 button:disabled {
@@ -223,24 +277,28 @@ button:disabled {
 }
 
 .secondary-button {
-  background: rgba(51, 65, 85, 0.95);
-  color: #e2e8f0;
+  background: rgba(108, 94, 78, 0.92);
+  color: #f8f5ef;
 }
 
 .muted-list {
   margin-top: 20px;
-  color: #94a3b8;
+  color: #6f675f;
 }
 
 .action-list {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   padding-left: 20px;
+}
+
+.action-list li::marker {
+  color: #b26e48;
 }
 
 .helper-copy,
 .dialog-copy {
-  color: #cbd5e1;
+  color: #5a544c;
   margin-bottom: 0;
 }
 
@@ -251,7 +309,7 @@ button:disabled {
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(2, 6, 23, 0.72);
+  background: rgba(68, 58, 46, 0.4);
 }
 
 .dialog-panel {
@@ -260,9 +318,9 @@ button:disabled {
   gap: 16px;
   padding: 20px;
   border-radius: 20px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(15, 23, 42, 0.98);
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(114, 104, 90, 0.18);
+  background: rgba(255, 252, 247, 0.98);
+  box-shadow: 0 24px 80px rgba(88, 76, 58, 0.2);
 }
 
 .dialog-header,
@@ -276,6 +334,7 @@ button:disabled {
 @media (max-width: 960px) {
   .app-shell {
     padding: 16px;
+    gap: 16px;
   }
 
   .topbar,
@@ -284,12 +343,16 @@ button:disabled {
     display: grid;
   }
 
+  .app-body {
+    grid-template-rows: minmax(240px, auto) minmax(0, 1fr);
+  }
+
   .topbar-copy {
     text-align: left;
   }
 
   .world-surface canvas {
-    min-height: 320px;
+    min-height: 0;
   }
 
   .world-status {

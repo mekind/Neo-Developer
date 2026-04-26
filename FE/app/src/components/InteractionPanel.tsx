@@ -81,8 +81,12 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
 
   return (
     <section>
-      <h2>Sidebar UI Placeholder</h2>
-      <p>Gather-like 레이아웃 기준으로 보조 정보와 캐릭터 생성 컨트롤이 이 영역에 들어갑니다.</p>
+      <p className="section-label">interaction guide</p>
+      <h2>낯설지 않게 시작하는 안내</h2>
+      <p>
+        복잡한 기능을 먼저 강조하기보다, 사용자가 지금 무엇을 하면 되는지 편하게 이해할 수 있는 흐름을
+        우선합니다.
+      </p>
 
       <div className="creation-form">
         <button type="button" onClick={() => setIsDialogOpen(true)}>
@@ -163,7 +167,7 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
             <strong>{currentCharacter.name}</strong> joined as a {currentCharacter.archetype}.
           </p>
         ) : (
-          <p>No characters created yet.</p>
+          <p>아직 생성된 캐릭터가 없습니다.</p>
         )}
       </section>
 
@@ -178,7 +182,7 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
             ))}
           </ul>
         ) : (
-          <p>Each submission appends another prototype avatar to the world.</p>
+          <p>캐릭터를 만들면 월드에 바로 추가되고, 기존 목록은 유지됩니다.</p>
         )}
       </section>
 
