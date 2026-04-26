@@ -2,7 +2,7 @@
 
 `docs/plan/01~06`에서 추출한 백엔드 작업 목록. 우선순위는 **MVP**(plan 04 §6 Must Have) 기준.
 
-> 현재 상태: NestJS scaffold + 인메모리 mock `/items` CRUD + Vercel 배포 + GHA 파이프라인. **도메인 코드 0%**.
+> 현재 상태 (2026-04-26 기준): P0 도메인(BE-02 ~ BE-06) + Prisma/Postgres(BE-01) + Docker compose + e2e 테스트(BE-13) + Swagger UI(BE-15) 완료. BE-07(Auth)는 단일 user 테스트 계획에 따라 **보류**. P1 / 운영 항목은 미진행.
 
 ## 백엔드의 역할 (plan 분석 요약)
 
@@ -34,48 +34,43 @@
 - [x] GHA에 `prisma migrate deploy` 단계 추가
 - [ ] **사용자 작업**: Vercel Postgres/Neon 프로비저닝, GitHub Secrets/Vercel Env에 두 URL 등록, 첫 `prisma migrate deploy` 또는 `migrate dev` 실행
 
-### [BE-02] User 리소스
-- [ ] `POST /users` — 익명 user 생성 (uuid 발급, 빈 profile.md 초기화, index.md/log.md 생성)
-- [ ] `GET /users/:id` — profile + index 묶음 반환
-- [ ] `PATCH /users/:id/profile` — 닉네임/목적/관심사 갱신 (온보딩 결과 수신)
-- [ ] DTO + class-validator
-- [ ] AC: plan US-01 (3-4 질문 내 완료, profile.md 생성)
+### [BE-02] User 리소스 ✅ (PR #19)
+- [x] `POST /users` — 익명 uuid 발급
+- [x] `GET /users/:id` — user + profile (없으면 profile=null, 404)
+- [x] `PATCH /users/:id/profile` — 닉네임/목적/techLevel upsert (검증 400)
+- [x] DTO + class-validator (`UpsertProfileDto`)
+- [x] e2e: `backend/test/users.e2e-spec.ts` 7건 통과
+- [x] AC: plan US-01
 
-### [BE-03] Memory CRUD (llm-wiki 패턴)
-- [ ] `GET /users/:id/memory` — 사용자 전체 Memory 트리 반환 (index 기반)
-- [ ] `GET /users/:id/memory/:path` — 단일 문서 조회 (예: `profile`, `preferences`, `agents/abc/SOUL`)
-- [ ] `PUT /users/:id/memory/:path` — 마크다운 + frontmatter 저장
-- [ ] `POST /users/:id/log` — append-only 이벤트 기록
-- [ ] frontmatter 파싱 헬퍼 (gray-matter)
-- [ ] `[[link]]` 추출 유틸 (선택)
-- [ ] AC: plan FR-04, US-07 (재방문 시 Memory 활용)
+### [BE-03] Memory CRUD (llm-wiki 패턴) ✅ (PR #20)
+- [x] `GET /users/:userId/memory` — 인덱스 (path/frontmatter/updatedAt)
+- [x] `GET /users/:userId/memory/*` — 단일 문서 (와일드카드)
+- [x] `PUT /users/:userId/memory/*` — frontmatter 미제공 시 gray-matter 자동 파싱
+- [x] `POST /users/:userId/log` — append-only (가장 최근 항목이 헤더 바로 아래)
+- [x] e2e: `backend/test/memory.e2e-spec.ts` 7건 통과
+- [ ] `[[link]]` 추출 유틸 (선택, 후속 작업)
 
-### [BE-04] Agent 리소스 + 3개 제한
-- [ ] `GET /users/:id/agents` — 사용자의 에이전트 목록 (각 entry는 persona summary)
-- [ ] `POST /users/:id/agents` — Persona Builder 결과(persona/SOUL/config dict) 받아 Memory에 3종 파일로 저장
-- [ ] `GET /users/:id/agents/:agentId` — persona + SOUL + config 묶음
-- [ ] `PATCH /users/:id/agents/:agentId` — 부분 수정 (예: 알림 시간만)
-- [ ] `DELETE /users/:id/agents/:agentId`
-- [ ] **3개 제한 enforcement** → 4번째 생성 시 `409` + 안내 메시지 (plan VC-10)
-- [ ] AC: US-02, US-06, VC-10
+### [BE-04] Agent 리소스 + 3개 제한 ✅ (PR #21)
+- [x] 5개 엔드포인트 (list/create/get/patch/delete)
+- [x] persona/SOUL/config은 `MemoryDocument`의 `agents/{id}/{persona|SOUL|config}` 경로에 저장
+- [x] **3개 제한** — 4번째 시 409 "에이전트는 최대 3개까지 만들 수 있어요"
+- [x] DELETE 시 관련 MemoryDocument도 정리, 슬롯 회복
+- [x] e2e: `backend/test/agents.e2e-spec.ts` 8건 통과 (VC-10 포함)
 
-### [BE-05] Skill 카탈로그
-- [ ] `GET /skills` — 사전 정의된 skill 목록 (`insane-search` 등) + 메타데이터
-- [ ] 데이터 소스: 코드 내 정적 배열 (MVP) — 나중에 DB로 이전
-- [ ] 각 skill: `id`, `name`, `description`, `triggers[]`, `defaultParams`
-- [ ] AC: Persona Builder가 이걸 매칭 후보로 사용 (FR-02-2)
+### [BE-05] Skill 카탈로그 ✅ (PR #22)
+- [x] `backend/src/skills/skill-catalog.ts` 5개 preset (insane-search, rss-watcher, summarizer, reminder, calendar-reader)
+- [x] `SkillsService.onModuleInit` 부팅 시 idempotent upsert (DB 다운 시 warn 후 통과)
+- [x] `GET /skills` — enabled 목록
+- [x] e2e: `backend/test/skills.e2e-spec.ts` 2건
 
-### [BE-06] 인사말 랜덤 픽 엔드포인트
-- [ ] `GET /users/:id/agents/:agentId/greeting?type=alert|approach`
-- [ ] SOUL.md의 `greetings_alert` / `greetings_approach` 배열에서 random pick
-- [ ] **LLM 호출 금지** (plan 4.3, FR-03-2: static random)
-- [ ] AC: US-05, VC-11
+### [BE-06] 인사말 랜덤 픽 엔드포인트 ✅ (PR #23)
+- [x] `GET /users/:userId/agents/:agentId/greeting?type=alert|approach`
+- [x] SOUL.md frontmatter 의 배열에서 `Math.random()` 픽 (LLM 호출 0)
+- [x] 빈 배열 → `text: null`, 잘못된 type → 400
+- [x] e2e: `backend/test/greetings.e2e-spec.ts` 6건
 
-### [BE-07] 익명 사용자 식별 (간이 auth)
-- [ ] 헤더 `x-user-id` 또는 `Authorization: Bearer <user_id>` 인식
-- [ ] NestJS `Guard` + `@CurrentUser()` 데코레이터
-- [ ] 미인증/잘못된 id → 401
-- [ ] AC: 모든 `/users/:id/*` 엔드포인트가 본인 자원만 접근 가능
+### [BE-07] 익명 사용자 식별 (간이 auth) — 보류
+- 단일 user 테스트 계획 따라 **deferred**. 코드는 구현됐었으나 PR #24 closed (브랜치 삭제). 멀티 user 진행 시 재도입.
 
 ---
 
@@ -111,28 +106,89 @@
 
 ## P2 — 운영 / 품질
 
-### [BE-13] 통합 테스트
-- [ ] supertest + jest e2e 셋업
-- [ ] plan VC-01~VC-11 시나리오를 e2e로 작성
-- [ ] CI에서 `npm run test:e2e` 실행
+### [BE-13] 통합 테스트 ✅ (PR #29)
+- [x] Jest + supertest 셋업, `npm run test:e2e`
+- [x] 6 스위트 / 31 테스트 — health/users/memory/agents/skills/greetings
+- [x] `pretest:e2e` 가 `prisma migrate deploy` 자동 실행
+- [x] 가이드: `docs/backend/test/README.md`
+- [ ] CI 자동 실행 — 사용자 요청으로 보류 (로컬 전용)
 
 ### [BE-14] 로깅 / 에러 핸들링 정리
 - [ ] 글로벌 ExceptionFilter — 일관된 에러 포맷 (`docs/backend/api.md`의 `ApiError` 스키마)
 - [ ] 구조화 로그 (Pino) — request id, user id 포함
 
-### [BE-15] OpenAPI 스펙 자동 생성
-- [ ] `@nestjs/swagger` 도입 → `/docs` 엔드포인트 (또는 `swagger.json` 정적 생성)
-- [ ] 프론트가 타입 자동 생성 가능
+### [BE-15] OpenAPI 스펙 자동 생성 ✅ (PR #34)
+- [x] `@nestjs/swagger@7.4` + `swagger-ui-express@5`
+- [x] `GET /docs` — Swagger UI, `GET /docs-json` — OpenAPI 3 spec
+- [x] `nest-cli.json` 에 `@nestjs/swagger` 플러그인 → DTOs 자동 ApiProperty
+- [x] 7 controllers 에 ApiTags + 핵심 ApiOperation (agents POST 의 409 명시)
+- [x] 프론트는 OpenAPI Generator/openapi-typescript 등으로 타입 추출 가능
 
-### [BE-16] 환경변수/시크릿 정리
-- [ ] `KV_URL`, `KV_TOKEN`, `OPENCLAW_BASE_URL`, `CRON_SECRET` 등 추가 시
-  - GitHub Secrets 등록
-  - Vercel 프로젝트 Environment Variables 등록
-  - `.env.example` 업데이트
+### [BE-16] 환경변수/시크릿 정리 — 부분 진행
+- [x] `DATABASE_URL`, `DIRECT_URL` 등록 (BE-01 와 함께)
+- [ ] `OPENCLAW_BASE_URL` (BE-09 도입 시)
+- [ ] `CRON_SECRET` (BE-08 도입 시)
 
 ### [BE-17] mock `/items` 제거
 - [ ] 도메인 리소스 도입 후 `items.module` 일괄 삭제
-- [ ] `docs/backend/api.md`도 동기화
+- [ ] `docs/backend/api.md`도 동기화 (현재 mock 명세 → P0 명세 또는 Swagger UI 링크로 대체)
+
+---
+
+## P3 — OpenClaw 페어 작업 (`docs/openclaw/` 참조)
+
+OpenClaw 런타임이 정상 동작하려면 NestJS 측 추가 엔드포인트/모듈이 필요. 상세 계약은 `docs/openclaw/api.md` 참조.
+
+### [BE-18] `OpenclawClient` 모듈 ✅
+- [x] HTTP client 래퍼 (`fetch` 기반, `backend/src/openclaw/openclaw.client.ts`)
+- [x] `Authorization: Bearer ${BACKEND_SERVICE_TOKEN}` 자동 주입
+- [x] timeout(15s, AbortController) + retry(1회, 250ms exponential backoff) — 5xx/네트워크 오류만 재시도
+- [x] env 미설정 시 `ServiceUnavailableException` + 부팅 시 warn 로그
+- [x] 글로벌 모듈(`OpenclawModule`)로 export → BE-19/20 등에서 주입 가능
+- [x] env 추가: `OPENCLAW_BASE_URL`, `BACKEND_SERVICE_TOKEN` (`.env.example`)
+- [x] 단위 테스트 4건 (`backend/test/openclaw-client.e2e-spec.ts`)
+- [x] AC: `OpenclawClient.invoke(req)` / `.tick(req)` / `.health()` 타입 안전 호출
+- [ ] **사용자 작업**: Vercel + GitHub Secrets에 `OPENCLAW_BASE_URL`, `BACKEND_SERVICE_TOKEN` 등록 (BE-19 머지 전)
+
+### [BE-19] `POST /agents/:agentId/invoke` (Frontend → NestJS → OpenClaw proxy)
+- [ ] x-user-id auth 적용
+- [ ] Memory snapshot 빌더: `profile + preferences + interests + recent_history(N=10)`
+- [ ] SOUL/config 로드 + frontmatter 파싱(`gray-matter`)
+- [ ] OpenClaw `/api/invoke` 호출 → 응답 그대로 프록시
+- [ ] AC: 프론트 → NestJS → OpenClaw 왕복 1회 정상 응답
+- [ ] AC: 토큰 누락/잘못된 user_id → 401
+
+### [BE-20] `GET /agents/due?at=${iso}` (Cron 보조)
+- [ ] `config.schedule.expression`(cron) 파싱 + 매칭 로직 (`cron-parser` 등)
+- [ ] 만기 에이전트 + SOUL/config/memory_snapshot 묶음 응답
+- [ ] 서비스 토큰 인증 (OpenClaw만 호출)
+- [ ] AC: now 시각 기준 만기 agent들이 각자의 컨텍스트와 함께 반환됨
+
+### [BE-21] `POST /users/:id/notifications`
+- [ ] 서비스 토큰 인증 (OpenClaw가 호출)
+- [ ] body: `{ agentId, kind: 'alert' \| 'message', body, used_skills?, ts }`
+- [ ] DB에 알림 row 저장
+- [ ] (페어) 사용자 조회용 `GET /users/:id/notifications` 와 ack는 BE-10 영역
+- [ ] AC: tick 1회 후 notifications 테이블에 row 추가
+
+### [BE-22] `POST /users/:id/log` (append-only)
+- [ ] 서비스 토큰 인증
+- [ ] append-only 보장 (수정/삭제 미지원)
+- [ ] body: `{ ts, event, meta? }`
+- [ ] AC: invoke 1회 후 `agent:<id>:reply` 이벤트 기록
+
+### env 추가 (BE-18~22 합본)
+- [ ] `OPENCLAW_BASE_URL` — Vercel preview/prod 등록
+- [ ] `BACKEND_SERVICE_TOKEN` — 양 서비스 동일 값 (32+ chars)
+- [ ] `.env.example` 업데이트
+
+### 의존 관계
+```
+BE-18 (OpenclawClient) ─┬─> BE-19 (invoke proxy)
+                         └─> BE-20 (due) ──┐
+                                            ├─> BE-21 (notifications, alert path)
+                                            └─> BE-22 (log)
+```
 
 ---
 
