@@ -5,7 +5,9 @@ import { listItems, type Item } from '@/services/items'
 
 type InteractionPanelProps = {
   characters: WorldCharacter[]
-  onCreateCharacter: (name: string, archetype: CharacterArchetype) => void
+  onCreateCharacter: (name: string, archetype: CharacterArchetype) => Promise<void>
+  isCreatingAgent: boolean
+  createAgentError: string | null
 }
 
 const futureActions = [
@@ -14,9 +16,15 @@ const futureActions = [
   '실시간 기능은 이후 단계에서 연결',
 ]
 
-export function InteractionPanel({ characters, onCreateCharacter }: InteractionPanelProps) {
+export function InteractionPanel({
+  characters,
+  onCreateCharacter,
+  isCreatingAgent,
+  createAgentError,
+}: InteractionPanelProps) {
   const [name, setName] = useState('')
   const [archetype, setArchetype] = useState<CharacterArchetype>('scout')
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [items, setItems] = useState<Item[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -50,14 +58,16 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
     }
   }, [])
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const trimmedName = name.trim()
-    if (!trimmedName) return
+    if (!trimmedName || isCreatingAgent) return
 
-    onCreateCharacter(trimmedName, archetype)
+    setIsDialogOpen(false)
     setName('')
+
+    await onCreateCharacter(trimmedName, archetype)
   }
 
   const currentCharacter = characters.at(-1)
@@ -71,55 +81,90 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
         우선합니다.
       </p>
 
-      <form className="creation-form" onSubmit={handleSubmit}>
-        <label className="field">
-          <span>Character name</span>
-          <input
-            name="name"
-            placeholder="e.g. Nova"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            required
-          />
-        </label>
+      <div className="creation-panel-actions">
+        <button type="button" onClick={() => setIsDialogOpen(true)} disabled={isCreatingAgent}>
+          {isCreatingAgent ? 'Creating agent…' : 'Create agent'}
+        </button>
+        <p className="helper-copy">폼 다이얼로그에서 생성 요청을 보내고, 메인 화면에서 진행 상태를 확인합니다.</p>
+      </div>
 
-        <label className="field">
-          <span>Archetype</span>
-          <select value={archetype} onChange={(event) => setArchetype(event.target.value as CharacterArchetype)}>
-            {archetypeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+      {createAgentError ? <p role="alert">{createAgentError}</p> : null}
 
-        <button type="submit">Create character</button>
-      </form>
+      {isDialogOpen ? (
+        <div className="dialog-backdrop" role="presentation">
+          <div className="dialog-shell" role="dialog" aria-modal="true" aria-labelledby="create-agent-title">
+            <div className="dialog-header">
+              <div>
+                <p className="section-label">new agent</p>
+                <h3 id="create-agent-title">Create an agent</h3>
+              </div>
+              <button type="button" className="secondary-button" onClick={() => setIsDialogOpen(false)}>
+                Close
+              </button>
+            </div>
+
+            <form className="creation-form" onSubmit={handleSubmit}>
+              <label className="field">
+                <span>Agent name</span>
+                <input
+                  name="name"
+                  placeholder="e.g. Nova"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  required
+                />
+              </label>
+
+              <label className="field">
+                <span>Archetype</span>
+                <select value={archetype} onChange={(event) => setArchetype(event.target.value as CharacterArchetype)}>
+                  {archetypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <button type="submit" disabled={isCreatingAgent}>
+                {isCreatingAgent ? 'Creating…' : 'Submit to backend'}
+              </button>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       <section className="panel-section" aria-label="Current character summary">
-        <h3>Current world character</h3>
+        <h3>Current world agent</h3>
         {currentCharacter ? (
-          <p>
-            <strong>{currentCharacter.name}</strong> joined as a {currentCharacter.archetype}.
-          </p>
+          currentCharacter.status === 'pending' ? (
+            <p>
+              <strong>{currentCharacter.name}</strong> is pending as a {currentCharacter.archetype}. Backend image
+              generation is still running.
+            </p>
+          ) : (
+            <p>
+              <strong>{currentCharacter.name}</strong> joined as a {currentCharacter.archetype}.
+            </p>
+          )
         ) : (
-          <p>아직 생성된 캐릭터가 없습니다.</p>
+          <p>아직 생성된 에이전트가 없습니다.</p>
         )}
       </section>
 
       <section className="panel-section" aria-label="Spawned character list">
-        <h3>Spawned characters</h3>
+        <h3>Agents on the main screen</h3>
         {characters.length > 0 ? (
           <ul className="action-list">
             {characters.map((character) => (
               <li key={character.id}>
                 {character.name} · {character.archetype}
+                {character.status === 'pending' ? ' · pending image generation' : ''}
               </li>
             ))}
           </ul>
         ) : (
-          <p>캐릭터를 만들면 월드에 바로 추가되고, 기존 목록은 유지됩니다.</p>
+          <p>에이전트를 만들면 메인 화면에 대기 상태가 먼저 보이고, 완료 후 정식으로 반영됩니다.</p>
         )}
       </section>
 

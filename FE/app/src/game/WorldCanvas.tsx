@@ -92,28 +92,48 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
     context.font = 'bold 18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
     context.fillText('Warm school commons prototype', 28, 42)
     context.font = '16px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-    context.fillText('새 캐릭터가 차분하고 읽기 쉬운 월드에 바로 배치됩니다.', 28, 68)
+    context.fillText('새 에이전트는 생성 중 상태를 거쳐 완료 후 월드에 정식 반영됩니다.', 28, 68)
 
     if (characters.length === 0) {
       context.fillStyle = 'rgba(77, 70, 63, 0.72)'
       context.font = '18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-      context.fillText('아직 생성된 캐릭터가 없습니다.', 28, 120)
+      context.fillText('아직 생성된 에이전트가 없습니다.', 28, 120)
       return
     }
 
     characters.forEach((character, index) => {
-      context.fillStyle = character.color
-      context.beginPath()
-      context.arc(character.x, character.y, 18, 0, Math.PI * 2)
-      context.fill()
-
+      context.save()
       context.strokeStyle = currentCharacter?.id === character.id ? '#fffaf3' : 'rgba(77, 70, 63, 0.45)'
       context.lineWidth = currentCharacter?.id === character.id ? 3 : 1
-      context.stroke()
+
+      if (character.status === 'pending') {
+        context.setLineDash([6, 4])
+        context.strokeStyle = '#9b6a4f'
+        context.beginPath()
+        context.arc(character.x, character.y, 18, 0, Math.PI * 2)
+        context.stroke()
+        context.setLineDash([])
+
+        context.fillStyle = 'rgba(217, 178, 106, 0.22)'
+        context.beginPath()
+        context.arc(character.x, character.y, 18, 0, Math.PI * 2)
+        context.fill()
+
+        context.fillStyle = '#7a5b45'
+        context.font = '12px Pretendard, SUIT, "Noto Sans KR", sans-serif'
+        context.fillText('Generating…', character.x - 34, character.y - 28)
+      } else {
+        context.fillStyle = character.color
+        context.beginPath()
+        context.arc(character.x, character.y, 18, 0, Math.PI * 2)
+        context.fill()
+        context.stroke()
+      }
 
       context.fillStyle = '#4d463f'
       context.font = '14px Pretendard, SUIT, "Noto Sans KR", sans-serif'
       context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
+      context.restore()
     })
   }, [characters, currentCharacter])
 
@@ -122,21 +142,31 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
       <div className="world-status">
         <div>
           <p className="eyebrow">Live world state</p>
-          <h2>Spawned avatars: {characters.length}</h2>
+          <h2>Agents in world: {characters.length}</h2>
         </div>
         <p className="world-helper">
           {currentCharacter
-            ? `${currentCharacter.name} is the latest character added to the canvas.`
-            : '첫 번째 캐릭터를 만들면 월드에 바로 반영됩니다.'}
+            ? currentCharacter.status === 'pending'
+              ? `${currentCharacter.name} is pending while the backend finishes image generation.`
+              : `${currentCharacter.name} is the latest fully created agent on the canvas.`
+            : '첫 번째 에이전트를 만들면 월드에 대기 상태가 먼저 표시됩니다.'}
         </p>
       </div>
       <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
       {characters.length > 0 ? (
         <ul className="world-roster" aria-label="World roster">
           {characters.map((character) => (
-            <li key={character.id}>
+            <li key={character.id} className={character.status === 'pending' ? 'world-roster-pending' : undefined}>
+              {character.imageUrl ? (
+                <img className="world-roster-avatar" src={character.imageUrl} alt={`${character.name} generated avatar`} />
+              ) : (
+                <span className="world-roster-avatar world-roster-avatar-placeholder" aria-hidden="true">
+                  …
+                </span>
+              )}
               <span className="world-roster-dot" style={{ backgroundColor: character.color }} aria-hidden="true" />
               {character.name} · {character.archetype}
+              {character.status === 'pending' ? ' · pending' : ''}
             </li>
           ))}
         </ul>
