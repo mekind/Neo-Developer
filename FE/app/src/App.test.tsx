@@ -1,62 +1,47 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
 
+const backendAgents = [
+  {
+    id: 'mentor-hana',
+    name: 'Hana',
+    imageAsset: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22/%3E',
+  },
+  {
+    id: 'guide-min',
+    name: 'Min',
+    imageAsset: null,
+  },
+]
+
 vi.mock('@/game/WorldCanvas', () => ({
   WorldCanvas: ({
-    characters,
-    currentCharacter,
-    interactionTarget,
-    lastInteractionMessage,
-    onCharactersChange,
-    onInteractionMessage,
-    playerStatusCopy,
-    interactionStatusCopy,
-    phaserStatusCopy,
+    agents,
+    isLoading,
+    errorMessage,
   }: {
-    characters: Array<{ id: string; name: string; archetype: string; x: number; y: number }>
-    currentCharacter: { id: string; name: string; x: number; y: number } | null
-    interactionTarget: { id: string; name: string } | null
-    lastInteractionMessage: string | null
-    onCharactersChange: (characters: Array<{ id: string; name: string; archetype: string; x: number; y: number }>) => void
-    onInteractionMessage: (message: string) => void
-    playerStatusCopy: string
-    interactionStatusCopy: string
-    phaserStatusCopy: string
+    agents: Array<{ id: string; label: string; imageSrc: string; usesPlaceholder: boolean }>
+    isLoading: boolean
+    errorMessage: string | null
   }) => (
     <div aria-label="Phaser map viewport">
-      <h2>Spawned avatars: {characters.length}</h2>
-      <p>{playerStatusCopy}</p>
-      <p>{currentCharacter ? interactionStatusCopy : '첫 번째 캐릭터를 만들면 월드에 바로 반영됩니다.'}</p>
-      <p>{phaserStatusCopy}</p>
-      <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
-      {interactionTarget ? <p>Distance to {interactionTarget.name}: 20px</p> : null}
-      <button
-        type="button"
-        onClick={() => {
-          const player = characters.at(-1)
-          if (!player) return
-          onCharactersChange(
-            characters.map((character, index) =>
-              index === characters.length - 1 ? { ...character, x: character.x - 120 } : character,
-            ),
-          )
-        }}
-      >
-        Mock move left
-      </button>
-      <button
-        type="button"
-        onClick={() => {
-          const player = currentCharacter
-          const target = interactionTarget
-          if (!player || !target) return
-          onInteractionMessage(`${player.name} greeted ${target.name}.`)
-        }}
-      >
-        Mock interact
-      </button>
+      <h2>Backend agents: {agents.length}</h2>
+      <p>
+        {isLoading
+          ? 'Loading backend agents into the world.'
+          : errorMessage
+            ? 'Backend agent roster could not be loaded.'
+            : agents.length > 0
+              ? 'Agents are mounted into the Phaser world surface.'
+              : 'No backend agents were returned for this world load.'}
+      </p>
+      {agents.map((agent) => (
+        <figure key={agent.id}>
+          <img src={agent.imageSrc} alt={`${agent.label} avatar`} />
+          <figcaption>{agent.label}</figcaption>
+        </figure>
+      ))}
     </div>
   ),
 }))
@@ -66,120 +51,68 @@ describe('App', () => {
     vi.stubEnv('VITE_API_BASE_URL', 'https://backend-kappa-brown-63.vercel.app')
     vi.spyOn(globalThis, 'fetch').mockResolvedValue({
       ok: true,
-      json: async () => [],
+      json: async () => backendAgents,
     } as Response)
   })
 
-  it('renders the warm demo-friendly world layout shell', async () => {
+  it('renders the backend-driven world layout shell', async () => {
     render(<App />)
+
     expect(screen.getByRole('heading', { name: /편하게 둘러보는 데모 공간/i })).toBeInTheDocument()
-    expect(screen.getByRole('complementary')).toHaveTextContent(/낯설지 않게 시작하는 안내/i)
-    expect(screen.getByRole('button', { name: /open persona dialog/i })).toBeInTheDocument()
+    expect(screen.getByRole('complementary')).toHaveTextContent(/백엔드 agent 목록 안내/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
-    await screen.findByRole('list', { name: /live items list/i })
+    expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
-  it('creates a character from the persona dialog and reflects it in the world UI', async () => {
-    vi.mocked(globalThis.fetch)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => [],
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          id: 'agent-1',
-          name: 'Nova Guide',
-          archetype: 'maker',
-          personaSummary: 'Warm school guide',
-          backstoryPrompt: 'Helps every newcomer settle in.',
-          createdAt: '2026-04-26T00:00:00.000Z',
-        }),
-      } as Response)
-
+  it('replaces the local creation UI with a simple backend agent list', async () => {
     render(<App />)
 
-    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
-    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Warm school guide' } })
-    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), {
-      target: { value: 'Helps every newcomer settle in.' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-
-    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/nova guide joined as a maker/i)
-    expect(screen.getByRole('heading', { name: /spawned avatars: 1/i })).toBeInTheDocument()
-    expect(screen.getByText(/nova guide · maker/i)).toBeInTheDocument()
-    await screen.findByRole('list', { name: /live items list/i })
+    expect(screen.queryByRole('button', { name: /create character/i })).not.toBeInTheDocument()
+    const roster = await screen.findByRole('list', { name: /backend agent list/i })
+    expect(within(roster).getByText(/hana · image asset/i)).toBeInTheDocument()
+    expect(within(roster).getByText(/min · placeholder image/i)).toBeInTheDocument()
   })
 
-  it('appends multiple created characters instead of replacing the current roster', async () => {
-    vi.mocked(globalThis.fetch)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => [],
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          id: 'agent-1',
-          name: 'Nova Scout',
-          archetype: 'scout',
-          personaSummary: 'Nova scout',
-          backstoryPrompt: 'Explores the room.',
-          createdAt: '2026-04-26T00:00:00.000Z',
-        }),
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          id: 'agent-2',
-          name: 'Milo Spark',
-          archetype: 'spark',
-          personaSummary: 'Milo spark',
-          backstoryPrompt: 'Energizes the room.',
-          createdAt: '2026-04-26T00:00:00.000Z',
-        }),
-      } as Response)
-
-    render(<App />)
-
-    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
-    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Nova scout' } })
-    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Explores the room.' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-    await screen.findByRole('heading', { name: /spawned avatars: 1/i })
-
-    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
-    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Milo spark' } })
-    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Energizes the room.' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-
-    expect(await screen.findByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
-    expect(screen.getByText(/controlling milo spark at \(1320, 700\)/i)).toBeInTheDocument()
-    expect(screen.getByText(/nova scout · scout/i)).toBeInTheDocument()
-    expect(screen.getByText(/milo spark · spark/i)).toBeInTheDocument()
-    await screen.findByRole('list', { name: /live items list/i })
-  })
-
-  it('renders live items from the backend demo slice', async () => {
+  it('falls back to the agent id when the backend omits a display name', async () => {
     vi.mocked(globalThis.fetch).mockResolvedValueOnce({
       ok: true,
       json: async () => [
         {
-          id: '1',
-          name: 'Mock Coffee',
-          description: 'A freshly brewed mock coffee',
-          price: 4500,
-          createdAt: '2026-04-26T00:00:00.000Z',
-          updatedAt: '2026-04-26T00:00:00.000Z',
+          id: 'mystery-agent',
+          imageAsset: null,
         },
       ],
     } as Response)
 
     render(<App />)
 
-    const liveItemsList = await screen.findByRole('list', { name: /live items list/i })
-    expect(within(liveItemsList).getByText('Mock Coffee')).toBeInTheDocument()
+    const roster = await screen.findByRole('list', { name: /backend agent list/i })
+    expect(within(roster).getByText(/mystery-agent · placeholder image/i)).toBeInTheDocument()
+  })
+
+  it('uses a placeholder avatar when the backend agent has no image asset', async () => {
+    render(<App />)
+
+    const placeholderAvatar = await screen.findByRole('img', { name: /min avatar/i })
+    expect(placeholderAvatar.getAttribute('src')).toContain('data:image/svg+xml')
+  })
+
+  it('falls back to the placeholder avatar for disallowed image sources', async () => {
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [
+        {
+          id: 'unsafe-agent',
+          name: 'Unsafe',
+          imageAsset: 'ftp://example.com/avatar.png',
+        },
+      ],
+    } as Response)
+
+    render(<App />)
+
+    const fallbackAvatar = await screen.findByRole('img', { name: /unsafe avatar/i })
+    expect(fallbackAvatar.getAttribute('src')).toContain('data:image/svg+xml')
   })
 
   it('shows an error state when the backend request fails', async () => {
@@ -191,29 +124,8 @@ describe('App', () => {
 
     render(<App />)
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
-  })
-
-  it('shows submit errors inside the persona dialog when creation fails', async () => {
-    vi.mocked(globalThis.fetch)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => [],
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: false,
-        status: 500,
-        json: async () => ({}),
-      } as Response)
-
-    render(<App />)
-
-    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
-    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Warm guide' } })
-    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Supports the class.' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-
-    expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
+    const alerts = await screen.findAllByRole('alert')
+    expect(alerts[0]).toHaveTextContent('API request failed: 500')
   })
 
   it('shows a configuration error when the API base URL is missing', async () => {
@@ -221,63 +133,8 @@ describe('App', () => {
 
     render(<App />)
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
+    const alerts = await screen.findAllByRole('alert')
+    expect(alerts[0]).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
     expect(globalThis.fetch).not.toHaveBeenCalled()
-  })
-
-  it('moves the latest created character and unlocks interaction feedback nearby', async () => {
-    vi.mocked(globalThis.fetch)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => [],
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          id: 'agent-1',
-          name: 'Nova Scout',
-          archetype: 'scout',
-          personaSummary: 'Nova scout',
-          backstoryPrompt: 'Explores the room.',
-          createdAt: '2026-04-26T00:00:00.000Z',
-        }),
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          id: 'agent-2',
-          name: 'Milo Spark',
-          archetype: 'spark',
-          personaSummary: 'Milo spark',
-          backstoryPrompt: 'Energizes the room.',
-          createdAt: '2026-04-26T00:00:00.000Z',
-        }),
-      } as Response)
-
-    render(<App />)
-    await screen.findByRole('list', { name: /live items list/i })
-
-    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
-    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Nova scout' } })
-    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Explores the room.' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-    await screen.findByRole('heading', { name: /spawned avatars: 1/i })
-
-    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
-    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Milo spark' } })
-    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Energizes the room.' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
-    await screen.findByRole('heading', { name: /spawned avatars: 2/i })
-
-    fireEvent.click(screen.getByRole('button', { name: /mock move left/i }))
-
-    expect(screen.getByText(/controlling milo spark at \(1200, 700\)/i)).toBeInTheDocument()
-    expect(screen.getByText(/press e near nova scout to interact/i)).toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole('button', { name: /mock interact/i }))
-
-    expect(screen.getByText(/milo spark greeted nova scout/i)).toBeInTheDocument()
-    expect(screen.getByText(/distance to nova scout: 20px/i)).toBeInTheDocument()
-    expect(screen.getByText(/phaser drives the map camera, movement, and proximity interaction/i)).toBeInTheDocument()
   })
 })

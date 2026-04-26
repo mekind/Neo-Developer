@@ -1,75 +1,33 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import type Phaser from 'phaser'
 
-import {
-  INTERACTION_RADIUS,
-  PLAYER_MOVE_SPEED,
-  PLAYER_RADIUS,
-  WORLD_HEIGHT,
-  WORLD_OBSTACLES,
-  WORLD_VIEWPORT_HEIGHT,
-  WORLD_WIDTH,
-  clampCharacterToMap,
-  measureDistance,
-  type WorldCharacter,
-} from './characters'
+import { type WorldAgent } from './agents'
 
 type WorldCanvasProps = {
-  characters: WorldCharacter[]
-  onCharactersChange: (characters: WorldCharacter[]) => void
-  onInteractionMessage: (message: string) => void
-  currentCharacter: WorldCharacter | null
-  interactionTarget: WorldCharacter | null
-  playerStatusCopy: string
-  interactionStatusCopy: string
-  lastInteractionMessage: string | null
-  phaserStatusCopy: string
+  agents: WorldAgent[]
+  isLoading: boolean
+  errorMessage: string | null
 }
 
-type RuntimeBridge = {
-  characters: WorldCharacter[]
-  onCharactersChange: (characters: WorldCharacter[]) => void
-  onInteractionMessage: (message: string) => void
-}
+const MAP_WIDTH = 2400
+const MAP_HEIGHT = 1350
+const VIEWPORT_WIDTH = 1280
+const VIEWPORT_HEIGHT = 720
+const AGENT_RADIUS = 28
+const OBSTACLES = [
+  { x: 300, y: 350, width: 320, height: 140, color: 0xcfaf84 },
+  { x: 980, y: 460, width: 360, height: 150, color: 0xd7b88c },
+  { x: 1680, y: 320, width: 280, height: 140, color: 0xcfaf84 },
+  { x: 620, y: 920, width: 540, height: 110, color: 0xd6b48b },
+  { x: 1820, y: 860, width: 220, height: 220, color: 0x8ea275 },
+] as const
 
-const WORLD_VIEWPORT_WIDTH = 1280
-
-type SceneSprites = {
-  body: Phaser.GameObjects.Arc
-  label: Phaser.GameObjects.Text
-  halo: Phaser.GameObjects.Arc
-}
-
-type SceneKeys = {
-  up: Phaser.Input.Keyboard.Key
-  down: Phaser.Input.Keyboard.Key
-  left: Phaser.Input.Keyboard.Key
-  right: Phaser.Input.Keyboard.Key
-  interact: Phaser.Input.Keyboard.Key
-}
-
-export function WorldCanvas({
-  characters,
-  onCharactersChange,
-  onInteractionMessage,
-  currentCharacter,
-  interactionTarget,
-  playerStatusCopy,
-  interactionStatusCopy,
-  lastInteractionMessage,
-  phaserStatusCopy,
-}: WorldCanvasProps) {
+export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
-  const bridgeRef = useRef<RuntimeBridge>({
-    characters,
-    onCharactersChange,
-    onInteractionMessage,
-  })
+  const agentsRef = useRef<WorldAgent[]>(agents)
 
-  bridgeRef.current.characters = characters
-  bridgeRef.current.onCharactersChange = onCharactersChange
-  bridgeRef.current.onInteractionMessage = onInteractionMessage
+  agentsRef.current = agents
 
   useEffect(() => {
     let cancelled = false
@@ -80,162 +38,81 @@ export function WorldCanvas({
       const Phaser = (await import('phaser')).default
       if (cancelled || !mountRef.current) return
 
-      const bridge = bridgeRef
-
-      class PrototypeWorldScene extends Phaser.Scene {
-        private keys!: SceneKeys
-        private cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys
-        private characterSprites = new Map<string, SceneSprites>()
+      class BackendRosterScene extends Phaser.Scene {
         private background!: Phaser.GameObjects.Graphics
         private obstacleLayer!: Phaser.GameObjects.Graphics
-        private followTarget!: Phaser.GameObjects.Zone
+        private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }>()
 
         create() {
-          this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT)
+          this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
+          this.cameras.main.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2)
           this.cameras.main.setBackgroundColor('#ece6da')
 
           this.background = this.add.graphics()
           this.obstacleLayer = this.add.graphics()
+
           this.drawBackground()
           this.drawObstacles()
-
-          this.followTarget = this.add.zone(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, 1, 1)
-          this.cameras.main.startFollow(this.followTarget, true, 0.12, 0.12)
-
-          this.keys = this.input.keyboard!.addKeys({
-            up: Phaser.Input.Keyboard.KeyCodes.W,
-            down: Phaser.Input.Keyboard.KeyCodes.S,
-            left: Phaser.Input.Keyboard.KeyCodes.A,
-            right: Phaser.Input.Keyboard.KeyCodes.D,
-            interact: Phaser.Input.Keyboard.KeyCodes.E,
-          }) as unknown as SceneKeys
-
-          this.cursorKeys = this.input.keyboard!.createCursorKeys()
+          this.syncAgents()
 
           this.scale.on('resize', this.handleResize, this)
           this.handleResize({ width: this.scale.width, height: this.scale.height })
-          this.syncCharacters()
         }
 
-        update(_time: number, delta: number) {
-          const snapshot = bridge.current.characters
-          if (snapshot.length > 0) {
-            const moved = this.applyMovement(snapshot, delta)
-            if (moved !== snapshot) {
-              bridge.current.onCharactersChange(moved)
-            }
-          }
-
-          if (Phaser.Input.Keyboard.JustDown(this.keys.interact)) {
-            const activeCharacters = bridge.current.characters
-            const player = activeCharacters.at(-1)
-            const target = player ? getNearestInteractionTarget(player, activeCharacters) : null
-
-            if (player && target) {
-              bridge.current.onInteractionMessage(`${player.name} greeted ${target.name}.`)
-            }
-          }
-
-          this.syncCharacters()
+        update() {
+          this.syncAgents()
         }
 
-        private applyMovement(sourceCharacters: WorldCharacter[], delta: number) {
-          const player = sourceCharacters.at(-1)
-          if (!player) return sourceCharacters
+        private syncAgents() {
+          const snapshot = agentsRef.current
+          const ids = new Set(snapshot.map((agent) => agent.id))
 
-          const directionX =
-            Number(this.keys.right.isDown || this.cursorKeys.right.isDown) -
-            Number(this.keys.left.isDown || this.cursorKeys.left.isDown)
-          const directionY =
-            Number(this.keys.down.isDown || this.cursorKeys.down.isDown) -
-            Number(this.keys.up.isDown || this.cursorKeys.up.isDown)
-
-          if (directionX === 0 && directionY === 0) {
-            this.followTarget.setPosition(player.x, player.y)
-            return sourceCharacters
-          }
-
-          const vector = new Phaser.Math.Vector2(directionX, directionY).normalize()
-          const distance = PLAYER_MOVE_SPEED * (delta / 1000)
-          const movedPlayer = clampCharacterToMap(
-            player,
-            player.x + vector.x * distance,
-            player.y + vector.y * distance,
-          )
-
-          this.followTarget.setPosition(movedPlayer.x, movedPlayer.y)
-
-          if (movedPlayer.x === player.x && movedPlayer.y === player.y) {
-            return sourceCharacters
-          }
-
-          return sourceCharacters.map((character, index, all) => (index === all.length - 1 ? movedPlayer : character))
-        }
-
-        private syncCharacters() {
-          const snapshot = bridge.current.characters
-          const currentIds = new Set(snapshot.map((character) => character.id))
-
-          snapshot.forEach((character, index) => {
-            const existing = this.characterSprites.get(character.id)
-            const target = getNearestInteractionTarget(character, snapshot, character.id === snapshot.at(-1)?.id)
-            const isPlayer = character.id === snapshot.at(-1)?.id
-            const isInteractionTarget = snapshot.at(-1)?.id !== character.id && target?.id === character.id
+          snapshot.forEach((agent) => {
+            const existing = this.agentSprites.get(agent.id)
+            const x = (agent.xPercent / 100) * MAP_WIDTH
+            const y = (agent.yPercent / 100) * MAP_HEIGHT
 
             if (!existing) {
-              const halo = this.add.circle(character.x, character.y, INTERACTION_RADIUS)
-              halo.setStrokeStyle(3, 0x4ade80, 0.28)
-              halo.setVisible(isPlayer)
+              const body = this.add.circle(x, y, AGENT_RADIUS, agent.usesPlaceholder ? 0xfde68a : 0x93c5fd)
+              body.setStrokeStyle(4, 0xfffbeb, 1)
 
-              const body = this.add.circle(character.x, character.y, PLAYER_RADIUS, Phaser.Display.Color.HexStringToColor(character.color).color)
-              body.setStrokeStyle(isPlayer ? 4 : 2, isInteractionTarget ? 0xfacc15 : 0xf8fafc, 1)
+              const label = this.add.text(x - 40, y + 36, agent.label, {
+                color: '#4d463f',
+                fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+                fontSize: '14px',
+                backgroundColor: 'rgba(255,247,237,0.88)',
+                padding: { x: 8, y: 4 },
+              })
 
-              const label = this.add
-                .text(character.x - 26, character.y + 28, `${index + 1}. ${character.name}`, {
-                  color: '#3d332d',
-                  fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
-                  fontSize: '14px',
-                })
-                .setDepth(1)
-
-              this.characterSprites.set(character.id, { body, label, halo })
+              this.agentSprites.set(agent.id, { body, label })
               return
             }
 
-            existing.body.setPosition(character.x, character.y)
-            existing.body.setFillStyle(Phaser.Display.Color.HexStringToColor(character.color).color)
-            existing.body.setStrokeStyle(isPlayer ? 4 : 2, isInteractionTarget ? 0xfacc15 : 0xf8fafc, 1)
-            existing.label.setPosition(character.x - 26, character.y + 28).setText(`${index + 1}. ${character.name}`)
-            existing.halo.setPosition(character.x, character.y).setVisible(isPlayer)
+            existing.body.setPosition(x, y)
+            existing.body.setFillStyle(agent.usesPlaceholder ? 0xfde68a : 0x93c5fd)
+            existing.label.setPosition(x - 40, y + 36).setText(agent.label)
           })
 
-          for (const [id, sprite] of this.characterSprites.entries()) {
-            if (currentIds.has(id)) continue
+          for (const [id, sprite] of this.agentSprites.entries()) {
+            if (ids.has(id)) continue
             sprite.body.destroy()
             sprite.label.destroy()
-            sprite.halo.destroy()
-            this.characterSprites.delete(id)
-          }
-
-          const player = snapshot.at(-1)
-          if (player) {
-            this.followTarget.setPosition(player.x, player.y)
+            this.agentSprites.delete(id)
           }
         }
 
         private drawBackground() {
           this.background.clear()
-
           this.background.fillStyle(0xf7efe3, 1)
-          this.background.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT)
+          this.background.fillRect(0, 0, MAP_WIDTH, MAP_HEIGHT)
           this.background.fillStyle(0xe4d2bc, 1)
-          this.background.fillRect(0, WORLD_HEIGHT - 220, WORLD_WIDTH, 220)
+          this.background.fillRect(0, MAP_HEIGHT - 220, MAP_WIDTH, 220)
           this.background.fillStyle(0x9b7959, 1)
-          this.background.fillRect(80, 88, WORLD_WIDTH - 160, 28)
+          this.background.fillRect(80, 88, MAP_WIDTH - 160, 28)
 
-          for (let x = 0; x < WORLD_WIDTH; x += 120) {
+          for (let x = 0; x < MAP_WIDTH; x += 120) {
             this.background.fillStyle(x % 240 === 0 ? 0xc8a883 : 0xd8baa0, 0.2)
-            this.background.fillRect(x, 0, 6, WORLD_HEIGHT)
+            this.background.fillRect(x, 0, 6, MAP_HEIGHT)
           }
 
           const windowXs = [180, 520, 860, 1200, 1540, 1880]
@@ -253,9 +130,8 @@ export function WorldCanvas({
 
         private drawObstacles() {
           this.obstacleLayer.clear()
-
-          WORLD_OBSTACLES.forEach((obstacle) => {
-            this.obstacleLayer.fillStyle(Phaser.Display.Color.HexStringToColor(obstacle.color).color, 1)
+          OBSTACLES.forEach((obstacle) => {
+            this.obstacleLayer.fillStyle(obstacle.color, 1)
             this.obstacleLayer.fillRoundedRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height, 20)
             this.obstacleLayer.lineStyle(3, 0x8c6d52, 0.7)
             this.obstacleLayer.strokeRoundedRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height, 20)
@@ -267,21 +143,19 @@ export function WorldCanvas({
         }
       }
 
-      const game = new Phaser.Game({
+      gameRef.current = new Phaser.Game({
         type: Phaser.AUTO,
         parent: mountRef.current,
         backgroundColor: '#ece6da',
         scale: {
           mode: Phaser.Scale.RESIZE,
           parent: mountRef.current,
-          width: WORLD_VIEWPORT_WIDTH,
-          height: WORLD_VIEWPORT_HEIGHT,
+          width: VIEWPORT_WIDTH,
+          height: VIEWPORT_HEIGHT,
           autoCenter: Phaser.Scale.CENTER_BOTH,
         },
-        scene: [PrototypeWorldScene],
+        scene: [BackendRosterScene],
       })
-
-      gameRef.current = game
     }
 
     void mountGame()
@@ -293,60 +167,27 @@ export function WorldCanvas({
     }
   }, [])
 
-  const interactionDistance = useMemo(() => {
-    if (!currentCharacter || !interactionTarget) return null
-    return Math.round(measureDistance(currentCharacter, interactionTarget))
-  }, [currentCharacter, interactionTarget])
-
   return (
     <div className="world-surface">
       <div className="world-status">
         <div>
           <p className="eyebrow">Live world state</p>
-          <h2>Spawned avatars: {characters.length}</h2>
-          <p className="world-helper world-helper-strong">{playerStatusCopy}</p>
+          <h2>Backend agents: {agents.length}</h2>
         </div>
-        <p className="world-helper">{currentCharacter ? interactionStatusCopy : '첫 번째 캐릭터를 만들면 월드에 바로 반영됩니다.'}</p>
+        <p className="world-helper">
+          {isLoading
+            ? 'Loading backend agents into the world.'
+            : errorMessage
+              ? 'Backend agent roster could not be loaded.'
+              : agents.length > 0
+                ? 'Agents are mounted into the Phaser world surface and stay still until the next load.'
+                : 'No backend agents were returned for this world load.'}
+        </p>
       </div>
+
       <div className="world-canvas-shell">
         <div ref={mountRef} className="world-phaser-host" aria-label="Phaser map viewport" />
       </div>
-      <div className="world-feedback" aria-live="polite">
-        <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
-        <p>{phaserStatusCopy}</p>
-        {interactionDistance !== null ? (
-          <p>
-            Distance to {interactionTarget?.name}: {interactionDistance}px
-          </p>
-        ) : (
-          <p>Bring your player close to another avatar to unlock the interaction prompt.</p>
-        )}
-      </div>
-      {characters.length > 0 ? (
-        <ul className="world-roster" aria-label="World roster">
-          {characters.map((character) => (
-            <li key={character.id}>
-              <span className="world-roster-dot" style={{ backgroundColor: character.color }} aria-hidden="true" />
-              {character.name} · {character.archetype}
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   )
-}
-
-const getNearestInteractionTarget = (
-  character: WorldCharacter,
-  characters: WorldCharacter[],
-  requireRange = false,
-) => {
-  const nearest = characters
-    .filter((candidate) => candidate.id !== character.id)
-    .map((candidate) => ({ candidate, distance: measureDistance(character, candidate) }))
-    .sort((left, right) => left.distance - right.distance)[0]
-
-  if (!nearest) return null
-  if (requireRange && nearest.distance > INTERACTION_RADIUS) return null
-  return nearest.candidate
 }
