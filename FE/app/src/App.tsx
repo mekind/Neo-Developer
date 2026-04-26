@@ -1,5 +1,3 @@
-import { useMemo } from 'react'
-
 import { useAgentsPage } from '@/hooks/useAgentsPage'
 import { useLpcSpriteBundle } from '@/hooks/useLpcSpriteBundle'
 import { AddAgentDialogSection } from '@/sections/dialog/AddAgentDialogSection'
@@ -27,26 +25,14 @@ export default function App() {
     handleOpenChat,
     handleSendChatMessage,
   } = useAgentsPage()
-  const { catalog: lpcSpriteCatalog, creditsText: localCreditsText, errorMessage: lpcErrorMessage } = useLpcSpriteBundle()
-
-  const combinedCreditsText = useMemo(() => {
-    const parts = [localCreditsText, ...agents.map((agent) => agent.apiSprite?.creditsText ?? '').filter(Boolean)]
-    return Array.from(new Set(parts.filter(Boolean))).join('\n\n')
-  }, [agents, localCreditsText])
+  const { catalog: lpcSpriteCatalog } = useLpcSpriteBundle()
 
   return (
     <main className="app-shell">
       <TitleSection liveCount={agents.length} onOpenChat={handleOpenChat} isChatDisabled={agents.length === 0} />
 
       <div className="app-body">
-        <SidebarSection
-          agents={agents}
-          isLoading={isLoading}
-          errorMessage={errorMessage}
-          lpcCreditsText={combinedCreditsText || null}
-          lpcErrorMessage={lpcErrorMessage}
-          onOpenDialog={openDialog}
-        />
+        <SidebarSection agents={agents} isLoading={isLoading} errorMessage={errorMessage} onOpenDialog={openDialog} />
         <MapSection agents={agents} lpcSpriteCatalog={lpcSpriteCatalog} onAgentInteraction={handleAgentInteraction} />
       </div>
 

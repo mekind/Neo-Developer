@@ -2,16 +2,12 @@ import { getJson, postJson } from '@/lib/api-client'
 import type { BackendAgentRecord } from '@/game/agents'
 import { isLpcFrameMap, isLpcState } from '@/game/lpcSprite'
 
-const USER_STORAGE_KEY = 'myclaw-user-id'
+const FIXED_USER_ID = '5c4a5a9b-ac4f-4e2f-a7ba-4d7e93bd2e86'
 
 export type AgentConversationReply = {
   reply: string
   usedSkills: string[]
   refusedReason: string | null
-}
-
-type BackendUserRecord = {
-  id: string
 }
 
 type BackendInvokeRecord = {
@@ -20,21 +16,6 @@ type BackendInvokeRecord = {
   refused?: {
     reason?: string
   } | null
-}
-
-type BrowserStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
-
-let cachedUserId: string | null = null
-let userBootstrapPromise: Promise<string> | null = null
-
-function getStorage(): BrowserStorage | null {
-  if (typeof window === 'undefined') return null
-  return window.localStorage
-}
-
-function isBackendUserRecord(value: unknown): value is BackendUserRecord {
-  if (typeof value !== 'object' || value === null) return false
-  return typeof (value as Record<string, unknown>).id === 'string'
 }
 
 function isBackendAgentRecord(value: unknown): value is BackendAgentRecord {
@@ -59,58 +40,12 @@ function isBackendInvokeRecord(value: unknown): value is BackendInvokeRecord {
   return typeof (value as Record<string, unknown>).reply === 'string'
 }
 
-async function validateStoredUser(userId: string) {
-  try {
-    const payload = await getJson(`/users/${userId}`)
-    return isBackendUserRecord(payload)
-  } catch {
-    return false
-  }
-}
-
-async function createUser() {
-  const payload = await postJson('/users')
-
-  if (!isBackendUserRecord(payload)) {
-    throw new Error('User bootstrap response shape was invalid.')
-  }
-
-  return payload.id
-}
-
-export async function ensureUserId() {
-  if (cachedUserId) return cachedUserId
-  if (userBootstrapPromise) return userBootstrapPromise
-
-  userBootstrapPromise = (async () => {
-    const storage = getStorage()
-    const storedUserId = storage?.getItem(USER_STORAGE_KEY)?.trim() ?? ''
-
-    if (storedUserId && (await validateStoredUser(storedUserId))) {
-      cachedUserId = storedUserId
-      return storedUserId
-    }
-
-    if (storedUserId) {
-      storage?.removeItem(USER_STORAGE_KEY)
-    }
-
-    const nextUserId = await createUser()
-    storage?.setItem(USER_STORAGE_KEY, nextUserId)
-    cachedUserId = nextUserId
-    return nextUserId
-  })()
-
-  try {
-    return await userBootstrapPromise
-  } finally {
-    userBootstrapPromise = null
-  }
+export function ensureUserId() {
+  return FIXED_USER_ID
 }
 
 export async function listAgents() {
-  const userId = await ensureUserId()
-  const payload = await getJson(`/users/${userId}/agents`)
+  const payload = await getJson(`/users/${ensureUserId()}/agents`)
 
   if (!Array.isArray(payload) || !payload.every(isBackendAgentRecord)) {
     throw new Error('Agent API response shape was invalid.')
@@ -120,8 +55,7 @@ export async function listAgents() {
 }
 
 export async function createAgent(input: { name: string; personaSummary: string }) {
-  const userId = await ensureUserId()
-  const payload = await postJson(`/users/${userId}/agents`, {
+  const payload = await postJson(`/users/${ensureUserId()}/agents`, {
     name: input.name,
     persona: {
       summary: input.personaSummary,
@@ -145,8 +79,7 @@ export async function createAgent(input: { name: string; personaSummary: string 
 }
 
 export async function invokeAgent(agentId: string, message: string): Promise<AgentConversationReply> {
-  const userId = await ensureUserId()
-  const payload = await postJson(`/users/${userId}/agents/${agentId}/invoke`, { message })
+  const payload = await postJson(`/users/${ensureUserId()}/agents/${agentId}/invoke`, { message })
 
   if (!isBackendInvokeRecord(payload)) {
     throw new Error('Agent invoke response shape was invalid.')
@@ -161,7 +94,4 @@ export async function invokeAgent(agentId: string, message: string): Promise<Age
   }
 }
 
-export function resetAgentSessionForTests() {
-  cachedUserId = null
-  userBootstrapPromise = null
-}
+export function resetAgentSessionForTests() {}

@@ -17,7 +17,7 @@ type MockPayload = {
   json: unknown
 }
 
-const createdUser = { id: 'user-123' }
+const fixedUserId = '5c4a5a9b-ac4f-4e2f-a7ba-4d7e93bd2e86'
 const backendAgents: AgentPayload[] = [
   {
     id: 'mentor-hana',
@@ -38,13 +38,9 @@ function installFetchMock(overrides: Record<string, MockPayload> = {}) {
     let payload = override
 
     if (!payload) {
-      if (method === 'POST' && pathname === '/users') {
-        payload = { json: createdUser }
-      } else if (method === 'GET' && pathname === `/users/${createdUser.id}`) {
-        payload = { json: createdUser }
-      } else if (method === 'GET' && pathname === `/users/${createdUser.id}/agents`) {
+      if (method === 'GET' && pathname === `/users/${fixedUserId}/agents`) {
         payload = { json: backendAgents }
-      } else if (method === 'POST' && pathname === `/users/${createdUser.id}/agents`) {
+      } else if (method === 'POST' && pathname === `/users/${fixedUserId}/agents`) {
         payload = {
           json: {
             id: 'created-agent',
@@ -53,7 +49,7 @@ function installFetchMock(overrides: Record<string, MockPayload> = {}) {
             imageAsset: 'lpc:cafe-bot',
           },
         }
-      } else if (method === 'POST' && pathname === `/users/${createdUser.id}/agents/mentor-hana/invoke`) {
+      } else if (method === 'POST' && pathname === `/users/${fixedUserId}/agents/mentor-hana/invoke`) {
         payload = {
           json: {
             reply: '안녕하세요! 저는 하나예요.',
@@ -145,6 +141,8 @@ describe('App', () => {
     expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
     expect(await screen.findByText('Hana')).toBeInTheDocument()
     expect(await screen.findByText('Noa')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /lpc 크레딧/i })).not.toBeInTheDocument()
+    await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('2'))
   })
 
   it('creates a backend agent from the dialog', async () => {
@@ -159,7 +157,7 @@ describe('App', () => {
 
     await waitFor(() => expect(screen.getByText('Warm Guide')).toBeInTheDocument())
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/users/user-123/agents'),
+      expect.stringContaining(`/users/${fixedUserId}/agents`),
       expect.objectContaining({ method: 'POST' }),
     )
   })
@@ -200,24 +198,26 @@ describe('App', () => {
     expect(await screen.findByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
   })
 
-  it('shows an error state when the backend request fails but still keeps the default dummy npc', async () => {
-    installFetchMock({ 'GET /users/user-123/agents': { ok: false, status: 500, json: {} } })
+  it('shows an error state when the backend request fails and leaves the roster empty', async () => {
+    installFetchMock({ [`GET /users/${fixedUserId}/agents`]: { ok: false, status: 500, json: {} } })
 
     render(<App />)
 
     expect(await screen.findByText('API 요청에 실패했습니다: 500')).toBeInTheDocument()
-    expect(await screen.findByText('Noa')).toBeInTheDocument()
+    expect(screen.getByText('Noa')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('1'))
   })
 
-  it('reuses the stored backend user id without creating a new user again', async () => {
-    window.localStorage.setItem('myclaw-user-id', createdUser.id)
+  it('always uses the fixed backend user id', async () => {
+    window.localStorage.setItem('myclaw-user-id', 'user-from-storage')
 
     render(<App />)
 
     await screen.findByText('Hana')
 
     const calledPaths = vi.mocked(globalThis.fetch).mock.calls.map(([input]) => new URL(String(input), 'https://fe.local').pathname)
-    expect(calledPaths.filter((path) => path === '/users')).toHaveLength(0)
-    expect(calledPaths).toContain(`/users/${createdUser.id}`)
+    expect(calledPaths).toContain(`/users/${fixedUserId}/agents`)
+    expect(calledPaths).not.toContain('/users/user-from-storage/agents')
+    expect(calledPaths.every((path) => !path.startsWith('/users/user-from-storage'))).toBe(true)
   })
 })

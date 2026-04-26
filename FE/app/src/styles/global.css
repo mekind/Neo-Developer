@@ -413,25 +413,6 @@ h3 {
 }
 
 
-.sidebar-credits {
-  min-height: 0;
-}
-
-.credits-text {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  max-height: 240px;
-  overflow: auto;
-  padding: 12px;
-  border-radius: 14px;
-  background: rgba(244, 236, 227, 0.86);
-  color: #4d463f;
-  font-family: inherit;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
 
 .chat-agent-avatar-shell {
   width: 52px;

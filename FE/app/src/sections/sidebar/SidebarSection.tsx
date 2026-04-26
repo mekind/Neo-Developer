@@ -4,12 +4,10 @@ type SidebarSectionProps = {
   agents: WorldAgent[]
   isLoading: boolean
   errorMessage: string | null
-  lpcCreditsText: string | null
-  lpcErrorMessage: string | null
   onOpenDialog: () => void
 }
 
-export function SidebarSection({ agents, isLoading, errorMessage, lpcCreditsText, lpcErrorMessage, onOpenDialog }: SidebarSectionProps) {
+export function SidebarSection({ agents, isLoading, errorMessage, onOpenDialog }: SidebarSectionProps) {
   return (
     <aside className="sidebar panel-shell">
       <section className="sidebar-content sidebar-content-polished">
@@ -53,15 +51,6 @@ export function SidebarSection({ agents, isLoading, errorMessage, lpcCreditsText
           ) : null}
 
           {!isLoading && agents.length === 0 ? <p className="sidebar-state-copy">표시할 에이전트가 아직 없습니다.</p> : null}
-        </section>
-
-        <section className="sidebar-card sidebar-credits" aria-label="LPC 크레딧">
-          <div className="sidebar-card-head">
-            <h3>LPC 크레딧</h3>
-            <span className="panel-count">표시중</span>
-          </div>
-          {lpcErrorMessage ? <p className="sidebar-state-copy" role="alert">{lpcErrorMessage}</p> : null}
-          {lpcCreditsText ? <pre className="credits-text">{lpcCreditsText}</pre> : <p className="sidebar-state-copy">LPC 자산 크레딧을 불러오는 중…</p>}
         </section>
       </section>
     </aside>
