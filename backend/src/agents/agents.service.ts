@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import * as cronParser from 'cron-parser';
+import cronParser from 'cron-parser';
 import { AgentRepository } from '../repositories/agent.repository';
 import { MemoryDocumentRepository } from '../repositories/memory-document.repository';
 import { UserRepository } from '../repositories/user.repository';
@@ -183,7 +183,7 @@ export class AgentsService {
 
   async getDueAgents(at?: string) {
     const agents = await this.agents.listAll();
-    const dueAgents = [];
+    const dueAgents: any[] = [];
     const targetTime = at ? new Date(at) : new Date();
 
     for (const agent of agents) {
@@ -197,7 +197,7 @@ export class AgentsService {
       if (!config.schedule) continue;
 
       try {
-        const interval = cronParser.parseExpression(config.schedule, {
+        const interval = (cronParser as any).parseExpression(config.schedule, {
           currentDate: new Date(targetTime.getTime() - 1000), // Check if it should have run by now
         });
         const nextRun = interval.next().toDate();

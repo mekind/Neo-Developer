@@ -10,6 +10,7 @@ import { RepositoriesModule } from './repositories/repositories.module';
 import { SkillsModule } from './skills/skills.module';
 import { UsersModule } from './users/users.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { CharactersModule } from './characters/characters.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     SkillsModule,
     GreetingsModule,
     NotificationsModule,
+    CharactersModule,
   ],
 })
 export class AppModule {}
