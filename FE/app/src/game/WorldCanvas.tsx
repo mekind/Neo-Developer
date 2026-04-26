@@ -21,33 +21,41 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
     const height = canvas.height
 
     context.clearRect(0, 0, width, height)
-    context.fillStyle = '#101826'
+    context.fillStyle = '#0f172a'
     context.fillRect(0, 0, width, height)
 
+    context.fillStyle = '#14213d'
+    context.fillRect(0, 0, width, 92)
+
     context.strokeStyle = 'rgba(255,255,255,0.08)'
-    for (let x = 0; x <= width; x += 40) {
+    for (let x = 0; x <= width; x += 48) {
       context.beginPath()
       context.moveTo(x, 0)
       context.lineTo(x, height)
       context.stroke()
     }
 
-    for (let y = 0; y <= height; y += 40) {
+    for (let y = 0; y <= height; y += 48) {
       context.beginPath()
       context.moveTo(0, y)
       context.lineTo(width, y)
       context.stroke()
     }
 
+    context.fillStyle = '#1d4ed8'
+    context.fillRect(96, 132, 180, 140)
+    context.fillRect(332, 188, 220, 180)
+    context.fillRect(598, 108, 160, 220)
+
     context.fillStyle = '#f8fafc'
     context.font = '16px sans-serif'
-    context.fillText('World prototype', 24, 32)
-    context.fillText('Characters appear here as soon as the panel creates them', 24, 56)
+    context.fillText('World viewport prototype', 24, 38)
+    context.fillText('Panel-created characters appear here immediately', 24, 64)
 
     if (characters.length === 0) {
       context.fillStyle = 'rgba(148, 163, 184, 0.9)'
       context.font = '18px sans-serif'
-      context.fillText('No spawned characters yet', 24, 96)
+      context.fillText('No spawned characters yet', 24, 120)
       return
     }
 
@@ -82,7 +90,7 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
             : 'Submit the form to create the first prototype avatar.'}
         </p>
       </div>
-      <canvas ref={canvasRef} width={720} height={480} aria-label="2D world prototype canvas" />
+      <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
       {characters.length > 0 ? (
         <ul className="world-roster" aria-label="World roster">
           {characters.map((character) => (

@@ -55,3 +55,19 @@ When actual feature work starts, the default shape is:
 - React handles shell UI and overlays
 - Canvas handles the room/world surface
 - world state stays lightweight until real complexity appears
+
+## Current layout direction
+
+The current shell direction is:
+- top bar for global status / navigation
+- left sidebar for supporting UI such as chat, user list, or room info
+- main world viewport occupying the remaining content area
+
+This keeps the world surface visually dominant, closer to a Gather-like product shape, while keeping React-driven UI outside the playable area when possible.
+
+## Relevant implementation files
+
+- `FE/app/src/App.tsx`
+- `FE/app/src/components/InteractionPanel.tsx`
+- `FE/app/src/game/WorldCanvas.tsx`
+- `FE/app/src/styles/global.css`

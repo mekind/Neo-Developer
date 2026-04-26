@@ -7,7 +7,11 @@ type InteractionPanelProps = {
   onCreateCharacter: (name: string, archetype: CharacterArchetype) => void
 }
 
-const futureActions = ['Movement system stays out of scope', 'Persistence can come later', 'Interaction objects can layer on next']
+const futureActions = [
+  '좌측 사이드바에 상태/채팅/유저 목록 배치 가능',
+  '월드 상호작용 UI는 오버레이로 확장 가능',
+  '실시간 기능은 이후 단계에서 연결',
+]
 
 export function InteractionPanel({ characters, onCreateCharacter }: InteractionPanelProps) {
   const [name, setName] = useState('')
@@ -26,11 +30,9 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
   const currentCharacter = characters.at(-1)
 
   return (
-    <section className="panel">
-      <h2>Character Creation Panel</h2>
-      <p>
-        Create a lightweight world presence from the side panel, then reflect it in the canvas immediately.
-      </p>
+    <section>
+      <h2>Sidebar UI Placeholder</h2>
+      <p>Gather-like 레이아웃 기준으로 보조 정보와 캐릭터 생성 컨트롤이 이 영역에 들어갑니다.</p>
 
       <form className="creation-form" onSubmit={handleSubmit}>
         <label className="field">
