@@ -21,6 +21,7 @@ jobs:
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_FRONTEND_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}
+      VITE_API_BASE_URL: https://backend-kappa-brown-63.vercel.app
     steps:
       - name: Checkout
         uses: actions/checkout@v4
