@@ -4,6 +4,7 @@ import { GreetingsModule } from './greetings/greetings.module';
 import { HealthModule } from './health/health.module';
 import { ItemsModule } from './items/items.module';
 import { MemoryModule } from './memory/memory.module';
+import { OpenclawModule } from './openclaw/openclaw.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RepositoriesModule } from './repositories/repositories.module';
 import { SkillsModule } from './skills/skills.module';
@@ -13,6 +14,7 @@ import { UsersModule } from './users/users.module';
   imports: [
     PrismaModule,
     RepositoriesModule,
+    OpenclawModule,
     HealthModule,
     ItemsModule,
     UsersModule,
