@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import type Phaser from 'phaser'
 
 import { INTERACTION_RADIUS_PERCENT, measurePercentDistance, type WorldAgent, type WorldPlayer } from './agents'
 
@@ -17,6 +16,68 @@ const MAP_HEIGHT = 1350
 const VIEWPORT_WIDTH = 1280
 const VIEWPORT_HEIGHT = 720
 const AGENT_RADIUS = 28
+
+type DestroyableGame = {
+  destroy: (removeCanvas?: boolean, noReturn?: boolean) => void
+}
+
+type PhaserLike = {
+  AUTO: number
+  Scale: {
+    RESIZE: number
+    CENTER_BOTH: number
+  }
+  Game: new (config: Record<string, unknown>) => DestroyableGame
+  Scene: new (...args: never[]) => {
+    cameras: {
+      main: {
+        setBounds: (...args: number[]) => void
+        centerOn: (...args: number[]) => void
+        setBackgroundColor: (color: string) => void
+        setViewport: (...args: number[]) => void
+      }
+    }
+    add: {
+      graphics: () => {
+        clear: () => void
+        fillStyle: (color: number, alpha?: number) => void
+        fillRect: (...args: number[]) => void
+        fillRoundedRect: (...args: number[]) => void
+        lineStyle: (width: number, color: number, alpha?: number) => void
+        strokeRoundedRect: (...args: number[]) => void
+        fillCircle: (...args: number[]) => void
+      }
+      circle: (x: number, y: number, radius: number, color: number) => {
+        setStrokeStyle: (width: number, color: number, alpha?: number) => void
+        setPosition: (x: number, y: number) => void
+        setFillStyle: (color: number) => void
+        destroy: () => void
+      }
+      text: (x: number, y: number, text: string, style: Record<string, unknown>) => {
+        setPosition: (x: number, y: number) => { setText: (text: string) => void }
+        destroy: () => void
+      }
+    }
+    scale: {
+      width: number
+      height: number
+      on: (event: string, handler: (gameSize: { width: number; height: number }) => void, context: unknown) => void
+    }
+  }
+}
+
+type AgentSprite = {
+  body: {
+    setPosition: (x: number, y: number) => void
+    setFillStyle: (color: number) => void
+    destroy: () => void
+  }
+  label: {
+    setPosition: (x: number, y: number) => { setText: (text: string) => void }
+    destroy: () => void
+  }
+}
+
 const OBSTACLES = [
   { x: 300, y: 350, width: 320, height: 140, color: 0xcfaf84 },
   { x: 980, y: 460, width: 360, height: 150, color: 0xd7b88c },
@@ -34,7 +95,7 @@ export function WorldCanvas({
   lastInteractionMessage,
 }: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
-  const gameRef = useRef<Phaser.Game | null>(null)
+  const gameRef = useRef<DestroyableGame | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
 
   agentsRef.current = agents
@@ -45,13 +106,13 @@ export function WorldCanvas({
     async function mountGame() {
       if (!mountRef.current || gameRef.current) return
 
-      const Phaser = (await import('phaser')).default
+      const Phaser = (await import('phaser')).default as unknown as PhaserLike
       if (cancelled || !mountRef.current) return
 
       class BackendRosterScene extends Phaser.Scene {
-        private background!: Phaser.GameObjects.Graphics
-        private obstacleLayer!: Phaser.GameObjects.Graphics
-        private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }>()
+        private background!: ReturnType<InstanceType<PhaserLike['Scene']>['add']['graphics']>
+        private obstacleLayer!: ReturnType<InstanceType<PhaserLike['Scene']>['add']['graphics']>
+        private agentSprites = new Map<string, AgentSprite>()
 
         create() {
           this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)

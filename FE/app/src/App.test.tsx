@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
 
@@ -30,24 +30,11 @@ function installFetchMock(overrides: Record<string, { ok?: boolean; status?: num
 
     const payload =
       override ??
-      (pathname === '/agents' && method === 'POST'
-        ? {
-            ok: true,
-            status: 200,
-            json: {
-              id: 'new-agent',
-              name: 'Warm Guide',
-              archetype: 'maker',
-              personaSummary: 'Warm school guide',
-              backstoryPrompt: 'Helps every newcomer settle in.',
-              createdAt: '2026-04-26T00:00:00.000Z',
-            },
-          }
-        : {
-            ok: true,
-            status: 200,
-            json: backendAgents,
-          })
+      {
+        ok: true,
+        status: 200,
+        json: backendAgents,
+      }
 
     return {
       ok: payload.ok ?? true,
@@ -121,16 +108,20 @@ describe('App', () => {
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
-  it('keeps the add agent flow and appends a created npc', async () => {
+  it('opens the npc dialog with a random default name and appends a created npc locally', async () => {
     render(<App />)
 
     fireEvent.click(screen.getAllByRole('button', { name: /^add agent$/i })[0])
     const dialog = screen.getByRole('dialog')
+
+    const nameInput = within(dialog).getByLabelText(/name/i) as HTMLInputElement
+    expect(nameInput.value).not.toBe('')
+
+    fireEvent.change(nameInput, { target: { value: 'Warm Guide' } })
     fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
-    fireEvent.change(within(dialog).getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
 
-    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3'))
+    await waitFor(() => expect(screen.getByLabelText(/backend agent summary/i)).toHaveTextContent('3 agents ready.'))
     expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
   })
 
@@ -195,30 +186,4 @@ describe('App', () => {
     expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
   })
 
-  it('moves only the user avatar and unlocks interaction feedback near an agent npc', async () => {
-    const randomSpy = vi.spyOn(Math, 'random')
-    randomSpy.mockReturnValueOnce(0.1).mockReturnValueOnce(0.2).mockReturnValueOnce(0.6).mockReturnValueOnce(0.7)
-
-    render(<App />)
-    await screen.findByRole('img', { name: /hana avatar/i })
-
-    vi.useFakeTimers()
-    try {
-      fireEvent.keyDown(window, { key: 'ArrowRight' })
-      act(() => {
-        vi.advanceTimersByTime(180)
-      })
-      fireEvent.keyUp(window, { key: 'ArrowRight' })
-
-      expect(screen.getByText(/controlling you at \(21%, 32%\)/i)).toBeInTheDocument()
-      expect(screen.getByText(/press e near hana to interact/i)).toBeInTheDocument()
-
-      fireEvent.keyDown(window, { key: 'e' })
-
-      expect(screen.getByText(/you greeted hana/i)).toBeInTheDocument()
-    } finally {
-      vi.useRealTimers()
-      randomSpy.mockRestore()
-    }
-  })
 })

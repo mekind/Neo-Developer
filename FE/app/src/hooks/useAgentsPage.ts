@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   INTERACTION_RADIUS_PERCENT,
   PLAYER_STEP_PERCENT,
-  appendCreatedAgent,
+  createLocalWorldAgent,
   buildWorldAgents,
   buildWorldPlayer,
   clampPercent,
@@ -11,7 +11,7 @@ import {
   type WorldAgent,
   type WorldPlayer,
 } from '@/game/agents'
-import { createAgent, listAgents } from '@/services/agents'
+import { listAgents } from '@/services/agents'
 
 type DirectionKey = 'up' | 'down' | 'left' | 'right'
 
@@ -31,12 +31,15 @@ const MOVEMENT_KEYS: Record<string, DirectionKey> = {
 }
 
 export function useAgentsPage() {
-  const [agents, setAgents] = useState<WorldAgent[]>([])
+  const [backendAgents, setBackendAgents] = useState<WorldAgent[]>([])
+  const [createdAgents, setCreatedAgents] = useState<WorldAgent[]>([])
   const [player, setPlayer] = useState<WorldPlayer>(() => buildWorldPlayer())
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [lastInteractionMessage, setLastInteractionMessage] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const agents = useMemo(() => [...backendAgents, ...createdAgents], [backendAgents, createdAgents])
 
   const pressedKeysRef = useRef<Set<DirectionKey>>(new Set())
   const movementIntervalRef = useRef<number | null>(null)
@@ -52,12 +55,12 @@ export function useAgentsPage() {
         setErrorMessage(null)
         const nextAgents = await listAgents()
         if (isMounted) {
-          setAgents(buildWorldAgents(nextAgents))
+          setBackendAgents(buildWorldAgents(nextAgents))
         }
       } catch (error) {
         if (isMounted) {
           setErrorMessage(error instanceof Error ? error.message : 'Failed to load backend agents.')
-          setAgents([])
+          setBackendAgents([])
         }
       } finally {
         if (isMounted) {
@@ -161,9 +164,18 @@ export function useAgentsPage() {
     }
   }, [interactionTarget])
 
-  const handleCreateAgent = async (personaSummary: string, backstoryPrompt: string) => {
-    const created = await createAgent({ personaSummary, backstoryPrompt })
-    setAgents((current) => appendCreatedAgent(current, created))
+  const handleCreateAgent = async (name: string, persona: string) => {
+    const created = {
+      id: `local-agent-${globalThis.crypto?.randomUUID?.() ?? Date.now()}`,
+      name,
+      personaSummary: persona,
+      createdAt: new Date().toISOString(),
+    }
+
+    setCreatedAgents((current) => [
+      ...current,
+      createLocalWorldAgent([...backendAgents, ...current], created),
+    ])
   }
 
   return {
