@@ -22,7 +22,7 @@ import json
 import sys
 from pathlib import Path
 
-from mapper import map_persona
+from mapper import map_persona, enforce_torso_coverage
 from composer import compose
 
 MODULE_ROOT = Path(__file__).resolve().parent.parent  # lpc-character-pipeline/
@@ -82,7 +82,7 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    state = mapping["lpc_state"]
+    state = enforce_torso_coverage(mapping["lpc_state"], catalog_text)
     state_path_pre = output_dir / "lpc-state.pre.json"
     state_path_pre.write_text(
         json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8"

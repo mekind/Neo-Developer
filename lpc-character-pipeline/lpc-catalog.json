@@ -1,7 +1,8 @@
 {
-  "source": "LPC Universal Spritesheet Character Generator (sheet_definitions/)",
+  "source": "LPC Universal Spritesheet Character Generator",
   "repo": "https://github.com/liberatedpixelcup/Universal-LPC-Spritesheet-Character-Generator",
   "extracted_at": "2026-04-26",
+  "note": "item.recolorPalette references palettes[<sig>].colors. variants[] are baked alternates (use exact spelling). recolor uses underscores e.g. \"dark_brown\".",
   "bodyTypes": [
     "male",
     "female",
@@ -10,44 +11,749 @@
     "muscular",
     "pregnant"
   ],
+  "skinRecolors": [
+    "amber",
+    "black",
+    "blue",
+    "bright_green",
+    "bronze",
+    "brown",
+    "coffee",
+    "dark_green",
+    "fur_black",
+    "fur_brown",
+    "fur_copper",
+    "fur_gold",
+    "fur_grey",
+    "fur_tan",
+    "fur_white",
+    "green",
+    "honey",
+    "ivory",
+    "lavender",
+    "light",
+    "olive",
+    "pale_green",
+    "peach",
+    "porcelain",
+    "tan",
+    "taupe",
+    "tawny",
+    "zombie",
+    "zombie_green"
+  ],
+  "palettes": {
+    "metal:ulpc,cloth.ulpc,lpcr,all.lpcr": {
+      "material": "metal",
+      "palette_refs": [
+        "ulpc",
+        "cloth.ulpc",
+        "lpcr",
+        "all.lpcr"
+      ],
+      "colors": [
+        "ceramic",
+        "brass",
+        "copper",
+        "bronze",
+        "iron",
+        "steel",
+        "silver",
+        "gold",
+        "brown",
+        "leather",
+        "walnut",
+        "yellow",
+        "tan",
+        "orange",
+        "rose",
+        "maroon",
+        "red",
+        "pink",
+        "lavender",
+        "purple",
+        "blue",
+        "navy",
+        "teal",
+        "bluegray",
+        "forest",
+        "green",
+        "white",
+        "sky",
+        "slate",
+        "gray",
+        "black",
+        "charcoal",
+        "ivory",
+        "porcelain",
+        "peach",
+        "tawny",
+        "honey",
+        "coffee",
+        "aegean",
+        "amber",
+        "amethyst",
+        "apple",
+        "apricot",
+        "azure",
+        "beige",
+        "blue_violet",
+        "cerise",
+        "cerulean",
+        "chocolate",
+        "coral",
+        "cornflower",
+        "cyan",
+        "denim",
+        "dove",
+        "emerald",
+        "fern",
+        "garnet",
+        "heather",
+        "ice",
+        "indigo",
+        "lemon",
+        "linen",
+        "mauve",
+        "midnight",
+        "mint",
+        "mustard",
+        "neptune",
+        "oak",
+        "ochre",
+        "olivine",
+        "pearl",
+        "periwinkle",
+        "plum",
+        "powder",
+        "red_orange",
+        "royal",
+        "salmon",
+        "sepia",
+        "shadow",
+        "smoke",
+        "soot",
+        "spring",
+        "swamp",
+        "tumeric",
+        "umber",
+        "wine"
+      ]
+    },
+    "metal:ulpc,lpcr,cloth.ulpc,all.lpcr": {
+      "material": "metal",
+      "palette_refs": [
+        "ulpc",
+        "lpcr",
+        "cloth.ulpc",
+        "all.lpcr"
+      ],
+      "colors": [
+        "ceramic",
+        "brass",
+        "copper",
+        "bronze",
+        "iron",
+        "steel",
+        "silver",
+        "gold",
+        "brown",
+        "leather",
+        "walnut",
+        "yellow",
+        "tan",
+        "orange",
+        "rose",
+        "maroon",
+        "red",
+        "pink",
+        "lavender",
+        "purple",
+        "blue",
+        "navy",
+        "teal",
+        "bluegray",
+        "forest",
+        "green",
+        "white",
+        "sky",
+        "slate",
+        "gray",
+        "black",
+        "charcoal",
+        "ivory",
+        "porcelain",
+        "peach",
+        "tawny",
+        "honey",
+        "coffee",
+        "aegean",
+        "amber",
+        "amethyst",
+        "apple",
+        "apricot",
+        "azure",
+        "beige",
+        "blue_violet",
+        "cerise",
+        "cerulean",
+        "chocolate",
+        "coral",
+        "cornflower",
+        "cyan",
+        "denim",
+        "dove",
+        "emerald",
+        "fern",
+        "garnet",
+        "heather",
+        "ice",
+        "indigo",
+        "lemon",
+        "linen",
+        "mauve",
+        "midnight",
+        "mint",
+        "mustard",
+        "neptune",
+        "oak",
+        "ochre",
+        "olivine",
+        "pearl",
+        "periwinkle",
+        "plum",
+        "powder",
+        "red_orange",
+        "royal",
+        "salmon",
+        "sepia",
+        "shadow",
+        "smoke",
+        "soot",
+        "spring",
+        "swamp",
+        "tumeric",
+        "umber",
+        "wine"
+      ]
+    },
+    "cloth:ulpc,all.lpcr": {
+      "material": "cloth",
+      "palette_refs": [
+        "ulpc",
+        "all.lpcr"
+      ],
+      "colors": [
+        "brown",
+        "leather",
+        "walnut",
+        "yellow",
+        "tan",
+        "orange",
+        "rose",
+        "maroon",
+        "red",
+        "pink",
+        "lavender",
+        "purple",
+        "blue",
+        "navy",
+        "teal",
+        "bluegray",
+        "forest",
+        "green",
+        "white",
+        "sky",
+        "slate",
+        "gray",
+        "black",
+        "charcoal",
+        "ivory",
+        "porcelain",
+        "peach",
+        "tawny",
+        "honey",
+        "bronze",
+        "coffee",
+        "aegean",
+        "amber",
+        "amethyst",
+        "apple",
+        "apricot",
+        "azure",
+        "beige",
+        "blue_violet",
+        "cerise",
+        "cerulean",
+        "chocolate",
+        "coral",
+        "cornflower",
+        "cyan",
+        "denim",
+        "dove",
+        "emerald",
+        "fern",
+        "garnet",
+        "heather",
+        "ice",
+        "indigo",
+        "lemon",
+        "linen",
+        "mauve",
+        "midnight",
+        "mint",
+        "mustard",
+        "neptune",
+        "oak",
+        "ochre",
+        "olivine",
+        "pearl",
+        "periwinkle",
+        "plum",
+        "powder",
+        "red_orange",
+        "royal",
+        "salmon",
+        "sepia",
+        "shadow",
+        "silver",
+        "smoke",
+        "soot",
+        "spring",
+        "swamp",
+        "tumeric",
+        "umber",
+        "wine"
+      ]
+    },
+    "metal:ulpc,lpcr,all.lpcr": {
+      "material": "metal",
+      "palette_refs": [
+        "ulpc",
+        "lpcr",
+        "all.lpcr"
+      ],
+      "colors": [
+        "ceramic",
+        "brass",
+        "copper",
+        "bronze",
+        "iron",
+        "steel",
+        "silver",
+        "gold",
+        "ivory",
+        "porcelain",
+        "peach",
+        "tan",
+        "tawny",
+        "honey",
+        "brown",
+        "coffee",
+        "aegean",
+        "amber",
+        "amethyst",
+        "apple",
+        "apricot",
+        "azure",
+        "beige",
+        "black",
+        "blue",
+        "blue_violet",
+        "cerise",
+        "cerulean",
+        "charcoal",
+        "chocolate",
+        "coral",
+        "cornflower",
+        "cyan",
+        "denim",
+        "dove",
+        "emerald",
+        "fern",
+        "forest",
+        "garnet",
+        "gray",
+        "green",
+        "heather",
+        "ice",
+        "indigo",
+        "lavender",
+        "leather",
+        "lemon",
+        "linen",
+        "mauve",
+        "midnight",
+        "mint",
+        "mustard",
+        "navy",
+        "neptune",
+        "oak",
+        "ochre",
+        "olivine",
+        "orange",
+        "pearl",
+        "periwinkle",
+        "pink",
+        "plum",
+        "powder",
+        "purple",
+        "red",
+        "red_orange",
+        "royal",
+        "salmon",
+        "sepia",
+        "shadow",
+        "sky",
+        "smoke",
+        "soot",
+        "spring",
+        "swamp",
+        "teal",
+        "tumeric",
+        "umber",
+        "white",
+        "wine",
+        "yellow"
+      ]
+    },
+    "body:ulpc,lpcr,all.lpcr": {
+      "material": "body",
+      "palette_refs": [
+        "ulpc",
+        "lpcr",
+        "all.lpcr"
+      ],
+      "colors": [
+        "light",
+        "amber",
+        "olive",
+        "taupe",
+        "bronze",
+        "brown",
+        "black",
+        "blue",
+        "bright_green",
+        "dark_green",
+        "fur_black",
+        "fur_brown",
+        "fur_copper",
+        "fur_gold",
+        "fur_grey",
+        "fur_tan",
+        "fur_white",
+        "green",
+        "lavender",
+        "pale_green",
+        "zombie",
+        "zombie_green",
+        "ivory",
+        "porcelain",
+        "peach",
+        "tan",
+        "tawny",
+        "honey",
+        "coffee",
+        "aegean",
+        "amethyst",
+        "apple",
+        "apricot",
+        "azure",
+        "beige",
+        "blue_violet",
+        "cerise",
+        "cerulean",
+        "charcoal",
+        "chocolate",
+        "coral",
+        "cornflower",
+        "cyan",
+        "denim",
+        "dove",
+        "emerald",
+        "fern",
+        "forest",
+        "garnet",
+        "gray",
+        "heather",
+        "ice",
+        "indigo",
+        "leather",
+        "lemon",
+        "linen",
+        "mauve",
+        "midnight",
+        "mint",
+        "mustard",
+        "navy",
+        "neptune",
+        "oak",
+        "ochre",
+        "olivine",
+        "orange",
+        "pearl",
+        "periwinkle",
+        "pink",
+        "plum",
+        "powder",
+        "purple",
+        "red",
+        "red_orange",
+        "royal",
+        "salmon",
+        "sepia",
+        "shadow",
+        "silver",
+        "sky",
+        "smoke",
+        "soot",
+        "spring",
+        "swamp",
+        "teal",
+        "tumeric",
+        "umber",
+        "white",
+        "wine",
+        "yellow"
+      ]
+    },
+    "hair:ulpc,lpcr,all.lpcr": {
+      "material": "hair",
+      "palette_refs": [
+        "ulpc",
+        "lpcr",
+        "all.lpcr"
+      ],
+      "colors": [
+        "orange",
+        "ash",
+        "platinum",
+        "white",
+        "gray",
+        "blonde",
+        "sandy",
+        "strawberry",
+        "gold",
+        "ginger",
+        "carrot",
+        "redhead",
+        "red",
+        "light_brown",
+        "chestnut",
+        "dark_brown",
+        "dark_gray",
+        "black",
+        "raven",
+        "rose",
+        "pink",
+        "purple",
+        "violet",
+        "navy",
+        "blue",
+        "green",
+        "ash_brown",
+        "brown",
+        "charcoal",
+        "ruby",
+        "silver",
+        "teal",
+        "ivory",
+        "porcelain",
+        "peach",
+        "tan",
+        "tawny",
+        "honey",
+        "bronze",
+        "coffee",
+        "aegean",
+        "amber",
+        "amethyst",
+        "apple",
+        "apricot",
+        "azure",
+        "beige",
+        "blue_violet",
+        "cerise",
+        "cerulean",
+        "chocolate",
+        "coral",
+        "cornflower",
+        "cyan",
+        "denim",
+        "dove",
+        "emerald",
+        "fern",
+        "forest",
+        "garnet",
+        "heather",
+        "ice",
+        "indigo",
+        "lavender",
+        "leather",
+        "lemon",
+        "linen",
+        "mauve",
+        "midnight",
+        "mint",
+        "mustard",
+        "neptune",
+        "oak",
+        "ochre",
+        "olivine",
+        "pearl",
+        "periwinkle",
+        "plum",
+        "powder",
+        "red_orange",
+        "royal",
+        "salmon",
+        "sepia",
+        "shadow",
+        "sky",
+        "smoke",
+        "soot",
+        "spring",
+        "swamp",
+        "tumeric",
+        "umber",
+        "wine",
+        "yellow"
+      ]
+    },
+    "cloth:ulpc,metal.ulpc,all.lpcr": {
+      "material": "cloth",
+      "palette_refs": [
+        "ulpc",
+        "metal.ulpc",
+        "all.lpcr"
+      ],
+      "colors": [
+        "brown",
+        "leather",
+        "walnut",
+        "yellow",
+        "tan",
+        "orange",
+        "rose",
+        "maroon",
+        "red",
+        "pink",
+        "lavender",
+        "purple",
+        "blue",
+        "navy",
+        "teal",
+        "bluegray",
+        "forest",
+        "green",
+        "white",
+        "sky",
+        "slate",
+        "gray",
+        "black",
+        "charcoal",
+        "ceramic",
+        "brass",
+        "copper",
+        "bronze",
+        "iron",
+        "steel",
+        "silver",
+        "gold",
+        "ivory",
+        "porcelain",
+        "peach",
+        "tawny",
+        "honey",
+        "coffee",
+        "aegean",
+        "amber",
+        "amethyst",
+        "apple",
+        "apricot",
+        "azure",
+        "beige",
+        "blue_violet",
+        "cerise",
+        "cerulean",
+        "chocolate",
+        "coral",
+        "cornflower",
+        "cyan",
+        "denim",
+        "dove",
+        "emerald",
+        "fern",
+        "garnet",
+        "heather",
+        "ice",
+        "indigo",
+        "lemon",
+        "linen",
+        "mauve",
+        "midnight",
+        "mint",
+        "mustard",
+        "neptune",
+        "oak",
+        "ochre",
+        "olivine",
+        "pearl",
+        "periwinkle",
+        "plum",
+        "powder",
+        "red_orange",
+        "royal",
+        "salmon",
+        "sepia",
+        "shadow",
+        "smoke",
+        "soot",
+        "spring",
+        "swamp",
+        "tumeric",
+        "umber",
+        "wine"
+      ]
+    }
+  },
   "selectionGroups": {
     "accessory": {
       "items": {
         "hat_accessory_wings": {
           "name": "Helmet wings",
-          "variants": []
+          "recolorPalette": "metal:ulpc,cloth.ulpc,lpcr,all.lpcr"
         },
         "hat_accessory_horns_short": {
           "name": "Short Horns",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,cloth.ulpc,all.lpcr"
         },
         "hat_accessory_plumage_centurion": {
-          "name": "Centurion Plumage",
-          "variants": []
+          "name": "Centurion Plumage"
         },
         "hat_accessory_plumage_legion": {
           "name": "Legion Plumage",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "hat_accessory_crest": {
           "name": "Crest",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_accessory_horns_upward": {
           "name": "Upward Horns",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,cloth.ulpc,all.lpcr"
         },
         "hat_accessory_crest_centurion": {
           "name": "Centurion Crest",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_accessory_plumage": {
           "name": "Plumage",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "hat_accessory_horns_downward": {
           "name": "Downward Horns",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,cloth.ulpc,all.lpcr"
         }
       }
     },
@@ -65,7 +771,7 @@
       "items": {
         "legs_skirt_overskirt": {
           "name": "Overskirt",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_aprons_apron_half": {
           "name": "Apron half",
@@ -160,15 +866,14 @@
       "items": {
         "torso_armour_legion": {
           "name": "Legion",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "torso_armour_leather": {
-          "name": "Leather",
-          "variants": []
+          "name": "Leather"
         },
         "torso_armour_plate": {
           "name": "Plate",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -176,7 +881,7 @@
       "items": {
         "arms_armour": {
           "name": "Armour",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -292,7 +997,7 @@
       "items": {
         "hat_helmet_mail": {
           "name": "Mail",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_bandana": {
           "name": "Bandana",
@@ -423,7 +1128,7 @@
       "items": {
         "bauldron": {
           "name": "Bauldron",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,metal.ulpc,all.lpcr"
         }
       }
     },
@@ -431,23 +1136,23 @@
       "items": {
         "beards_winter": {
           "name": "Winter Beard",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_5oclock_shadow": {
           "name": "5 O'clock Shadow",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_trimmed": {
           "name": "Trimmed Beard",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_medium": {
           "name": "Medium Beard",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_beard": {
           "name": "Basic Beard",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -537,7 +1242,7 @@
       "items": {
         "body": {
           "name": "Body Color",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "body_zombie": {
           "name": "Zombie",
@@ -557,7 +1262,7 @@
       "items": {
         "arms_bracers": {
           "name": "Bracers",
-          "variants": []
+          "recolorPalette": "metal:ulpc,cloth.ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -705,7 +1410,7 @@
       "items": {
         "torso_chainmail": {
           "name": "Chainmail",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -1205,19 +1910,19 @@
         },
         "torso_clothes_longsleeve2_vneck": {
           "name": "Longsleeve 2 VNeck",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeve_scoop": {
           "name": "Scoop",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeve": {
           "name": "Longsleeve",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeve2_scoop": {
           "name": "Longsleeve 2 Scoop",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeve_formal": {
           "name": "Collared/Formal Longsleeve",
@@ -1233,19 +1938,19 @@
         },
         "torso_clothes_longsleeve2_polo": {
           "name": "Longsleeve Polo",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeve2": {
           "name": "Longsleeve 2",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeve2_buttoned": {
           "name": "Longsleeve 2 Buttoned",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeve2_cardigan": {
           "name": "Cardigan",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeve_laced": {
           "name": "Longsleeve laced",
@@ -1307,7 +2012,7 @@
         },
         "torso_clothes_sleeveless1": {
           "name": "Original Sleeveless",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_sleeveless_striped": {
           "name": "Sleeveless striped",
@@ -1340,11 +2045,11 @@
         },
         "torso_clothes_sleeveless2_polo": {
           "name": "Sleeveless 2 Polo",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_sleeveless2_buttoned": {
           "name": "Sleeveless 2 Buttoned",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_sleeveless_tanktop": {
           "name": "Tanktop",
@@ -1377,11 +2082,11 @@
         },
         "torso_clothes_sleeveless2_cardigan": {
           "name": "Sleeveless 2 Cardigan",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_sleeveless2_vneck": {
           "name": "Sleeveless 2 VNeck",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_sleeveless": {
           "name": "Sleeveless",
@@ -1414,39 +2119,39 @@
         },
         "torso_clothes_sleeveless2": {
           "name": "Sleeveless 2",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_sleeveless2_scoop": {
           "name": "Sleeveless 2 Scoop",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_shortsleeve_cardigan": {
           "name": "Shortsleeve Cardigan",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_tshirt_buttoned": {
           "name": "TShirt Buttoned",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_tshirt_vneck": {
           "name": "TShirt VNeck",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_tshirt_scoop": {
           "name": "TShirt Scoop",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_tshirt": {
           "name": "TShirt",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_shortsleeve": {
           "name": "Shortsleeve",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_shortsleeve_polo": {
           "name": "Shortsleeve Polo",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         }
       }
     },
@@ -1907,31 +2612,31 @@
       "items": {
         "head_ears_long": {
           "name": "Long ears",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_dragon": {
           "name": "Dragon Ears",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_hang": {
           "name": "Hanging Elven Ears",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_elven": {
           "name": "Elven ears",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_big": {
           "name": "Big ears",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_medium": {
           "name": "Medium Elven Ears",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_down": {
           "name": "Downward Elven Ears",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_zabos": {
           "name": "Side Cat Ears",
@@ -2053,79 +2758,70 @@
       "items": {
         "head_ears_zabos_skin": {
           "name": "Side Cat Ears Skintone",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_avyon_skin": {
           "name": "Feather Ears Skintone",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_lykon_skin": {
           "name": "Side Wolf Ears Skintone",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         }
       }
     },
     "expression": {
       "items": {
         "face_sad": {
-          "name": "Sad",
-          "variants": []
+          "name": "Sad"
         },
         "face_neutral": {
-          "name": "Neutral",
-          "variants": []
+          "name": "Neutral"
         },
         "face_look_r": {
-          "name": "Looking Right",
-          "variants": []
+          "name": "Looking Right"
         },
         "face_eyeroll": {
-          "name": "Rolling Eyes",
-          "variants": []
+          "name": "Rolling Eyes"
         },
         "face_look_l": {
-          "name": "Looking Left",
-          "variants": []
+          "name": "Looking Left"
         },
         "face_happy2": {
           "name": "Happy Alt",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "face_angry2": {
           "name": "Angry Alt",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "face_happy": {
           "name": "Happy",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "face_closing": {
-          "name": "Closing Eyes",
-          "variants": []
+          "name": "Closing Eyes"
         },
         "face_blush": {
           "name": "Blush",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "face_closed": {
           "name": "Closed Eyes",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "face_sad2": {
           "name": "Sad Alt",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "face_angry": {
-          "name": "Angry",
-          "variants": []
+          "name": "Angry"
         },
         "face_shame": {
-          "name": "Shame",
-          "variants": []
+          "name": "Shame"
         },
         "face_shock": {
-          "name": "Shock",
-          "variants": []
+          "name": "Shock"
         }
       }
     },
@@ -2143,11 +2839,11 @@
       "items": {
         "eyebrows_thin": {
           "name": "Thin Eyebrows",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "eyebrows_thick": {
           "name": "Thick Eyebrows",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -2806,11 +3502,11 @@
       "items": {
         "head_fins_fin_short": {
           "name": "Short fin",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_fins_fin": {
           "name": "Fin",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -2898,11 +3594,11 @@
       "items": {
         "head_ears_cat_skin": {
           "name": "Cat Ears Skintone",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_ears_wolf_skin": {
           "name": "Wolf Ears Skintone",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -2910,7 +3606,7 @@
       "items": {
         "arms_gloves": {
           "name": "Gloves",
-          "variants": []
+          "recolorPalette": "metal:ulpc,cloth.ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -2918,367 +3614,364 @@
       "items": {
         "hair_braid": {
           "name": "Braid",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_ponytail2": {
           "name": "Ponytail2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_long_tied": {
-          "name": "Long tied",
-          "variants": []
+          "name": "Long tied"
         },
         "hair_relm_xlong": {
           "name": "Relm XLong",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_ponytail": {
           "name": "Ponytail",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_shoulderr": {
           "name": "Shoulderr",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_topknot_short2": {
           "name": "Short Topknot 2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_relm_ponytail": {
           "name": "Relm w/Ponytail",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_topknot_short": {
           "name": "Short Topknot",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_topknot_long": {
           "name": "Long Topknot",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_bangs_bun": {
           "name": "Bangs bun",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_braid2": {
           "name": "Braid2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_high_ponytail": {
           "name": "High ponytail",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_half_up": {
           "name": "Half up",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_shoulderl": {
           "name": "Shoulderl",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_topknot_long2": {
           "name": "Long Topknot 2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_flat_top_fade": {
           "name": "Flat top fade",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_twists_fade": {
           "name": "Twists fade",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_afro": {
           "name": "Afro",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_twists_straight": {
           "name": "Twists straight",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_natural": {
           "name": "Natural",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_flat_top_straight": {
           "name": "Flat top straight",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_dreadlocks_long": {
           "name": "Dreadlocks long",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_cornrows": {
           "name": "Cornrows",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_dreadlocks_short": {
           "name": "Dreadlocks short",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_bob_side_part": {
           "name": "Bob side part",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_bob": {
           "name": "Bob",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_lob": {
           "name": "Lob",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_relm_short": {
           "name": "Relm Short",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_pigtails": {
-          "name": "Pigtails",
-          "variants": []
+          "name": "Pigtails"
         },
         "hair_bunches": {
           "name": "Bunches",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_pigtails_bangs": {
           "name": "Pigtails bangs",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_swoop": {
           "name": "Swoop",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_messy": {
           "name": "Messy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_bangs": {
           "name": "Bangs",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_parted2": {
           "name": "Parted 2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_parted3": {
           "name": "Parted 3",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_parted_side_bangs2": {
           "name": "Side Parted w/Bangs 2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_plain": {
           "name": "Plain",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_pixie": {
           "name": "Pixie",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_messy3": {
           "name": "Messy3",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_page2": {
           "name": "Page2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_curtains": {
           "name": "Curtains",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_messy2": {
           "name": "Messy2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_cowlick": {
           "name": "Cowlick",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_parted_side_bangs": {
           "name": "Side Parted w/Bangs",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_unkempt": {
           "name": "Unkempt",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_page": {
           "name": "Page",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_bangsshort": {
           "name": "Bangsshort",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_messy1": {
           "name": "Messy1",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_mop": {
           "name": "Mop",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_swoop_side": {
           "name": "Side Swoop",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_bedhead": {
           "name": "Bedhead",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_idol": {
           "name": "Idol",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_parted": {
           "name": "Parted",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_cowlick_tall": {
           "name": "Cowlick tall",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_single": {
           "name": "Single",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_long_center_part": {
           "name": "Long center part",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_long_messy": {
           "name": "Long messy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_long_messy2": {
           "name": "Long messy2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_curtains_long": {
           "name": "Curtains long",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_wavy": {
           "name": "Wavy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_long_straight": {
           "name": "Long straight",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_loose": {
           "name": "Loose",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_wavy_child": {
           "name": "Child Wavy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_bangslong": {
           "name": "Bangslong",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_bangslong2": {
           "name": "Bangslong2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_long": {
           "name": "Long",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_spiked": {
           "name": "Spiked",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_spiked_liberty2": {
           "name": "Spiked liberty2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_halfmessy": {
           "name": "Halfmessy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_spiked_porcupine": {
           "name": "Spiked porcupine",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_spiked_liberty": {
           "name": "Spiked liberty",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_spiked2": {
           "name": "Spiked2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_spiked_beehive": {
           "name": "Spiked beehive",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_high_and_tight": {
           "name": "High and tight",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_longhawk": {
           "name": "Longhawk",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_shorthawk": {
           "name": "Shorthawk",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_balding": {
           "name": "Balding",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_buzzcut": {
           "name": "Buzzcut",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_curls_large_xlong": {
           "name": "Large Curls XLong",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_curly_long": {
           "name": "Curly long",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_curls_large": {
           "name": "Large Curls",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_curly_short": {
           "name": "Curly short",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_jewfro": {
           "name": "Jewfro",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_curly_short2": {
           "name": "Curly short 2",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_xlong": {
           "name": "Xlong",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_xlong_wavy": {
           "name": "XLong Wavy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_princess": {
           "name": "Princess",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_sara": {
           "name": "Sara",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hair_long_band": {
-          "name": "Long band",
-          "variants": []
+          "name": "Long band"
         }
       }
     },
@@ -3286,31 +3979,31 @@
       "items": {
         "hairext_xlong_bangl": {
           "name": "Left XLong Bang",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_xlong_curlyl": {
           "name": "Left XLong Curly",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_long_straightl": {
           "name": "Left Long Straight",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_xlong_wavyl": {
           "name": "Left XLong Wavy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_xlong_braidl": {
           "name": "Left XLong Braid",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_braidl": {
           "name": "Left Braid",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_long_wavyl": {
           "name": "Left Long Wavy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -3318,31 +4011,31 @@
       "items": {
         "hairext_xlong_braidr": {
           "name": "Right XLong Braid",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_xlong_wavyr": {
           "name": "Right XLong Wavy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_long_straightr": {
           "name": "Right Long Straight",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_xlong_bangr": {
           "name": "Right XLong Bang",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_xlong_curlyr": {
           "name": "Right XLong Curly",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_long_wavyr": {
           "name": "Right Long Wavy",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_braidr": {
           "name": "Right Braid",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -3416,51 +4109,48 @@
       "items": {
         "hat_helmet_barbuta_simple": {
           "name": "Simple barbuta",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_flattop": {
           "name": "Flattop",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_kettle": {
-          "name": "Kettle helm",
-          "variants": []
+          "name": "Kettle helm"
         },
         "hat_helmet_legion": {
           "name": "Legion",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_barbarian": {
-          "name": "Barbarian",
-          "variants": []
+          "name": "Barbarian"
         },
         "hat_helmet_pointed": {
           "name": "Pointed helm",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_sugarloaf_simple": {
           "name": "Simple sugarloaf helm",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_xeon": {
           "name": "Xeon helmet",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_bascinet": {
           "name": "Bascinet",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_barbarian_nasal": {
-          "name": "Barbarian nasal",
-          "variants": []
+          "name": "Barbarian nasal"
         },
         "hat_helmet_norman": {
           "name": "Norman helm",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_bascinet_round": {
           "name": "Round bascinet",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_bascinet_pigface_raised": {
           "name": "Pigface bascinet raised",
@@ -3477,31 +4167,31 @@
         },
         "hat_helmet_spangenhelm": {
           "name": "Spangenhelm",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_close": {
           "name": "Close helm",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_greathelm": {
           "name": "Greathelm",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_morion": {
           "name": "Morion",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_spangenhelm_viking": {
           "name": "Viking spangenhelm",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_nasal": {
           "name": "Nasal helm",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_armet_simple": {
           "name": "Simple Armet",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_bascinet_pigface": {
           "name": "Pigface bascinet",
@@ -3518,27 +4208,26 @@
         },
         "hat_helmet_armet": {
           "name": "Armet",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_sugarloaf": {
           "name": "Sugarloaf greathelm",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_maximus": {
           "name": "Maximus",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_barbuta": {
           "name": "Barbuta",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_horned": {
           "name": "Horned helmet",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_helmet_barbarian_viking": {
-          "name": "Barbarian Viking",
-          "variants": []
+          "name": "Barbarian Viking"
         },
         "hat_holiday_christmas": {
           "name": "Christmas Hat",
@@ -4965,83 +5654,83 @@
       "items": {
         "heads_rabbit": {
           "name": "Rabbit",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_rabbit_child": {
           "name": "Rabbit child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_mouse_child": {
           "name": "Mouse child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_pig_child": {
           "name": "Pig child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_pig": {
           "name": "Pig",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_rat_child": {
           "name": "Rat child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_mouse": {
           "name": "Mouse",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_sheep_child": {
           "name": "Sheep child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_rat": {
           "name": "Rat",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_sheep": {
           "name": "Sheep",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_wolf_female": {
           "name": "Wolf female",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_wolf_male": {
           "name": "Wolf male",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_wartotaur": {
           "name": "Wartotaur",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_boarman_child": {
           "name": "Boarman child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_boarman": {
           "name": "Boarman",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_minotaur_female": {
           "name": "Minotaur female",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_minotaur_child": {
           "name": "Minotaur child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_minotaur": {
           "name": "Minotaur",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_wolf_child": {
           "name": "Wolf child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_zombie": {
           "name": "Zombie",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_skeleton": {
           "name": "Skeleton",
@@ -5051,7 +5740,7 @@
         },
         "heads_vampire": {
           "name": "Vampire",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_jack": {
           "name": "Jack O Lantern",
@@ -5061,91 +5750,81 @@
         },
         "heads_frankenstein": {
           "name": "Frankenstein",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_alien": {
           "name": "Alien",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_lizard_female": {
           "name": "Lizard female",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_lizard_male": {
           "name": "Lizard male",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_lizard_child": {
           "name": "Lizard child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_human_male_gaunt": {
-          "name": "Human Male Gaunt",
-          "variants": []
+          "name": "Human Male Gaunt"
         },
         "heads_human_female_small": {
-          "name": "Human Female Small",
-          "variants": []
+          "name": "Human Female Small"
         },
         "heads_human_child": {
-          "name": "Human Child",
-          "variants": []
+          "name": "Human Child"
         },
         "heads_human_female": {
-          "name": "Human Female",
-          "variants": []
+          "name": "Human Female"
         },
         "heads_human_male": {
-          "name": "Human Male",
-          "variants": []
+          "name": "Human Male"
         },
         "heads_human_elderly_small": {
-          "name": "Human Elderly Small",
-          "variants": []
+          "name": "Human Elderly Small"
         },
         "heads_human_male_elderly": {
-          "name": "Human Male Elderly",
-          "variants": []
+          "name": "Human Male Elderly"
         },
         "heads_human_male_plump": {
-          "name": "Human Male Plump",
-          "variants": []
+          "name": "Human Male Plump"
         },
         "heads_human_female_elderly": {
-          "name": "Human Female Elderly",
-          "variants": []
+          "name": "Human Female Elderly"
         },
         "heads_human_male_small": {
-          "name": "Human Male Small",
-          "variants": []
+          "name": "Human Male Small"
         },
         "heads_goblin": {
           "name": "Goblin",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_goblin_child": {
           "name": "Goblin child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_orc_child": {
           "name": "Orc child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_orc_female": {
           "name": "Orc female",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_troll": {
           "name": "Troll",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_troll_child": {
           "name": "Troll child",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "heads_orc_male": {
           "name": "Orc male",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -5623,19 +6302,19 @@
       "items": {
         "legs_armour": {
           "name": "Armour",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "legs_skirt_straight": {
           "name": "Straight skirt",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_skirts_legion": {
           "name": "Legion skirt",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,metal.ulpc,all.lpcr"
         },
         "legs_skirts_slit": {
           "name": "Slit skirt",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_childskirts": {
           "name": "Child skirts",
@@ -5654,23 +6333,23 @@
         },
         "legs_skirt_belle": {
           "name": "Belle skirt",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_skirts_plain": {
           "name": "Plain skirt",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_fur": {
           "name": "Fur Pants",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_pants": {
           "name": "Pants",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_pants2": {
           "name": "Long Pants",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_widepants": {
           "name": "Wide pants",
@@ -5717,11 +6396,11 @@
         },
         "legs_formal_striped": {
           "name": "Striped Formal Pants",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_formal": {
           "name": "Formal Pants",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_pregnantpants": {
           "name": "Pregnancy pants",
@@ -5749,31 +6428,31 @@
         },
         "legs_cuffed": {
           "name": "Cuffed Pants",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_pantaloons": {
           "name": "Pantaloons",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_shorts": {
           "name": "Shorts",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_shorts_short": {
           "name": "Short Shorts",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_leggings2": {
           "name": "Leggings 2",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_hose": {
           "name": "Hose",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "legs_leggings": {
           "name": "Leggings",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         }
       }
     },
@@ -5781,35 +6460,35 @@
       "items": {
         "beards_horseshoe": {
           "name": "Horseshoe Mustache",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_lampshade": {
           "name": "Lampshade Mustache",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_bigstache": {
           "name": "Big Mustache",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_walrus": {
           "name": "Walrus Mustache",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_handlebar": {
           "name": "Handlebar Mustache",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_mustache": {
           "name": "Mustache",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_chevron": {
           "name": "Chevron Mustache",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "beards_french": {
           "name": "French Mustache",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -6107,23 +6786,23 @@
       "items": {
         "head_nose_button": {
           "name": "Button nose",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_nose_big": {
           "name": "Big nose",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_nose_large": {
           "name": "Large nose",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_nose_elderly": {
           "name": "Elderly nose",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "head_nose_straight": {
           "name": "Straight nose",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -6193,15 +6872,15 @@
       "items": {
         "hairext_topknot_short": {
           "name": "Short Topknot",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_topknot_relm": {
           "name": "Relm Topknot",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         },
         "hairext_topknot_long": {
           "name": "Long Topknot",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -6239,7 +6918,7 @@
       "items": {
         "arms_hands_ring_stud": {
           "name": "Stud Ring",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,metal.ulpc,all.lpcr"
         }
       }
     },
@@ -8555,19 +9234,19 @@
       "items": {
         "shoulders_pauldrons": {
           "name": "Pauldrons",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,metal.ulpc,all.lpcr"
         },
         "shoulders_mantal": {
           "name": "Mantal",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "shoulders_epaulets": {
           "name": "Epaulets",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,metal.ulpc,all.lpcr"
         },
         "shoulders_legion": {
           "name": "Legion",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -8575,23 +9254,23 @@
       "items": {
         "torso_clothes_longsleeves_cuffed": {
           "name": "Cuffed Longsleeves Overlay",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeves2": {
           "name": "Longsleeves 2 Overlay",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_longsleeves": {
           "name": "Original Longsleeves Overlay",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_shortsleeves2": {
           "name": "Shortsleeves 2 Overlay",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "torso_clothes_shortsleeves": {
           "name": "Original Shortsleeves Overlay",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         }
       }
     },
@@ -8690,7 +9369,7 @@
       "items": {
         "tail_lizard": {
           "name": "Lizard tail",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "tail_lizard_alt": {
           "name": "Lizard Tail (Alt Colors)",
@@ -8850,7 +9529,7 @@
       "items": {
         "hairext_high_bun": {
           "name": "High Bun",
-          "variants": []
+          "recolorPalette": "hair:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -8975,39 +9654,39 @@
       "items": {
         "hat_visor_grated_narrow": {
           "name": "Narrow grated visor",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_visor_horned": {
           "name": "Horned visor",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_visor_round_raised": {
           "name": "Round visor raised",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_visor_pigface_raised": {
           "name": "Pigface visor raised",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_visor_round": {
           "name": "Round visor",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_visor_grated": {
           "name": "Grated visor",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_visor_pigface": {
           "name": "Pigface visor",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_visor_slit_narrow": {
           "name": "Narrow slit visor",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         },
         "hat_visor_slit": {
           "name": "Slit visor",
-          "variants": []
+          "recolorPalette": "metal:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -9397,11 +10076,11 @@
       "items": {
         "wings_lizard": {
           "name": "Lizard Wings",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "wings_lizard_bat": {
           "name": "Batlike Lizard Wings",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         },
         "wings_bat": {
           "name": "Bat Wings",
@@ -9872,7 +10551,7 @@
       "items": {
         "head_wrinkles": {
           "name": "Wrinkles",
-          "variants": []
+          "recolorPalette": "body:ulpc,lpcr,all.lpcr"
         }
       }
     },
@@ -9880,17 +10559,13 @@
       "items": {
         "wrists_cuffs_lace": {
           "name": "Lace Cuffs",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         },
         "wrists_cuffs": {
           "name": "Cuffs",
-          "variants": []
+          "recolorPalette": "cloth:ulpc,all.lpcr"
         }
       }
     }
-  },
-  "stats": {
-    "total_items": 655,
-    "selection_groups": 104
   }
 }
