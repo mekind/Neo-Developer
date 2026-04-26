@@ -72,23 +72,26 @@ const CHARACTER_SPAWN_POINTS = [
   { x: 1460, y: 760 },
 ]
 
-export const createWorldCharacter = (
-  name: string,
-  archetype: CharacterArchetype,
+export function buildWorldCharacter(
+  seed: Pick<WorldCharacter, 'id' | 'name' | 'archetype'>,
   index: number,
-): WorldCharacter => {
-  const palette = archetypeOptions.find((option) => option.value === archetype) ?? archetypeOptions[0]
+): WorldCharacter {
+  const palette = archetypeOptions.find((option) => option.value === seed.archetype) ?? archetypeOptions[0]
   const spawnPoint = CHARACTER_SPAWN_POINTS[index % CHARACTER_SPAWN_POINTS.length] ?? CHARACTER_SPAWN_POINTS[0]
 
   return {
-    id: `${name}-${index + 1}`,
-    name,
-    archetype,
+    ...seed,
     color: palette.color,
     x: spawnPoint.x,
     y: spawnPoint.y,
   }
 }
+
+export const createWorldCharacter = (
+  name: string,
+  archetype: CharacterArchetype,
+  index: number,
+): WorldCharacter => buildWorldCharacter({ id: `${name}-${index + 1}`, name, archetype }, index)
 
 export const measureDistance = (from: Pick<WorldCharacter, 'x' | 'y'>, to: Pick<WorldCharacter, 'x' | 'y'>) =>
   Math.hypot(from.x - to.x, from.y - to.y)
