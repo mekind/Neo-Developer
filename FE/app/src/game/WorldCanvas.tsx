@@ -183,7 +183,6 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction }: Wo
       class BackendRosterScene extends Phaser.Scene {
         private minimapLayer!: Phaser.GameObjects.Graphics
         private playerMarker!: Phaser.GameObjects.Arc
-        private playerHalo!: Phaser.GameObjects.Arc
         private playerLabel!: Phaser.GameObjects.Text
         private promptText!: Phaser.GameObjects.Text
         private minimapLegend!: Phaser.GameObjects.Text
@@ -233,8 +232,6 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction }: Wo
           bundleMap.forEach((bundle) => this.registerLpcAnimations(bundle))
 
           this.minimapLayer = this.add.graphics().setScrollFactor(0).setDepth(30)
-          this.playerHalo = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), PLAYER_RADIUS * 2.1, 0x22c55e, 0.12)
-          this.playerHalo.setStrokeStyle(3, 0x22c55e, 0.3)
           this.playerMarker = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), PLAYER_RADIUS, 0x22c55e)
           this.playerMarker.setStrokeStyle(4, 0xfffbeb, 1)
           this.playerMarker.setAlpha(this.playerBundle ? 0 : 1)
@@ -390,7 +387,6 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction }: Wo
           const playerIsMoving = this.playerState.velocity.x !== 0 || this.playerState.velocity.y !== 0
           const nextPlayerAnimation = toAnimationName(playerIsMoving, this.playerFacing)
 
-          this.playerHalo.setPosition(playerX, playerY)
           this.playerMarker.setPosition(playerX, playerY)
           this.playerLabel.setPosition(playerX - 18, playerY + 22).setText(this.playerState.label)
 
