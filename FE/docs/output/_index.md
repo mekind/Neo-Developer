@@ -3,9 +3,12 @@
 Generated and time-bound frontend artifacts live here.
 
 ## Current Outputs
+- [[Demo Scope Note]] ([Demo Scope Note](demo-scope-note-2026-04-26.md))
+- [[Gather-like Layout Note]] ([Gather-like Layout Note](gather-like-layout-note-2026-04-26.md))
 - [[Initial Vault Setup Note]] ([Initial Vault Setup Note](initial-vault-setup-note-2026-04-26.md))
 - [[Frontend Architecture Note]] ([Frontend Architecture Note](frontend-architecture-note-2026-04-26.md))
 - [[FE Bootstrap Note]] ([FE Bootstrap Note](fe-bootstrap-note-2026-04-26.md))
+- [[Character Creation Flow Note]] ([Character Creation Flow Note](character-creation-flow-note-2026-04-26.md))
 
 ## Output Conventions
 - date-stamp generated artifacts when they capture a moment in time
