@@ -5,6 +5,7 @@ import { listItems, type Item } from '@/services/items'
 
 type InteractionPanelProps = {
   characters: WorldCharacter[]
+  playerCharacter: WorldCharacter
   onCreateCharacter: (personaSummary: string, backstoryPrompt: string) => Promise<void>
 }
 
@@ -14,7 +15,7 @@ const futureActions = [
   '실시간 기능은 이후 단계에서 연결',
 ]
 
-export function InteractionPanel({ characters, onCreateCharacter }: InteractionPanelProps) {
+export function InteractionPanel({ characters, playerCharacter, onCreateCharacter }: InteractionPanelProps) {
   const dialogTitleId = useId()
   const dialogDescriptionId = useId()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -77,22 +78,20 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
     }
   }
 
-  const currentCharacter = characters.at(-1)
-
   return (
     <section>
       <p className="section-label">interaction guide</p>
       <h2>낯설지 않게 시작하는 안내</h2>
       <p>
-        복잡한 기능을 먼저 강조하기보다, 사용자가 지금 무엇을 하면 되는지 편하게 이해할 수 있는 흐름을
-        우선합니다.
+        사용자는 입장하자마자 자기 아바타를 움직일 수 있고, 복잡한 기능보다 지금 무엇을 할 수 있는지 먼저
+        이해하도록 흐름을 단순하게 유지합니다.
       </p>
 
       <div className="creation-form">
         <button type="button" onClick={() => setIsDialogOpen(true)}>
-          Open persona dialog
+          Open agent dialog
         </button>
-        <p className="helper-copy">Replace the old inline prototype with one richer API-backed creation step.</p>
+        <p className="helper-copy">Agent API로 받은 NPC를 월드에 추가하는 흐름입니다. 플레이어 아바타는 따로 유지됩니다.</p>
       </div>
 
       {isDialogOpen ? (
@@ -107,7 +106,7 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
             <div className="dialog-header">
               <div>
                 <p className="eyebrow">Agent creation</p>
-                <h3 id={dialogTitleId}>Create persona character</h3>
+                <h3 id={dialogTitleId}>Create agent NPC</h3>
               </div>
               <button
                 type="button"
@@ -120,8 +119,8 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
             </div>
 
             <p id={dialogDescriptionId} className="dialog-copy">
-              Submit a short persona summary plus a longer backstory prompt, then spawn the returned character into the
-              world immediately.
+              Submit a short persona summary plus a longer backstory prompt, then spawn the returned agent NPC into the
+              world while the user avatar stays under player control.
             </p>
 
             <form className="creation-form" onSubmit={handleSubmit}>
@@ -152,7 +151,7 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
 
               <div className="dialog-actions">
                 <button type="submit" disabled={submitState === 'submitting'}>
-                  {submitState === 'submitting' ? 'Creating character…' : 'Create character'}
+                  {submitState === 'submitting' ? 'Creating agent…' : 'Create agent'}
                 </button>
               </div>
             </form>
@@ -161,18 +160,14 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
       ) : null}
 
       <section className="panel-section" aria-label="Current character summary">
-        <h3>Current world character</h3>
-        {currentCharacter ? (
-          <p>
-            <strong>{currentCharacter.name}</strong> joined as a {currentCharacter.archetype}.
-          </p>
-        ) : (
-          <p>아직 생성된 캐릭터가 없습니다.</p>
-        )}
+        <h3>Current player</h3>
+        <p>
+          <strong>{playerCharacter.name}</strong> is the controllable user avatar.
+        </p>
       </section>
 
       <section className="panel-section" aria-label="Spawned character list">
-        <h3>Spawned characters</h3>
+        <h3>Agent NPC roster</h3>
         {characters.length > 0 ? (
           <ul className="action-list">
             {characters.map((character) => (
@@ -182,7 +177,7 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
             ))}
           </ul>
         ) : (
-          <p>캐릭터를 만들면 월드에 바로 추가되고, 기존 목록은 유지됩니다.</p>
+          <p>백엔드 agent API가 비어 있으면 아직 NPC가 없는 상태로 시작합니다.</p>
         )}
       </section>
 

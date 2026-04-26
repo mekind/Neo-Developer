@@ -1,5 +1,5 @@
-import { postJson } from '@/lib/api-client'
 import { type CharacterArchetype } from '@/game/characters'
+import { getJson, postJson } from '@/lib/api-client'
 
 export interface CreateAgentPayload {
   personaSummary: string
@@ -28,6 +28,20 @@ function isCreatedAgent(value: unknown): value is CreatedAgent {
     typeof candidate.backstoryPrompt === 'string' &&
     typeof candidate.createdAt === 'string'
   )
+}
+
+function isCreatedAgentList(value: unknown): value is CreatedAgent[] {
+  return Array.isArray(value) && value.every(isCreatedAgent)
+}
+
+export async function listAgents() {
+  const response = await getJson('/agents')
+
+  if (!isCreatedAgentList(response)) {
+    throw new Error('API response shape was invalid.')
+  }
+
+  return response
 }
 
 export async function createAgent(payload: CreateAgentPayload) {

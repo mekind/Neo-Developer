@@ -2,32 +2,41 @@
 
 ## Summary
 
-Extended the FE world prototype from spawn-only avatars to a first playable loop:
-create a character, move the latest-created avatar, then interact with nearby generated characters.
+Adjusted the FE world prototype so the controllable avatar is always the user player,
+while generated agents are treated as separate NPCs in the world.
 
 ## What changed
 
 - `FE/app/src/App.tsx`
-  - keeps the latest created character as the controllable player
-  - adds keyboard movement and interaction state
+  - separates player-avatar state from agent-NPC state
+  - keeps keyboard movement attached only to the user avatar
+  - treats nearby agents as interaction targets
 - `FE/app/src/game/characters.ts`
-  - centralizes world sizing, movement, interaction, and character creation helpers
+  - adds explicit player vs agent character kinds
+  - adds a dedicated player-avatar builder
 - `FE/app/src/game/WorldCanvas.tsx`
-  - shows player status, nearby interaction prompts, and last interaction feedback
-  - highlights the active player and nearby interaction target
+  - labels player and NPC roles more clearly in the viewport
+  - keeps nearby-agent interaction feedback focused on NPCs
+- `FE/app/src/components/InteractionPanel.tsx`
+  - reframes the sidebar copy around “user avatar + agent NPC roster”
+- `FE/app/src/services/agents.ts`
+  - adds the FE read path for loading agent NPCs from `/agents`
 - `FE/app/src/App.test.tsx`
-  - preserves spawn/append behavior tests
-  - adds movement + interaction loop coverage
+  - locks the player-only movement contract
+  - covers agent creation without replacing the player avatar
 
 ## Intent
 
-The prototype should now feel like a tiny Gather-style playable slice rather than a static character placement demo.
+The prototype should feel closer to the intended model:
+the person entering the space controls their own avatar,
+and backend-provided agents appear as NPCs rather than hijacking player input.
 
 ## Behavior contract
 
-- the latest created character is the active player
+- the user avatar is always the active player
 - the player moves with WASD or arrow keys
-- interaction becomes available near another generated character
+- generated agents are NPCs, not direct input targets
+- interaction becomes available near a nearby agent NPC
 - pressing `E` triggers visible interaction feedback
 
 ## Explicit scope boundary
@@ -41,4 +50,5 @@ Still intentionally excludes:
 ## Follow-up notes
 
 - movement responsiveness is the most important success bar for this pass
+- FE now assumes an agent-list read path exists at `/agents`; if backend rollout lags behind, the world should be expected to show an empty or errored NPC state
 - if richer world simulation appears later, consider extracting the local loop into dedicated world-state logic

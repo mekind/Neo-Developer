@@ -1,5 +1,7 @@
 export type CharacterArchetype = 'scout' | 'maker' | 'spark'
 
+export type CharacterKind = 'player' | 'agent'
+
 export type WorldCharacter = {
   id: string
   name: string
@@ -7,6 +9,7 @@ export type WorldCharacter = {
   x: number
   y: number
   color: string
+  kind: CharacterKind
 }
 
 export const WORLD_WIDTH = 1280
@@ -50,8 +53,21 @@ export function buildWorldCharacter(
   return {
     ...seed,
     color: palette.color,
-    x: 160 + (index % 4) * 180,
+    kind: 'agent',
+    x: 220 + (index % 4) * 180,
     y: 180 + Math.floor(index / 4) * 110,
+  }
+}
+
+export function buildPlayerCharacter(): WorldCharacter {
+  return {
+    id: 'user-player',
+    name: 'You',
+    archetype: 'scout',
+    kind: 'player',
+    color: '#22c55e',
+    x: 124,
+    y: 180,
   }
 }
 

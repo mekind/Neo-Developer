@@ -7,13 +7,14 @@ import {
   WORLD_HEIGHT,
   WORLD_PADDING,
   WORLD_WIDTH,
+  buildPlayerCharacter,
   buildWorldCharacter,
   clampToWorld,
   measureDistance,
   type WorldCharacter,
 } from '@/game/characters'
 import { WorldCanvas } from '@/game/WorldCanvas'
-import { createAgent } from '@/services/agents'
+import { createAgent, listAgents } from '@/services/agents'
 
 type DirectionKey = 'up' | 'down' | 'left' | 'right'
 
@@ -33,30 +34,53 @@ const MOVEMENT_KEYS: Record<string, DirectionKey> = {
 }
 
 export default function App() {
-  const [characters, setCharacters] = useState<WorldCharacter[]>([])
+  const [playerCharacter, setPlayerCharacter] = useState<WorldCharacter>(() => buildPlayerCharacter())
+  const [agents, setAgents] = useState<WorldCharacter[]>([])
+  const [agentLoadError, setAgentLoadError] = useState<string | null>(null)
   const [lastInteractionMessage, setLastInteractionMessage] = useState<string | null>(null)
   const pressedKeysRef = useRef<Set<DirectionKey>>(new Set())
   const movementIntervalRef = useRef<number | null>(null)
-  const currentCharacterRef = useRef<WorldCharacter | null>(null)
+  const currentCharacterRef = useRef<WorldCharacter>(playerCharacter)
   const interactionTargetRef = useRef<WorldCharacter | null>(null)
 
   const handleCreateCharacter = async (personaSummary: string, backstoryPrompt: string) => {
     const createdAgent = await createAgent({ personaSummary, backstoryPrompt })
 
-    setCharacters((current) => [...current, buildWorldCharacter(createdAgent, current.length)])
+    setAgents((current) => [...current, buildWorldCharacter(createdAgent, current.length)])
     setLastInteractionMessage(null)
   }
 
-  const currentCharacter = useMemo(() => characters.at(-1) ?? null, [characters])
-  const interactionTarget = useMemo(() => {
-    if (!currentCharacter) return null
+  useEffect(() => {
+    let isMounted = true
 
-    return characters
-      .filter((character) => character.id !== currentCharacter.id)
+    async function loadAgents() {
+      try {
+        setAgentLoadError(null)
+        const loadedAgents = await listAgents()
+        if (!isMounted) return
+
+        setAgents(loadedAgents.map((agent, index) => buildWorldCharacter(agent, index)))
+      } catch (error) {
+        if (!isMounted) return
+        setAgentLoadError(error instanceof Error ? error.message : 'Failed to load agents.')
+      }
+    }
+
+    void loadAgents()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const characters = useMemo(() => [playerCharacter, ...agents], [playerCharacter, agents])
+  const currentCharacter = playerCharacter
+  const interactionTarget = useMemo(() => {
+    return agents
       .map((character) => ({ character, distance: measureDistance(currentCharacter, character) }))
       .filter(({ distance }) => distance <= INTERACTION_RADIUS)
       .sort((left, right) => left.distance - right.distance)[0]?.character ?? null
-  }, [characters, currentCharacter])
+  }, [agents, currentCharacter])
 
   useEffect(() => {
     currentCharacterRef.current = currentCharacter
@@ -67,11 +91,7 @@ export default function App() {
     const pressedKeys = pressedKeysRef.current
     if (pressedKeys.size === 0) return
 
-    setCharacters((current) => {
-      if (current.length === 0) return current
-
-      const playerIndex = current.length - 1
-      const player = current[playerIndex]
+    setPlayerCharacter((player) => {
       let nextX = player.x
       let nextY = player.y
 
@@ -80,13 +100,11 @@ export default function App() {
       if (pressedKeys.has('left')) nextX -= PLAYER_MOVE_STEP
       if (pressedKeys.has('right')) nextX += PLAYER_MOVE_STEP
 
-      const clampedCharacter: WorldCharacter = {
+      return {
         ...player,
         x: clampToWorld(nextX, WORLD_PADDING, WORLD_WIDTH - WORLD_PADDING),
         y: clampToWorld(nextY, WORLD_PADDING + 72, WORLD_HEIGHT - WORLD_PADDING),
       }
-
-      return current.map((character, index) => (index === playerIndex ? clampedCharacter : character))
     })
   }
 
@@ -148,14 +166,12 @@ export default function App() {
     }
   }, [])
 
-  const playerStatusCopy = currentCharacter
-    ? `Controlling ${currentCharacter.name} at (${currentCharacter.x}, ${currentCharacter.y}).`
-    : 'Create a character to start moving through the world.'
+  const playerStatusCopy = `Controlling ${currentCharacter.name} at (${currentCharacter.x}, ${currentCharacter.y}).`
   const interactionStatusCopy = interactionTarget
     ? `Press E near ${interactionTarget.name} to interact.`
-    : currentCharacter
-      ? 'Move closer to another generated character to interact.'
-      : 'Add at least two characters to unlock interaction.'
+    : agents.length > 0
+      ? 'Move closer to an agent NPC to interact.'
+      : 'Agent NPCs will appear here after the backend responds.'
 
   return (
     <main className="app-shell">
@@ -172,17 +188,17 @@ export default function App() {
 
       <div className="app-body">
         <aside className="sidebar panel-shell">
-          <InteractionPanel characters={characters} onCreateCharacter={handleCreateCharacter} />
+          <InteractionPanel characters={agents} playerCharacter={playerCharacter} onCreateCharacter={handleCreateCharacter} />
         </aside>
 
         <section className="world-stage panel-shell" aria-label="world stage">
           <div className="world-stage-copy">
             <p className="eyebrow">World viewport</p>
             <p className="description">
-              생성된 캐릭터가 따뜻한 공용 공간 톤의 월드에 바로 나타나며, 복잡한 설명보다 먼저 편안한 첫인상을
-              전달하도록 구성했습니다.
+              사용자는 자기 아바타를 직접 움직이고, 백엔드 agent API에서 온 캐릭터들은 NPC로 월드에 배치됩니다.
             </p>
             <p className="description">Controls: WASD / Arrow keys to move · E to interact</p>
+            {agentLoadError ? <p className="description" role="alert">{agentLoadError}</p> : null}
           </div>
           <WorldCanvas
             characters={characters}

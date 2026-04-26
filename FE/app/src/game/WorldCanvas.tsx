@@ -112,9 +112,10 @@ export function WorldCanvas({
       return
     }
 
-    characters.forEach((character, index) => {
+    characters.forEach((character) => {
       const isCurrent = currentCharacter?.id === character.id
       const isInteractionTarget = interactionTarget?.id === character.id
+      const labelPrefix = character.kind === 'player' ? 'You' : 'NPC'
 
       if (isCurrent) {
         context.strokeStyle = 'rgba(34, 197, 94, 0.4)'
@@ -135,7 +136,7 @@ export function WorldCanvas({
 
       context.fillStyle = '#4d463f'
       context.font = '14px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-      context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
+      context.fillText(`${labelPrefix}: ${character.name}`, character.x - 30, character.y + 38)
     })
 
     if (currentCharacter && interactionTarget) {
@@ -169,7 +170,7 @@ export function WorldCanvas({
             Distance to {interactionTarget.name}: {Math.round(measureDistance(currentCharacter, interactionTarget))}px
           </p>
         ) : (
-          <p>Bring your player close to another avatar to unlock the interaction prompt.</p>
+          <p>Bring your player close to an agent NPC to unlock the interaction prompt.</p>
         )}
       </div>
       {characters.length > 0 ? (
