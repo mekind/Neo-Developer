@@ -30,7 +30,35 @@ npm run start:dev          # watch 모드, http://localhost:3000
 ### 로컬 DB 옵션
 
 1. **Neon dev branch (권장)** — Vercel Postgres 가입 후 dev branch URL을 `.env`에 넣으면 끝.
-2. **Docker Postgres** — `docker run -d --name myclaw-pg -e POSTGRES_PASSWORD=dev -p 5432:5432 postgres:16` 후 `DATABASE_URL="postgresql://postgres:dev@localhost:5432/postgres"` `DIRECT_URL=` 동일.
+2. **Docker Postgres (수동)** — `docker run -d --name myclaw-pg -e POSTGRES_PASSWORD=dev -p 5432:5432 postgres:16` 후 `DATABASE_URL="postgresql://postgres:dev@localhost:5432/postgres"`, `DIRECT_URL` 동일.
+3. **Docker Compose (백엔드 + DB 한 번에)** — 아래 §Docker Compose 참조.
+
+## Docker Compose (백엔드 + Postgres 통합 실행)
+
+`backend/Dockerfile` + `backend/docker-compose.yml`로 백엔드와 Postgres를 컨테이너로 같이 띄울 수 있습니다. Node/npm 설치 없이 검증만 할 때 가장 빠릅니다.
+
+```bash
+cd backend
+docker compose up --build -d            # 첫 실행: 이미지 빌드 + DB+백엔드 기동
+docker compose logs -f backend          # 로그 확인 (Ctrl+C로 빠져나옴)
+
+curl http://localhost:3000/health        # {"status":"ok","db":"ok",...}
+curl http://localhost:3000/items         # mock 2건
+
+docker compose down                      # 종료 (볼륨 유지)
+docker compose down -v                   # 종료 + DB 데이터 삭제
+```
+
+동작:
+- `backend` 컨테이너 부팅 시 `prisma migrate deploy`가 자동 실행되어 스키마 적용
+- `postgres` 서비스가 `pg_isready` 헬스체크 통과 후 backend 시작
+- DB 데이터는 `postgres-data` 볼륨에 영속화 (`down -v`로 삭제 가능)
+
+호스트에서 DB 직접 접속:
+
+```bash
+psql postgresql://myclaw:myclaw@localhost:5432/myclaw
+```
 
 기타 스크립트 (`backend/package.json`):
 
