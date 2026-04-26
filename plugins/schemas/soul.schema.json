@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "soul.schema.json",
+  "title": "Soul Output Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["frontmatter", "content"],
+  "properties": {
+    "frontmatter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "agent_id", "model"],
+      "properties": {
+        "type": {
+          "const": "agent-soul"
+        },
+        "agent_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "personality", "greetings_alert", "greetings_approach", "behavior_rules", "boundaries"],
+      "properties": {
+        "identity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "personality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tone", "verbosity", "emoji_usage", "language", "formality"],
+          "properties": {
+            "tone": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1
+            },
+            "verbosity": {
+              "type": "string",
+              "minLength": 1
+            },
+            "emoji_usage": {
+              "type": "string",
+              "minLength": 1
+            },
+            "language": {
+              "type": "string",
+              "enum": ["Korean", "English", "Japanese", "Chinese", "mixed"]
+            },
+            "formality": {
+              "type": "string",
+              "enum": ["존댓말", "반말"]
+            }
+          }
+        },
+        "greetings_alert": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "greetings_approach": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "behavior_rules": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

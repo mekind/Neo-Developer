@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "profile.schema.json",
+  "title": "Profile Output Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["frontmatter", "content"],
+  "properties": {
+    "frontmatter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "created", "updated", "links"],
+      "properties": {
+        "type": {
+          "const": "user-profile"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date"
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "context", "related"],
+      "properties": {
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "joined"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "joined": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["purpose", "tech_level"],
+          "properties": {
+            "purpose": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tech_level": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "related": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["preferences", "interests", "agents"],
+          "properties": {
+            "preferences": {
+              "type": "string",
+              "minLength": 1
+            },
+            "interests": {
+              "type": "string",
+              "minLength": 1
+            },
+            "agents": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}

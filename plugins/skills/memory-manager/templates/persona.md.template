@@ -1,0 +1,20 @@
+---
+type: agent-persona
+agent_id: {{agent_id}}
+created: {{created_date}}
+---
+
+# Agent Persona: {{agent_name}}
+
+## Visual Description
+{{agent_name}}를 나타내는 시각적 묘사. 
+{{purpose}}에 어울리는 개성 있는 캐릭터 디자인.
+
+## Pixel Art Prompt
+"cute character for {{agent_name}}, focused on {{primary_skill}},
+matching {{purpose}}, 16x16 pixel art style, clean lines"
+
+## Color Palette
+- Primary: {{primary_color}}
+- Secondary: {{secondary_color}}
+- Accent: {{accent_color}}

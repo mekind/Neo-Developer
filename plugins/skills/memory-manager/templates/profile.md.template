@@ -1,0 +1,24 @@
+---
+type: user-profile
+created: {{created_date}}
+updated: {{updated_date}}
+links:
+  - [[preferences]]
+  - [[context/interests]]
+---
+
+# Profile
+
+## Identity
+- user_id: {{user_id}}
+- name: {{nickname}}
+- joined: {{created_date}}
+
+## Context
+- purpose: {{purpose}}
+- tech_level: {{tech_level}}
+
+## Related
+- 선호도: [[preferences]]
+- 관심사: [[context/interests]]
+- 만든 에이전트: [[agents/index]]

@@ -1,0 +1,13 @@
+# {{nickname}}'s Space
+
+## Profile
+- [[profile]] - 기본 정보
+- [[preferences]] - 선호도
+
+## Agents
+- [[agents/{{agent_id}}/persona|{{agent_name}}]] - {{purpose}}
+- [[agents/{{agent_id}}/config|{{agent_name}} 설정]] - {{primary_skill}}
+
+## Context
+- [[context/interests]] - 관심사
+- [[context/history]] - 활동 이력
