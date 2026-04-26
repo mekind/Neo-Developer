@@ -25,8 +25,8 @@ from pathlib import Path
 from mapper import map_persona
 from composer import compose
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_CATALOG = REPO_ROOT / "poc" / "lpc-catalog-curated.json"
+MODULE_ROOT = Path(__file__).resolve().parent.parent  # lpc-character-pipeline/
+DEFAULT_CATALOG = MODULE_ROOT / "poc" / "lpc-catalog-curated.json"
 
 
 def main() -> int:
@@ -36,7 +36,7 @@ def main() -> int:
     parser.add_argument(
         "--catalog",
         default=str(DEFAULT_CATALOG),
-        help=f"Path to LPC catalog JSON (default: {DEFAULT_CATALOG.relative_to(REPO_ROOT)})",
+        help=f"Path to LPC catalog JSON (default: {DEFAULT_CATALOG.relative_to(MODULE_ROOT)})",
     )
     parser.add_argument(
         "--no-headless",

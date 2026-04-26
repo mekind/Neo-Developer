@@ -15,7 +15,8 @@ ryan-ideas.md
 .env.*.local
 
 # Pipeline outputs
-poc/output/
+lpc-character-pipeline/poc/output/
+lpc-character-pipeline/output/
 output/
 
 # Python
