@@ -17,7 +17,7 @@ export interface InvokeRequest {
   context: {
     soul: Record<string, unknown>;
     config: Record<string, unknown>;
-    memory_snapshot: MemorySnapshot;
+    memory: MemorySnapshot;
   };
 }
 
