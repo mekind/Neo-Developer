@@ -37,7 +37,7 @@ export function SidebarSection({ agents, isLoading, errorMessage, onOpenDialog }
           {isLoading ? <p className="sidebar-state-copy">에이전트 목록을 불러오는 중…</p> : null}
           {errorMessage ? <p className="sidebar-state-copy" role="alert">{errorMessage}</p> : null}
 
-          {!isLoading && !errorMessage && agents.length > 0 ? (
+          {!isLoading && agents.length > 0 ? (
             <ul className="agent-list agent-list-polished" aria-label="Backend agent list">
               {agents.map((agent, index) => (
                 <li key={agent.id}>
@@ -50,9 +50,7 @@ export function SidebarSection({ agents, isLoading, errorMessage, onOpenDialog }
             </ul>
           ) : null}
 
-          {!isLoading && !errorMessage && agents.length === 0 ? (
-            <p className="sidebar-state-copy">표시할 에이전트가 아직 없습니다.</p>
-          ) : null}
+          {!isLoading && agents.length === 0 ? <p className="sidebar-state-copy">표시할 에이전트가 아직 없습니다.</p> : null}
         </section>
       </section>
     </aside>
