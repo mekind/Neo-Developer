@@ -27,7 +27,7 @@ Always maintain the required formality level.
 
   // Generate the response using Gemini model via AI SDK
   const { text } = await generateText({
-    model: google('gemini-1.5-flash'),
+    model: google('gemini-3-flash-preview'),
     system: systemPrompt,
     prompt: message,
   });

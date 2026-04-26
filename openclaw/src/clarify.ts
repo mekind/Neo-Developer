@@ -16,7 +16,7 @@ export type ClarifyResult = z.infer<typeof clarifySchema>;
 
 export async function getClarifyingQuestions(prompt: string, currentContext: string = ''): Promise<ClarifyResult> {
   const { object } = await generateObject({
-    model: google('gemini-1.5-flash'),
+    model: google('gemini-3-flash-preview'),
     schema: clarifySchema,
     system: `You are the "Clarify" agent based on the 3-lens requirement clarification pattern.
 Your goal is to turn vague agent ideas into precise specifications.
