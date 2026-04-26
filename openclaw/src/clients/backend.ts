@@ -35,6 +35,30 @@ export class BackendClient {
       body: JSON.stringify(body),
     });
   }
+
+  async fetchDueAgents(now?: string): Promise<any[]> {
+    const url = new URL('/agents/due', this.baseUrl);
+    if (now) {
+      url.searchParams.set('at', now);
+    }
+    const res = await fetch(url.toString(), {
+      headers: {
+        'Authorization': `Bearer ${this.token}`
+      }
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch due agents: ${res.status}`);
+    }
+    return res.json();
+  }
+
+  async createNotification(userId: string, data: { agentId?: string, kind: string, body: string, meta?: any }) {
+    const res = await this.post(`/users/${userId}/notifications`, data);
+    if (!res.ok) {
+      throw new Error(`Failed to create notification: ${res.status}`);
+    }
+    return res.json();
+  }
 }
 
 export const backendClient = new BackendClient();
