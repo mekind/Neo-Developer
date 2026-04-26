@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: myclaw-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: myclaw
+      POSTGRES_PASSWORD: myclaw
+      POSTGRES_DB: myclaw
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myclaw -d myclaw"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: myclaw-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://myclaw:myclaw@postgres:5432/myclaw?schema=public
+      DIRECT_URL: postgresql://myclaw:myclaw@postgres:5432/myclaw?schema=public
+      PORT: 3000
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres-data:
