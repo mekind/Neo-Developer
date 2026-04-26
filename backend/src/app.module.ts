@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AgentsModule } from './agents/agents.module';
 import { HealthModule } from './health/health.module';
 import { ItemsModule } from './items/items.module';
 import { MemoryModule } from './memory/memory.module';
@@ -14,6 +15,7 @@ import { UsersModule } from './users/users.module';
     ItemsModule,
     UsersModule,
     MemoryModule,
+    AgentsModule,
   ],
 })
 export class AppModule {}
