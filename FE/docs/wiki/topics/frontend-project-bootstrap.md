@@ -65,6 +65,8 @@ The current shell direction is:
 
 This keeps the world surface visually dominant, closer to a Gather-like product shape, while keeping React-driven UI outside the playable area when possible.
 
+The current placeholder art direction also favors a warm school commons tone so the world feels closer to a friendly campus-like social space than a cold technical demo.
+
 ## Relevant implementation files
 
 - `FE/app/src/App.tsx`

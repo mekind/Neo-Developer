@@ -27,3 +27,11 @@ That means the room/world should remain the dominant visual surface, while auxil
 ## Follow-up
 
 Next UI passes can make the top bar and sidebar more Gather-like, then layer player movement and world overlays into the viewport.
+
+## Visual tone update
+
+The canvas placeholder now leans toward a warm school commons mood with beige walls, wood flooring, window light, desks, and plant accents instead of the earlier cool-toned abstract blocks.
+
+## Additional files
+
+- `FE/app/src/test/setup.ts`
