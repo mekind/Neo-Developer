@@ -70,29 +70,30 @@ describe('App', () => {
     expect(await screen.findByText('Hana')).toBeInTheDocument()
     expect(await screen.findByText('Haru')).toBeInTheDocument()
     expect(screen.getByText('Miso')).toBeInTheDocument()
-    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3')
+    await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('4'))
   })
 
   it('adds a local npc from the dialog', async () => {
     render(<App />)
+    await screen.findByText('Haru')
 
     fireEvent.click(screen.getByRole('button', { name: /에이전트 추가/i }))
-    const dialog = screen.getByRole('dialog', { name: /add agent npc/i })
-    fireEvent.change(within(dialog).getByLabelText(/name/i), { target: { value: 'Warm Guide' } })
-    fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
-    fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
+    const dialog = screen.getByRole('dialog', { name: /에이전트 npc 추가/i })
+    fireEvent.change(within(dialog).getByLabelText(/이름/i), { target: { value: 'Warm Guide' } })
+    fireEvent.change(within(dialog).getByLabelText(/페르소나/i), { target: { value: 'Warm school guide' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: /에이전트 추가/i }))
 
     await waitFor(() => expect(screen.getByText('Warm Guide')).toBeInTheDocument())
-    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('4'))
+    await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('5'))
   })
 
   it('opens chat from the header trigger', async () => {
     render(<App />)
     await screen.findByText('Hana')
 
-    fireEvent.click(screen.getByRole('button', { name: /open npc chat/i }))
+    fireEvent.click(screen.getByRole('button', { name: /npc 대화 열기/i }))
 
-    expect(screen.getByRole('dialog', { name: /chat with hana/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
   })
 
   it('opens chat from the game interaction callback', async () => {
@@ -101,7 +102,7 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /simulate interaction/i }))
 
-    expect(screen.getByRole('dialog', { name: /chat with hana/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
   })
 
   it('shows an error state when the backend request fails but still keeps dummy npcs', async () => {
