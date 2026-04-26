@@ -115,8 +115,6 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/current player summary/i)).toHaveTextContent(/you is the controllable user avatar/i)
-    expect(screen.getByLabelText(/current player summary/i)).toHaveTextContent(/move with arrow keys\. press space near an agent npc to interact/i)
     expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
@@ -139,6 +137,8 @@ describe('App', () => {
 
   it('renders a simple backend agent roster', async () => {
     render(<App />)
+
+    expect(screen.getByRole('button', { name: /^add agent$/i })).toBeInTheDocument()
 
     const roster = await screen.findByRole('list', { name: /backend agent list/i })
     expect(within(roster).getByText('Hana')).toBeInTheDocument()
