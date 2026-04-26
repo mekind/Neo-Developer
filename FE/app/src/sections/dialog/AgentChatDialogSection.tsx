@@ -48,8 +48,8 @@ function resolvePortraitSprite(agent: WorldAgent, lpcSpriteCatalog: LpcSpriteCat
 }
 
 function SpritePortrait({ agent, portraitSprite }: { agent: WorldAgent; portraitSprite: PortraitSprite }) {
-  const idleAnimation = portraitSprite.frameMap.animations.idle_s
-  const frameIndex = idleAnimation.frames[Math.min(1, idleAnimation.frames.length - 1)] ?? 0
+  const idleAnimation = portraitSprite.frameMap.animations.walk_s
+  const frameIndex = idleAnimation.frames[0] ?? 0
   const scale = CHAT_AVATAR_SIZE / portraitSprite.frameMap.frameSize
   const offsetX = frameIndex * portraitSprite.frameMap.frameSize
   const offsetY = idleAnimation.y

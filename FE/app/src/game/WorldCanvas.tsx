@@ -125,6 +125,10 @@ function toAnimationName(isMoving: boolean, facing: FacingDirection): LpcAnimati
   return `${isMoving ? 'walk' : 'idle'}_${facing}`
 }
 
+function toStillFrameAnimationName(facing: FacingDirection): LpcAnimationName {
+  return `walk_${facing}`
+}
+
 function createTextureKey(bundleKey: string) {
   return `lpc-sheet-${bundleKey}`
 }
@@ -195,7 +199,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
         private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
         private spaceKey?: Phaser.Input.Keyboard.Key
         private playerFacing: FacingDirection = 's'
-        private playerAnimationName: LpcAnimationName = 'idle_s'
+        private playerAnimationName: LpcAnimationName = 'walk_s'
         private playerState = {
           ...buildWorldPlayer(),
           velocity: { x: 0, y: 0 } as MovementVector,
@@ -387,6 +391,17 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
           target.play(key, true)
         }
 
+        private setActorStillFrame(target: Phaser.GameObjects.Sprite, bundle: ResolvedSpriteBundle, facing: FacingDirection) {
+          const animationName = toStillFrameAnimationName(facing)
+          const frames = buildAnimationFrameNumbers(
+            bundle.frameMap,
+            Math.floor((this.textures.get(createTextureKey(bundle.bundleKey)).getSourceImage() as { width: number }).width / bundle.frameMap.frameSize),
+            animationName,
+          )
+          target.stop()
+          target.setTexture(createTextureKey(bundle.bundleKey), frames[0] ?? 0)
+        }
+
         private createAgentBody(agent: WorldAgent, x: number, y: number, isTarget: boolean): SceneBody {
           const bundle = resolveAgentBundle(agent, lpcSpriteCatalog)
           if (bundle) {
@@ -394,7 +409,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
             sprite.setDisplaySize(60, 60)
             sprite.setDepth(12)
             sprite.setTint(isTarget ? 0xffe5a3 : 0xffffff)
-            this.playActorAnimation(sprite, bundle.bundleKey, 'idle_s')
+            this.setActorStillFrame(sprite, bundle, 's')
             return sprite
           }
 
@@ -409,7 +424,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
           if (bundle && body instanceof Phaser.GameObjects.Sprite) {
             body.setPosition(x, y + 10)
             body.setTint(isTarget ? 0xffe5a3 : 0xffffff)
-            this.playActorAnimation(body, bundle.bundleKey, 'idle_s')
+            this.setActorStillFrame(body, bundle, 's')
             return
           }
 
@@ -433,9 +448,14 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
 
           if (this.playerSprite && this.playerBundle) {
             this.playerSprite.setPosition(playerX, playerY + 10)
-            if (this.playerAnimationName !== nextPlayerAnimation) {
-              this.playerAnimationName = nextPlayerAnimation
-              this.playActorAnimation(this.playerSprite, this.playerBundle.bundleKey, nextPlayerAnimation)
+            if (playerIsMoving) {
+              if (this.playerAnimationName !== nextPlayerAnimation) {
+                this.playerAnimationName = nextPlayerAnimation
+                this.playActorAnimation(this.playerSprite, this.playerBundle.bundleKey, nextPlayerAnimation)
+              }
+            } else {
+              this.playerAnimationName = toStillFrameAnimationName(this.playerFacing)
+              this.setActorStillFrame(this.playerSprite, this.playerBundle, this.playerFacing)
             }
           }
 
