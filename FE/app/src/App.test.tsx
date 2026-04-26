@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
 
@@ -37,6 +37,31 @@ describe('App', () => {
     expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
+  })
+
+  it('restores the add agent button and appends a created agent', async () => {
+    vi.mocked(globalThis.fetch)
+      .mockResolvedValueOnce({ ok: true, json: async () => backendAgents } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: 'new-agent',
+          name: 'Warm Guide',
+          archetype: 'maker',
+          personaSummary: 'Warm school guide',
+          backstoryPrompt: 'Helps every newcomer settle in.',
+          createdAt: '2026-04-26T00:00:00.000Z',
+        }),
+      } as Response)
+
+    render(<App />)
+
+    fireEvent.change(screen.getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
+    fireEvent.change(screen.getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
+    fireEvent.click(screen.getByRole('button', { name: /add agent/i }))
+
+    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3'))
+    expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
   })
 
   it('renders a simple backend agent roster', async () => {

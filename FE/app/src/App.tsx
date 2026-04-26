@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 
 import { InteractionPanel } from '@/components/InteractionPanel'
-import { buildWorldAgents, type WorldAgent } from '@/game/agents'
+import { appendCreatedAgent, buildWorldAgents, type WorldAgent } from '@/game/agents'
 import { WorldCanvas } from '@/game/WorldCanvas'
-import { listAgents } from '@/services/agents'
+import { createAgent, listAgents } from '@/services/agents'
 
 export default function App() {
   const [agents, setAgents] = useState<WorldAgent[]>([])
@@ -40,6 +40,11 @@ export default function App() {
     }
   }, [])
 
+  const handleCreateAgent = async (personaSummary: string, backstoryPrompt: string) => {
+    const created = await createAgent({ personaSummary, backstoryPrompt })
+    setAgents((current) => appendCreatedAgent(current, created))
+  }
+
   return (
     <main className="app-shell">
       <header className="topbar panel-shell">
@@ -55,7 +60,12 @@ export default function App() {
 
       <div className="app-body">
         <aside className="sidebar panel-shell">
-          <InteractionPanel agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
+          <InteractionPanel
+            agents={agents}
+            isLoading={isLoading}
+            errorMessage={errorMessage}
+            onCreateAgent={handleCreateAgent}
+          />
         </aside>
 
         <section className="world-stage panel-shell" aria-label="world stage">
