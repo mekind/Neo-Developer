@@ -1,7 +1,7 @@
 # Vault Config
 
 - type: local llm wiki vault
-- scope: `FE/`
+- scope: `FE/docs/`
 - purpose: persistent markdown knowledge base for frontend context in `Neo-Developer`
 - source policy: raw sources remain intact; annotate rather than rewrite
 - article policy: wiki pages synthesize, normalize, and cross-link facts from sources

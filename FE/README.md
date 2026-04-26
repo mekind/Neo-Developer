@@ -1,17 +1,17 @@
 # FE LLM Wiki Vault
 
-Frontend documentation vault scaffold for this repository.
+Frontend documentation vault for this repository now lives under `FE/docs/`.
 
 ## Start Here
-- [Vault Home](_index.md)
-- [Vault Config](config.md)
-- [Frontend Workspace Overview](wiki/topics/frontend-workspace-overview.md)
-- [Source Index](raw/_index.md)
-- [Wiki Index](wiki/_index.md)
-- [Outputs Index](output/_index.md)
-- [Activity Log](log.md)
+- [Vault Home](docs/_index.md)
+- [Vault Config](docs/config.md)
+- [Frontend Workspace Overview](docs/wiki/topics/frontend-workspace-overview.md)
+- [Source Index](docs/raw/_index.md)
+- [Wiki Index](docs/wiki/_index.md)
+- [Outputs Index](docs/output/_index.md)
+- [Activity Log](docs/log.md)
 
 ## Structure
-- `raw/`: source-facing materials kept intact
-- `wiki/`: synthesized, durable knowledge pages
-- `output/`: generated summaries, plans, and dated artifacts
+- `docs/raw/`: source-facing materials kept intact
+- `docs/wiki/`: synthesized, durable knowledge pages
+- `docs/output/`: generated summaries, plans, and dated artifacts
