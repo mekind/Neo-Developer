@@ -46,6 +46,29 @@ push to main (paths: backend/**)
 | `VERCEL_TOKEN` | <https://vercel.com/account/tokens> (Full Account scope) |
 | `VERCEL_ORG_ID` | `vercel link` 후 `backend/.vercel/project.json`의 `orgId`, 또는 Vercel Team Settings → Team ID |
 | `VERCEL_PROJECT_ID` | 위 파일의 `projectId`, 또는 프로젝트 Settings → General → Project ID |
+| `DATABASE_URL` | Vercel Postgres / Neon **pooled** connection string (`?pgbouncer=true&connection_limit=1`) |
+| `DIRECT_URL` | Vercel Postgres / Neon **direct** connection string (마이그레이션 전용, pgbouncer 우회) |
+
+> 같은 두 값(`DATABASE_URL`, `DIRECT_URL`)을 **Vercel 프로젝트 Environment Variables**에도 등록해야 런타임에서 Prisma가 연결할 수 있습니다.
+
+## 배포 흐름의 마이그레이션 단계
+
+GHA 워크플로우에서 빌드 직전에 `npx prisma migrate deploy`가 실행됩니다 (`.github/workflows/deploy-backend.yml`). 이 단계는:
+
+- `prisma/migrations/` 폴더의 미적용 마이그레이션을 운영 DB에 순차 적용
+- 새 마이그레이션이 없으면 즉시 통과 (no-op)
+- 실패 시 워크플로우 중단 → Vercel 배포가 일어나지 않음 → 코드/스키마 불일치 차단
+
+새 스키마 변경을 푸시할 때:
+
+```bash
+# 로컬에서
+npx prisma migrate dev --name <change>   # 마이그레이션 폴더 생성 + 로컬 DB 적용
+git add prisma/migrations/
+git commit -m "feat(db): <change>"
+git push
+# main에 머지되면 GHA가 prisma migrate deploy로 운영 적용
+```
 
 `Environment secrets`가 아닌 `Repository secrets`로 등록합니다 (워크플로우에 `environment:` 선언 없음).
 

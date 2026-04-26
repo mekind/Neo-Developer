@@ -183,13 +183,14 @@ describe('App', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
   })
 
-  it('shows a configuration error when the API base URL is missing', async () => {
+  it('falls back to the default backend URL when the env is missing', async () => {
     vi.unstubAllEnvs()
 
     render(<App />)
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
-    expect(globalThis.fetch).not.toHaveBeenCalled()
+    await screen.findByRole('img', { name: /hana avatar/i })
+    expect(globalThis.fetch).toHaveBeenCalled()
+    expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
   })
 
   it('moves only the user avatar and unlocks interaction feedback near an agent npc', async () => {
