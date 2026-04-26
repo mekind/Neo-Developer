@@ -176,7 +176,7 @@ export class AgentsService {
       context: {
         soul: (soul as Record<string, unknown>) || {},
         config: (config as Record<string, unknown>) || {},
-        memory_snapshot: snapshot,
+        memory: snapshot,
       },
     });
   }
@@ -220,7 +220,7 @@ export class AgentsService {
              context: {
                soul: (soul as Record<string, unknown>) || {},
                config,
-               memory_snapshot: snapshot,
+               memory: snapshot,
              }
            });
         }
