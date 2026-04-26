@@ -1,0 +1,12 @@
+{
+  "name": "openclaw",
+  "version": "0.1.0",
+  "description": "AI Agent Framework Core",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "ai": "^4.1.45",
+    "@ai-sdk/google": "^1.1.11",
+    "zod": "^3.24.1"
+  }
+}

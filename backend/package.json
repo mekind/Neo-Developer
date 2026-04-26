@@ -17,7 +17,8 @@
     "class-validator": "^0.14.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "openclaw": "file:../openclaw"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.9",
