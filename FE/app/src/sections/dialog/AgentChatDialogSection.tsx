@@ -27,7 +27,7 @@ type PortraitSprite = {
 }
 
 const starterPrompts = ['오늘 일정 알려줘', '이 공간 설명해줘', '처음 온 사람에게 팁 있어?']
-const CHAT_AVATAR_SIZE = 70
+const CHAT_AVATAR_SIZE = 60
 
 function resolvePortraitSprite(agent: WorldAgent, lpcSpriteCatalog: LpcSpriteCatalog): PortraitSprite | null {
   if (agent.apiSprite) {

@@ -37,8 +37,8 @@ const MAP_WIDTH = 1254
 const MAP_HEIGHT = 1254
 const VIEWPORT_WIDTH = 1280
 const VIEWPORT_HEIGHT = 720
-const PLAYER_RADIUS = 31
-const AGENT_RADIUS = 29
+const PLAYER_RADIUS = 26
+const AGENT_RADIUS = 24
 const MINIMAP_WIDTH = 128
 const MINIMAP_HEIGHT = 128
 const MINIMAP_MARGIN = 8
@@ -251,7 +251,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
               projectY(this.playerState.yPercent) + 10,
               createTextureKey(this.playerBundle.bundleKey),
             )
-            this.playerSprite.setDisplaySize(70, 70)
+            this.playerSprite.setDisplaySize(60, 60)
             this.playerSprite.setDepth(14)
           }
 
@@ -406,7 +406,7 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focu
           const bundle = resolveAgentBundle(agent, lpcSpriteCatalog)
           if (bundle) {
             const sprite = this.add.sprite(x, y + 10, createTextureKey(bundle.bundleKey))
-            sprite.setDisplaySize(70, 70)
+            sprite.setDisplaySize(60, 60)
             sprite.setDepth(12)
             sprite.setTint(isTarget ? 0xffe5a3 : 0xffffff)
             this.setActorStillFrame(sprite, bundle, 's')
