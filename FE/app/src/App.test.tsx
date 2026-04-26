@@ -93,7 +93,7 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /npc 대화 열기/i }))
 
-    expect(screen.getByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
   })
 
   it('opens chat from the game interaction callback', async () => {
@@ -102,7 +102,7 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /simulate interaction/i }))
 
-    expect(screen.getByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
   })
 
   it('shows an error state when the backend request fails but still keeps dummy npcs', async () => {

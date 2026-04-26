@@ -160,7 +160,7 @@ export function buildWorldPlayer(): WorldPlayer {
     id: 'user-player',
     label: 'You',
     imageSrc: PLAYER_IMAGE,
-    xPercent: 12,
-    yPercent: 32,
+    xPercent: 50,
+    yPercent: 50,
   }
 }
