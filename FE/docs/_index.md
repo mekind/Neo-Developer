@@ -9,6 +9,7 @@ Karpathy-style local markdown vault for organizing frontend docs in this reposit
 - [[Frontend Source Index]] ([Frontend Source Index](raw/_index.md))
 - [[Frontend Wiki Index]] ([Frontend Wiki Index](wiki/_index.md))
 - [[Frontend Outputs Index]] ([Frontend Outputs Index](output/_index.md))
+- [[FE App README]] ([FE App README](app/README.md))
 - [[Activity Log]] ([Activity Log](log.md))
 
 ## Operating Model

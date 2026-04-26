@@ -5,6 +5,7 @@ Generated and time-bound frontend artifacts live here.
 ## Current Outputs
 - [[Initial Vault Setup Note]] ([Initial Vault Setup Note](initial-vault-setup-note-2026-04-26.md))
 - [[Frontend Architecture Note]] ([Frontend Architecture Note](frontend-architecture-note-2026-04-26.md))
+- [[FE Bootstrap Note]] ([FE Bootstrap Note](fe-bootstrap-note-2026-04-26.md))
 
 ## Output Conventions
 - date-stamp generated artifacts when they capture a moment in time
