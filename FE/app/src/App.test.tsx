@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react'
+import { vi } from 'vitest'
 import App from './App'
 
 const backendAgents = [
@@ -26,8 +27,8 @@ describe('App', () => {
   it('renders the backend-driven world layout shell', async () => {
     render(<App />)
 
-    expect(screen.getByRole('heading', { name: /gather-like world layout/i })).toBeInTheDocument()
-    expect(screen.getByRole('complementary')).toHaveTextContent(/backend agent roster/i)
+    expect(screen.getByRole('heading', { name: /편하게 둘러보는 데모 공간/i })).toBeInTheDocument()
+    expect(screen.getByRole('complementary')).toHaveTextContent(/백엔드 agent 목록 안내/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
@@ -64,7 +65,6 @@ describe('App', () => {
     const placeholderAvatar = await screen.findByRole('img', { name: /min avatar/i })
     expect(placeholderAvatar.getAttribute('src')).toContain('data:image/svg+xml')
   })
-
 
   it('falls back to the placeholder avatar for disallowed image sources', async () => {
     vi.mocked(globalThis.fetch).mockResolvedValueOnce({
@@ -106,4 +106,5 @@ describe('App', () => {
     expect(alerts[0]).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
     expect(globalThis.fetch).not.toHaveBeenCalled()
   })
-})
+}
+)

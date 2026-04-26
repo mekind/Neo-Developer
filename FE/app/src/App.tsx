@@ -44,12 +44,12 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar panel-shell">
         <div>
-          <p className="eyebrow">FE bootstrap</p>
-          <h1>Gather-like World Layout</h1>
+          <p className="eyebrow">demo-friendly baseline</p>
+          <h1>편하게 둘러보는 데모 공간</h1>
         </div>
         <p className="topbar-copy">
-          상단 바와 사이드바를 유지한 채, 백엔드에서 받은 agent roster가 따뜻한 학교 공용공간 톤의 월드에
-          랜덤 위치로 배치되는 첫 공유공간 데모를 보여줍니다.
+          처음 보는 사람도 부담 없이 이해할 수 있도록, 백엔드에서 받은 agent roster가 따뜻한 중간 톤의 월드에
+          랜덤 위치로 배치되는 흐름을 편하게 보여줍니다.
         </p>
       </header>
 
@@ -62,8 +62,8 @@ export default function App() {
           <div className="world-stage-copy">
             <p className="eyebrow">World viewport</p>
             <p className="description">
-              백엔드 agent 리스트가 로드될 때마다 랜덤한 위치에 배치되고, 같은 로드 안에서는 가만히 머무르는
-              Gather-like 월드 데모입니다.
+              백엔드 agent 리스트가 로드될 때마다 새로운 랜덤 위치에 배치되고, 같은 로드 안에서는 가만히 머무르는
+              첫 공유공간 데모입니다.
             </p>
           </div>
           <WorldCanvas agents={agents} isLoading={isLoading} errorMessage={errorMessage} />

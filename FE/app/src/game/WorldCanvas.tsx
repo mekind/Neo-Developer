@@ -24,30 +24,30 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
     context.clearRect(0, 0, width, height)
 
     const wallGradient = context.createLinearGradient(0, 0, 0, height)
-    wallGradient.addColorStop(0, '#f6ead8')
-    wallGradient.addColorStop(0.5, '#efe0c7')
-    wallGradient.addColorStop(1, '#e0c39e')
+    wallGradient.addColorStop(0, '#f7efe3')
+    wallGradient.addColorStop(0.5, '#efe3d2')
+    wallGradient.addColorStop(1, '#e4d2bc')
     context.fillStyle = wallGradient
     context.fillRect(0, 0, width, height)
 
-    context.fillStyle = '#d6a977'
+    context.fillStyle = '#d9b792'
     context.fillRect(0, height - 170, width, 170)
 
-    context.fillStyle = '#b98554'
+    context.fillStyle = '#c39868'
     for (let x = 0; x < width; x += 64) {
       context.fillRect(x, height - 170, 4, 170)
     }
 
-    context.fillStyle = '#8b5e3c'
+    context.fillStyle = '#9b7959'
     context.fillRect(56, 72, width - 112, 22)
 
     const windows = [150, 390, 630, 870]
     windows.forEach((x) => {
-      context.fillStyle = '#91613d'
+      context.fillStyle = '#a47b59'
       context.fillRect(x, 104, 150, 168)
-      context.fillStyle = '#b9e3f8'
+      context.fillStyle = '#dcedef'
       context.fillRect(x + 12, 116, 126, 144)
-      context.strokeStyle = 'rgba(255,255,255,0.45)'
+      context.strokeStyle = 'rgba(255,255,255,0.55)'
       context.lineWidth = 4
       context.beginPath()
       context.moveTo(x + 75, 116)
@@ -57,18 +57,18 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
       context.stroke()
     })
 
-    context.fillStyle = '#6c8f5f'
+    context.fillStyle = '#78916d'
     context.fillRect(1020, 124, 38, 118)
     context.beginPath()
     context.arc(1039, 104, 42, 0, Math.PI * 2)
     context.fill()
 
-    context.fillStyle = '#c99b64'
+    context.fillStyle = '#d0ae80'
     context.fillRect(176, 342, 220, 86)
     context.fillRect(480, 360, 250, 96)
     context.fillRect(834, 334, 200, 82)
 
-    context.fillStyle = '#8a5b39'
+    context.fillStyle = '#936846'
     ;[
       [200, 428, 12, 76],
       [360, 428, 12, 76],
@@ -80,19 +80,19 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
       context.fillRect(x, y, w, h)
     })
 
-    context.fillStyle = '#f4d06f'
+    context.fillStyle = '#efd48a'
     context.beginPath()
     context.arc(1116, 124, 28, 0, Math.PI * 2)
     context.fill()
-    context.fillStyle = 'rgba(244, 208, 111, 0.18)'
+    context.fillStyle = 'rgba(239, 212, 138, 0.2)'
     context.beginPath()
     context.arc(1116, 124, 78, 0, Math.PI * 2)
     context.fill()
 
-    context.fillStyle = '#5b4636'
-    context.font = 'bold 18px sans-serif'
+    context.fillStyle = '#4d463f'
+    context.font = 'bold 18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
     context.fillText('Warm school commons prototype', 28, 42)
-    context.font = '16px sans-serif'
+    context.font = '16px Pretendard, SUIT, "Noto Sans KR", sans-serif'
     context.fillText('Backend agents appear at random stationary spots for the current load.', 28, 68)
   }, [])
 

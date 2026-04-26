@@ -15,7 +15,8 @@ const futureActions = [
 export function InteractionPanel({ agents, isLoading, errorMessage }: InteractionPanelProps) {
   return (
     <section>
-      <h2>Backend Agent Roster</h2>
+      <p className="section-label">backend roster</p>
+      <h2>백엔드 agent 목록 안내</h2>
       <p>현재 월드에 표시되는 agent 목록을 백엔드 응답 기준으로 단순하게 보여줍니다.</p>
 
       <section className="panel-section" aria-label="Backend agent summary">
