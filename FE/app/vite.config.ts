@@ -3,14 +3,7 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
 
 function resolveBasePath() {
-  const repository = process.env.GITHUB_REPOSITORY
-  const repoName = repository?.split('/')[1]
-
-  if (!repoName) {
-    return '/'
-  }
-
-  return `/${repoName}/`
+  return process.env.VITE_BASE_PATH ?? '/'
 }
 
 export default defineConfig(({ mode }) => ({
