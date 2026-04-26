@@ -201,7 +201,7 @@
 
 `docs/backend/todo.md`에 추가 등록 필요. OpenClaw가 정상 동작하려면 모두 필요.
 
-- [ ] **BE-18** `OpenclawClient` 모듈 (HTTP client, BACKEND_SERVICE_TOKEN, retry)
+- [x] **BE-18** `OpenclawClient` 모듈 (HTTP client, BACKEND_SERVICE_TOKEN, retry) — PR #46 머지
 - [ ] **BE-19** `POST /agents/:agentId/invoke` (frontend → NestJS → OpenClaw proxy, x-user-id auth)
   - [ ] Memory snapshot 빌더 (profile + preferences + interests + recent_history)
 - [ ] **BE-20** `GET /agents/due?at=${iso}` (cron 보조)
