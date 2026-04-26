@@ -51,6 +51,10 @@ FE/
 
 ## First implementation direction
 
+The initial bootstrap page describes the pre-backend phase only.
+The first reusable FE-to-BE slice is documented separately in [[Frontend API Integration Baseline]]([Frontend API Integration Baseline](frontend-api-integration-baseline.md)).
+
+
 When actual feature work starts, the default shape is:
 - React handles shell UI and overlays
 - Canvas handles the room/world surface
@@ -64,6 +68,8 @@ The current shell direction is:
 - main world viewport occupying the remaining content area
 
 This keeps the world surface visually dominant, closer to a Gather-like product shape, while keeping React-driven UI outside the playable area when possible.
+
+The current placeholder art direction also favors a warm school commons tone so the world feels closer to a friendly campus-like social space than a cold technical demo.
 
 ## Relevant implementation files
 

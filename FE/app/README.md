@@ -16,6 +16,10 @@ First-pass frontend scaffold for the project.
 - `npm run test`
 
 ## Deployment
-- GitHub Pages deploy workflow: `.github/workflows/deploy-frontend.yml`
+- Vercel deploy workflow: `.github/workflows/deploy-frontend.yml`
 - Trigger: push to `main` when `FE/app/**` changes, or manual dispatch
-- Production builds automatically use the repository-name base path so the Vite app works on GitHub Pages project URLs
+- Required repository secrets:
+  - `VERCEL_TOKEN`
+  - `VERCEL_FRONTEND_ORG_ID`
+  - `VERCEL_FRONTEND_PROJECT_ID`
+- The production Vite base defaults to `/` and can be overridden with `VITE_BASE_PATH` if a non-root deployment path is needed later.

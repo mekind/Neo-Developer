@@ -32,45 +32,85 @@ export function WorldCanvas({
     const height = canvas.height
 
     context.clearRect(0, 0, width, height)
-    context.fillStyle = '#0f172a'
+
+    const wallGradient = context.createLinearGradient(0, 0, 0, height)
+    wallGradient.addColorStop(0, '#f7efe3')
+    wallGradient.addColorStop(0.5, '#efe3d2')
+    wallGradient.addColorStop(1, '#e4d2bc')
+    context.fillStyle = wallGradient
     context.fillRect(0, 0, width, height)
 
-    context.fillStyle = '#14213d'
-    context.fillRect(0, 0, width, 92)
+    context.fillStyle = '#d9b792'
+    context.fillRect(0, height - 170, width, 170)
 
-    context.strokeStyle = 'rgba(255,255,255,0.08)'
-    for (let x = 0; x <= width; x += 48) {
-      context.beginPath()
-      context.moveTo(x, 0)
-      context.lineTo(x, height)
-      context.stroke()
+    context.fillStyle = '#c39868'
+    for (let x = 0; x < width; x += 64) {
+      context.fillRect(x, height - 170, 4, 170)
     }
 
-    for (let y = 0; y <= height; y += 48) {
+    context.fillStyle = '#9b7959'
+    context.fillRect(56, 72, width - 112, 22)
+
+    const windows = [150, 390, 630, 870]
+    windows.forEach((x) => {
+      context.fillStyle = '#a47b59'
+      context.fillRect(x, 104, 150, 168)
+      context.fillStyle = '#dcedef'
+      context.fillRect(x + 12, 116, 126, 144)
+      context.strokeStyle = 'rgba(255,255,255,0.55)'
+      context.lineWidth = 4
       context.beginPath()
-      context.moveTo(0, y)
-      context.lineTo(width, y)
+      context.moveTo(x + 75, 116)
+      context.lineTo(x + 75, 260)
+      context.moveTo(x + 12, 188)
+      context.lineTo(x + 138, 188)
       context.stroke()
-    }
+    })
 
-    context.fillStyle = '#1d4ed8'
-    context.fillRect(96, 132, 180, 140)
-    context.fillRect(332, 188, 220, 180)
-    context.fillRect(598, 108, 160, 220)
+    context.fillStyle = '#78916d'
+    context.fillRect(1020, 124, 38, 118)
+    context.beginPath()
+    context.arc(1039, 104, 42, 0, Math.PI * 2)
+    context.fill()
 
-    context.fillStyle = '#f8fafc'
-    context.font = '16px sans-serif'
-    context.fillText('World viewport prototype', 24, 38)
-    context.fillText('Create, move, and interact in one loop', 24, 64)
+    context.fillStyle = '#d0ae80'
+    context.fillRect(176, 342, 220, 86)
+    context.fillRect(480, 360, 250, 96)
+    context.fillRect(834, 334, 200, 82)
+
+    context.fillStyle = '#936846'
+    ;[
+      [200, 428, 12, 76],
+      [360, 428, 12, 76],
+      [510, 456, 12, 70],
+      [688, 456, 12, 70],
+      [860, 416, 12, 74],
+      [1010, 416, 12, 74],
+    ].forEach(([x, y, w, h]) => {
+      context.fillRect(x, y, w, h)
+    })
+
+    context.fillStyle = '#efd48a'
+    context.beginPath()
+    context.arc(1116, 124, 28, 0, Math.PI * 2)
+    context.fill()
+    context.fillStyle = 'rgba(239, 212, 138, 0.2)'
+    context.beginPath()
+    context.arc(1116, 124, 78, 0, Math.PI * 2)
+    context.fill()
+
+    context.fillStyle = '#4d463f'
+    context.font = 'bold 18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
+    context.fillText('Warm school commons prototype', 28, 42)
+    context.font = '16px Pretendard, SUIT, "Noto Sans KR", sans-serif'
+    context.fillText('새 캐릭터가 생성된 뒤 바로 움직이고 상호작용할 수 있습니다.', 28, 68)
 
     if (characters.length === 0) {
-      context.fillStyle = 'rgba(148, 163, 184, 0.9)'
-      context.font = '18px sans-serif'
-      context.fillText('No spawned characters yet', 24, 120)
+      context.fillStyle = 'rgba(77, 70, 63, 0.72)'
+      context.font = '18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
+      context.fillText('아직 생성된 캐릭터가 없습니다.', 28, 120)
       return
     }
-
-    if (typeof context.arc !== 'function') return
 
     characters.forEach((character, index) => {
       const isCurrent = currentCharacter?.id === character.id
@@ -93,8 +133,8 @@ export function WorldCanvas({
       context.lineWidth = isCurrent || isInteractionTarget ? 3 : 1
       context.stroke()
 
-      context.fillStyle = '#f8fafc'
-      context.font = '14px sans-serif'
+      context.fillStyle = '#4d463f'
+      context.font = '14px Pretendard, SUIT, "Noto Sans KR", sans-serif'
       context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
     })
 
@@ -118,7 +158,7 @@ export function WorldCanvas({
           <p className="world-helper world-helper-strong">{playerStatusCopy}</p>
         </div>
         <p className="world-helper">
-          {currentCharacter ? interactionStatusCopy : 'Submit the form to create the first prototype avatar.'}
+          {currentCharacter ? interactionStatusCopy : '첫 번째 캐릭터를 만들면 월드에 바로 반영됩니다.'}
         </p>
       </div>
       <canvas ref={canvasRef} width={WORLD_WIDTH} height={WORLD_HEIGHT} aria-label="2D world prototype canvas" />
