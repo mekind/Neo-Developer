@@ -113,13 +113,14 @@ describe('App', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: /^add agent$/i })[0])
     const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveTextContent(/NPC 추가/i)
 
-    const nameInput = within(dialog).getByLabelText(/name/i) as HTMLInputElement
+    const nameInput = within(dialog).getByLabelText(/이름/i) as HTMLInputElement
     expect(nameInput.value).not.toBe('')
 
     fireEvent.change(nameInput, { target: { value: 'Warm Guide' } })
-    fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
-    fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
+    fireEvent.change(within(dialog).getByLabelText(/페르소나/i), { target: { value: 'Warm school guide' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: /^NPC 추가$/i }))
 
     await waitFor(() => expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1))
   })
