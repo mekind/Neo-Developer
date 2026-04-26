@@ -29,7 +29,7 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
       setBackstoryPrompt('')
       onClose()
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Failed to create agent.')
+      setSubmitError(error instanceof Error ? error.message : '에이전트 생성에 실패했습니다.')
     } finally {
       setSubmitState('idle')
     }
@@ -40,20 +40,20 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
       <div className="dialog-panel" role="dialog" aria-modal="true" aria-labelledby="add-agent-dialog-title">
         <div className="dialog-header">
           <div>
-            <p className="eyebrow">Agent dialog</p>
-            <h3 id="add-agent-dialog-title">Add agent</h3>
+            <p className="eyebrow">에이전트 추가</p>
+            <h3 id="add-agent-dialog-title">에이전트 추가</h3>
           </div>
           <button type="button" className="secondary-button" onClick={onClose} disabled={submitState === 'submitting'}>
-            Close
+            닫기
           </button>
         </div>
 
-        <form className="creation-form" onSubmit={handleSubmit} aria-label="Add agent form">
+        <form className="creation-form" onSubmit={handleSubmit} aria-label="에이전트 추가 폼">
           <label className="field">
-            <span>Persona</span>
+            <span>페르소나</span>
             <input
               name="personaSummary"
-              placeholder="Warm school guide"
+              placeholder="따뜻하게 안내해주는 학교 가이드"
               value={personaSummary}
               onChange={(event) => setPersonaSummary(event.target.value)}
               required
@@ -61,10 +61,10 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
           </label>
 
           <label className="field">
-            <span>Backstory</span>
+            <span>배경 설명</span>
             <textarea
               name="backstoryPrompt"
-              placeholder="Helps every newcomer settle in."
+              placeholder="처음 온 사용자가 편하게 적응하도록 돕습니다."
               rows={4}
               value={backstoryPrompt}
               onChange={(event) => setBackstoryPrompt(event.target.value)}
@@ -75,7 +75,7 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
           {submitError ? <p role="alert">{submitError}</p> : null}
 
           <button type="submit" disabled={submitState === 'submitting'}>
-            {submitState === 'submitting' ? 'Adding…' : 'Add agent'}
+            {submitState === 'submitting' ? '추가 중…' : '에이전트 추가'}
           </button>
         </form>
       </div>

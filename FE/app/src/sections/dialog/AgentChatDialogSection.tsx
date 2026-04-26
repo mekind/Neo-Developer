@@ -20,15 +20,15 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
       <section className="chat-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="npc-chat-title">
         <header className="dialog-header chat-dialog-header">
           <div>
-            <p className="eyebrow">NPC chat</p>
-            <h3 id="npc-chat-title">Chat with {agent.label}</h3>
+            <p className="eyebrow">NPC 대화</p>
+            <h3 id="npc-chat-title">{agent.label}와 대화하기</h3>
           </div>
           <button type="button" className="secondary-button" onClick={onClose}>
-            Close
+            닫기
           </button>
         </header>
 
-        <div className="chat-transcript" aria-label="NPC chat transcript">
+        <div className="chat-transcript" aria-label="NPC 대화 내용">
           <article className="chat-bubble chat-bubble-agent">
             <p>{buildNpcLine(agent)}</p>
           </article>

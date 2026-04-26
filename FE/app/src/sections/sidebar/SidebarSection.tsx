@@ -14,8 +14,8 @@ export function SidebarSection({ agents, isLoading, errorMessage, onOpenDialog }
         <section className="sidebar-card sidebar-cta" aria-label="Add agent entry">
           <div className="sidebar-card-head">
             <div>
-              <p className="eyebrow">Agents</p>
-              <h2>Agent Lobby</h2>
+              <p className="eyebrow">에이전트</p>
+              <h2>에이전트 라운지</h2>
             </div>
             <span className="panel-count">{agents.length}</span>
           </div>
@@ -24,17 +24,17 @@ export function SidebarSection({ agents, isLoading, errorMessage, onOpenDialog }
             <span className="sidebar-primary-button__icon" aria-hidden="true">
               +
             </span>
-            <span>Add agent</span>
+            <span>에이전트 추가</span>
           </button>
         </section>
 
         <section className="sidebar-card sidebar-roster" aria-label="Backend agent list">
           <div className="sidebar-card-head">
-            <h3>Agent list</h3>
+            <h3>에이전트 목록</h3>
             <span className="panel-count">{agents.length}</span>
           </div>
 
-          {isLoading ? <p className="sidebar-state-copy">Loading backend agents…</p> : null}
+          {isLoading ? <p className="sidebar-state-copy">에이전트 목록을 불러오는 중…</p> : null}
           {errorMessage ? <p className="sidebar-state-copy" role="alert">{errorMessage}</p> : null}
 
           {!isLoading && !errorMessage && agents.length > 0 ? (
@@ -51,7 +51,7 @@ export function SidebarSection({ agents, isLoading, errorMessage, onOpenDialog }
           ) : null}
 
           {!isLoading && !errorMessage && agents.length === 0 ? (
-            <p className="sidebar-state-copy">No backend agents were returned.</p>
+            <p className="sidebar-state-copy">표시할 에이전트가 아직 없습니다.</p>
           ) : null}
         </section>
       </section>

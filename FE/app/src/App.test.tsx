@@ -73,25 +73,25 @@ vi.mock('@/game/WorldCanvas', () => ({
     interactionTarget: { id: string; label: string } | null
     lastInteractionMessage: string | null
   }) => (
-    <div aria-label="Phaser map viewport">
-      <p>Controlling {player.label} at ({player.xPercent.toFixed(0)}%, {player.yPercent.toFixed(0)}%).</p>
+    <div aria-label="Phaser 맵 화면">
+      <p>{player.label} 위치 · X {player.xPercent.toFixed(0)}% / Y {player.yPercent.toFixed(0)}%</p>
       <p>
         {isLoading
-          ? 'Loading backend roster.'
+          ? '에이전트 배치를 불러오는 중입니다.'
           : errorMessage
-            ? 'Backend roster unavailable.'
+            ? '에이전트 배치를 불러오지 못했습니다.'
             : interactionTarget
-              ? `Press Space near ${interactionTarget.label} to interact.`
+              ? `스페이스바로 ${interactionTarget.label}와 대화할 수 있어요.`
               : agents.length > 0
-                ? 'Arrow keys move. Space interacts when a target enters range.'
-                : 'No backend agents returned.'}
+                ? '방향키로 이동하고, 가까이 가면 스페이스바로 상호작용할 수 있어요.'
+                : '표시할 에이전트가 아직 없습니다.'}
       </p>
-      <p>Minimap visible.</p>
-      <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
-      <img src={player.imageSrc} alt={`${player.label} avatar`} />
+      <p>미니맵 표시 중</p>
+      <p>{lastInteractionMessage ?? '아직 상호작용이 시작되지 않았습니다.'}</p>
+      <img src={player.imageSrc} alt={`${player.label} 아바타`} />
       {agents.map((agent) => (
         <figure key={agent.id}>
-          <img src={agent.imageSrc} alt={`${agent.label} avatar`} />
+          <img src={agent.imageSrc} alt={`${agent.label} 아바타`} />
           <figcaption>{agent.label}</figcaption>
         </figure>
       ))}
@@ -115,30 +115,30 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/agents/i)
-    expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
-    expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
-    expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent(/에이전트/i)
+    expect(screen.getByText(/You 위치 · X 12% \/ Y 32%/i)).toBeInTheDocument()
+    expect(screen.getByText(/미니맵 표시 중/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/월드 스테이지/i)).toBeInTheDocument()
+    expect(await screen.findByRole('img', { name: /hana 아바타/i })).toBeInTheDocument()
   })
 
   it('keeps the add agent flow and appends a created npc', async () => {
     render(<App />)
 
-    fireEvent.click(screen.getAllByRole('button', { name: /^add agent$/i })[0])
+    fireEvent.click(screen.getAllByRole('button', { name: /에이전트 추가/i })[0])
     const dialog = screen.getByRole('dialog')
-    fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
-    fireEvent.change(within(dialog).getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
-    fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
+    fireEvent.change(within(dialog).getByLabelText(/페르소나/i), { target: { value: 'Warm school guide' } })
+    fireEvent.change(within(dialog).getByLabelText(/배경 설명/i), { target: { value: 'Helps every newcomer settle in.' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: /에이전트 추가/i }))
 
-    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3'))
+    await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('3'))
     expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
   })
 
   it('renders a simple backend agent roster', async () => {
     render(<App />)
 
-    expect(screen.getByRole('button', { name: /^add agent$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /에이전트 추가/i })).toBeInTheDocument()
 
     const roster = await screen.findByRole('list', { name: /backend agent list/i })
     expect(within(roster).getByText('Hana')).toBeInTheDocument()
@@ -161,7 +161,7 @@ describe('App', () => {
   it('uses a placeholder avatar when the backend agent has no image asset', async () => {
     render(<App />)
 
-    const placeholderAvatar = await screen.findByRole('img', { name: /min avatar/i })
+    const placeholderAvatar = await screen.findByRole('img', { name: /min 아바타/i })
     expect(placeholderAvatar.getAttribute('src')).toContain('data:image/svg+xml')
   })
 
@@ -174,7 +174,7 @@ describe('App', () => {
 
     render(<App />)
 
-    const fallbackAvatar = await screen.findByRole('img', { name: /unsafe avatar/i })
+    const fallbackAvatar = await screen.findByRole('img', { name: /unsafe 아바타/i })
     expect(fallbackAvatar.getAttribute('src')).toContain('data:image/svg+xml')
   })
 
@@ -193,7 +193,7 @@ describe('App', () => {
 
     render(<App />)
 
-    await screen.findByRole('img', { name: /hana avatar/i })
+    await screen.findByRole('img', { name: /hana 아바타/i })
     expect(globalThis.fetch).toHaveBeenCalled()
     expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
   })
@@ -203,12 +203,12 @@ describe('App', () => {
     randomSpy.mockReturnValueOnce(0.1).mockReturnValueOnce(0.2).mockReturnValueOnce(0.6).mockReturnValueOnce(0.7)
 
     render(<App />)
-    await screen.findByRole('img', { name: /hana avatar/i })
+    await screen.findByRole('img', { name: /hana 아바타/i })
 
     vi.useFakeTimers()
     try {
-      expect(screen.getByText(/controlling you at/i)).toHaveTextContent('Controlling You at (12%, 32%).')
-      expect(screen.getByText(/press space near hana to interact/i)).toBeInTheDocument()
+      expect(screen.getByText(/위치/i)).toHaveTextContent('You 위치 · X 12% / Y 32%')
+      expect(screen.getByText(/스페이스바로 hana와 대화할 수 있어요\./i)).toBeInTheDocument()
 
       fireEvent.keyDown(window, { key: 'ArrowRight' })
       act(() => {
@@ -219,8 +219,8 @@ describe('App', () => {
         vi.advanceTimersByTime(220)
       })
 
-      const statusLines = screen.getAllByText((content) => content.includes('Controlling'))
-      expect(statusLines[0]?.textContent).not.toBe('Controlling You at (12%, 32%).')
+      const statusLines = screen.getAllByText((content) => content.includes('위치'))
+      expect(statusLines[0]?.textContent).not.toBe('You 위치 · X 12% / Y 32%')
 
       fireEvent.keyDown(window, { key: ' ', code: 'Space' })
 
