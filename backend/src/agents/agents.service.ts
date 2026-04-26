@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import * as cronParser from 'cron-parser';
 import { AgentRepository } from '../repositories/agent.repository';
 import { MemoryDocumentRepository } from '../repositories/memory-document.repository';
 import { UserRepository } from '../repositories/user.repository';
@@ -165,6 +166,73 @@ export class AgentsService {
       this.loadDoc(userId, p.config),
     ]);
 
+    const snapshot = await this.buildMemorySnapshot(userId);
+
+    return this.openclaw.invoke({
+      user_id: userId,
+      agent_id: agentId,
+      input: dto.message,
+      trigger: 'message',
+      context: {
+        soul: (soul as Record<string, unknown>) || {},
+        config: (config as Record<string, unknown>) || {},
+        memory_snapshot: snapshot,
+      },
+    });
+  }
+
+  async getDueAgents(at?: string) {
+    const agents = await this.agents.listAll();
+    const dueAgents = [];
+    const targetTime = at ? new Date(at) : new Date();
+
+    for (const agent of agents) {
+      const userId = agent.userId;
+      const agentId = agent.id;
+      const p = this.paths(agentId);
+      
+      const configDoc = await this.docs.findOne(userId, p.config);
+      const config = (configDoc?.frontmatter as Record<string, any>) || {};
+      
+      if (!config.schedule) continue;
+
+      try {
+        const interval = cronParser.parseExpression(config.schedule, {
+          currentDate: new Date(targetTime.getTime() - 1000), // Check if it should have run by now
+        });
+        const nextRun = interval.next().toDate();
+        
+        // Simple due check: if next run is within the last 5 minutes (or 1 minute) of targetTime
+        // Actually, cron-parser can check if it matches exactly.
+        // For now, let's just check if it's due.
+        const prevRun = interval.prev().toDate();
+        const diffMs = Math.abs(targetTime.getTime() - prevRun.getTime());
+        
+        if (diffMs < 60000) { // If it was due within the last 1 minute
+           const [soul, snapshot] = await Promise.all([
+             this.loadDoc(userId, p.soul),
+             this.buildMemorySnapshot(userId)
+           ]);
+           
+           dueAgents.push({
+             agent_id: agentId,
+             user_id: userId,
+             context: {
+               soul: (soul as Record<string, unknown>) || {},
+               config,
+               memory_snapshot: snapshot,
+             }
+           });
+        }
+      } catch (e) {
+        // Skip invalid cron
+        continue;
+      }
+    }
+    return dueAgents;
+  }
+
+  private async buildMemorySnapshot(userId: string): Promise<MemorySnapshot> {
     const profile = await this.profiles.findByUserId(userId);
     const [prefDoc, interestDoc] = await Promise.all([
       this.loadDoc(userId, 'profile/preferences'),
@@ -181,24 +249,12 @@ export class AgentsService {
     const logDoc = await this.docs.findOne(userId, 'log');
     const recent_history = this.parseRecentLogs(logDoc?.body);
 
-    const snapshot: MemorySnapshot = {
+    return {
       profile: profile ? { nickname: profile.nickname, purpose: profile.purpose, techLevel: profile.techLevel } : null,
       preferences: prefDoc as Record<string, unknown> | null,
       interests,
       recent_history,
     };
-
-    return this.openclaw.invoke({
-      user_id: userId,
-      agent_id: agentId,
-      input: dto.message,
-      trigger: 'message',
-      context: {
-        soul: (soul as Record<string, unknown>) || {},
-        config: (config as Record<string, unknown>) || {},
-        memory_snapshot: snapshot,
-      },
-    });
   }
 
   private parseRecentLogs(body?: string): Array<{ ts: string; event: string; meta?: unknown }> {
