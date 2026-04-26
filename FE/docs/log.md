@@ -1,4 +1,5 @@
 # FE Vault Activity Log
+- 2026-04-26: Expanded the FE NPC chat dialog from a basic shell into a more complete chat-interface mock with transcript, prompt chips, composer, and send-button layout for future BE wiring.
 - 2026-04-26: Simplified the sidebar so it only shows the Add agent entry point plus the backend agent list, removing extra sidebar summary blocks.
 
 - 2026-04-26: Added a dedicated FE NPC chat-dialog shell component so future agent interactions can open a reusable conversation surface without rebuilding the layout.
