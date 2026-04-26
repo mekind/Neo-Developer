@@ -1,4 +1,0 @@
-interface:
-  display_name: "Land PR"
-  short_description: "Push, open PR, resolve conflicts, merge"
-  default_prompt: "Use $gh-pr-land to push the current work, open a PR, resolve merge conflicts intentionally, and merge it safely."

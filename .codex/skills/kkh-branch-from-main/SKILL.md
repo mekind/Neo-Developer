@@ -1,5 +1,5 @@
 ---
-name: branch-from-main
+name: kkh-branch-from-main
 description: Create a fresh working branch from `main` and switch to it immediately. Use when Codex needs to start new work from the repository's `main` branch and must name the branch `kkh/YYYYMMDD-HHMMSS` using the current local time down to seconds.
 ---
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Land PR"
+  short_description: "Document, push, and land a PR"
+  default_prompt: "Use $kkh-gh-pr-land to document the completed work in repo docs, push the current branch, open a PR, resolve conflicts intentionally, and merge it safely."
