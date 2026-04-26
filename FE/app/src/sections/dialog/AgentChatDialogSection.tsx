@@ -63,6 +63,23 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
     node.scrollTop = node.scrollHeight
   }, [transcript, isOpen])
 
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        onClose()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen, onClose])
+
   if (!isOpen || !agent) return null
 
   const submitMessage = () => {

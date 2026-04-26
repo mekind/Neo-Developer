@@ -96,6 +96,19 @@ describe('App', () => {
     expect(await screen.findByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
   })
 
+
+  it('closes chat with Escape', async () => {
+    render(<App />)
+    await screen.findByText('Hana')
+
+    fireEvent.click(screen.getByRole('button', { name: /npc 대화 열기/i }))
+    expect(await screen.findByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
+
+    fireEvent.keyDown(window, { key: 'Escape' })
+
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: /hana와 대화하기/i })).not.toBeInTheDocument())
+  })
+
   it('opens chat from the game interaction callback', async () => {
     render(<App />)
     await screen.findByText('Hana')
