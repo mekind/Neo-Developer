@@ -15,6 +15,8 @@ This pass still stops short of BE wiring, but the dialog now looks and feels lik
   - wires a temporary header-level trigger path for opening the NPC chat dialog against the first loaded agent
 - `FE/app/src/sections/title/TitleSection.tsx`
   - adds a topbar test button for opening the chat dialog without waiting for real world interaction wiring
+- `FE/app/src/App.tsx`
+  - falls back to a local mock NPC when no loaded agent is available so the header chat trigger always opens during FE testing
 - `FE/app/src/styles/global.css`
   - adds polished chat-dialog styling plus the topbar trigger treatment
 
@@ -40,4 +42,5 @@ This pass intentionally does **not** include:
 ## Follow-up notes
 
 - the temporary header trigger should be removed once a real NPC interaction path opens the dialog
+- the fallback mock NPC should remain test-only and should not replace backend-owned conversation targets long term
 - once backend chat exists, keep transcript rendering and composer behavior inside this component boundary rather than spreading chat layout across `App.tsx`
