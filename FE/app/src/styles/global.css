@@ -795,3 +795,19 @@ figure {
     justify-self: start;
   }
 }
+
+.topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-chat-trigger {
+  border: 0;
+  cursor: pointer;
+}
+
+.topbar-chat-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
