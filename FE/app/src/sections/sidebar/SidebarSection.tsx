@@ -25,7 +25,7 @@ export function SidebarSection({ agents, player, isLoading, errorMessage, onOpen
           <p>
             <strong>{player.label}</strong> is the controllable user avatar.
           </p>
-          <p>Move with WASD or arrow keys. Press E near an agent NPC to interact.</p>
+          <p>Move with arrow keys. Press Space near an agent NPC to interact.</p>
         </section>
 
         <section className="panel-section creation-launcher" aria-label="Add agent entry">
