@@ -9,6 +9,7 @@ Durable synthesized frontend knowledge pages.
 - [[Frontend Stack Baseline]] ([Frontend Stack Baseline](frontend-stack-baseline.md))
 - [[Frontend Project Bootstrap]] ([Frontend Project Bootstrap](frontend-project-bootstrap.md))
 - [[Frontend API Integration Baseline]] ([Frontend API Integration Baseline](frontend-api-integration-baseline.md))
+- [[Frontend Backend Agent Roster]] ([Frontend Backend Agent Roster](frontend-backend-agent-roster.md))
 
 ## Suggested Additions
 - screen map

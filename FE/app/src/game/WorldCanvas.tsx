@@ -1,24 +1,14 @@
 import { useEffect, useRef } from 'react'
 
-import { INTERACTION_RADIUS, WORLD_HEIGHT, WORLD_WIDTH, measureDistance, type WorldCharacter } from './characters'
+import { type WorldAgent } from './agents'
 
 type WorldCanvasProps = {
-  characters: WorldCharacter[]
-  currentCharacter: WorldCharacter | null
-  interactionTarget: WorldCharacter | null
-  playerStatusCopy: string
-  interactionStatusCopy: string
-  lastInteractionMessage: string | null
+  agents: WorldAgent[]
+  isLoading: boolean
+  errorMessage: string | null
 }
 
-export function WorldCanvas({
-  characters,
-  currentCharacter,
-  interactionTarget,
-  playerStatusCopy,
-  interactionStatusCopy,
-  lastInteractionMessage,
-}: WorldCanvasProps) {
+export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -102,78 +92,43 @@ export function WorldCanvas({
     context.fillStyle = '#4d463f'
     context.font = 'bold 18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
     context.fillText('School Commons', 28, 42)
-
-    if (characters.length === 0) {
-      context.fillStyle = 'rgba(77, 70, 63, 0.72)'
-      context.font = '18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-      context.fillText('Room is empty', 28, 92)
-      return
-    }
-
-    characters.forEach((character, index) => {
-      const isCurrent = currentCharacter?.id === character.id
-      const isInteractionTarget = interactionTarget?.id === character.id
-
-      if (isCurrent) {
-        context.strokeStyle = 'rgba(34, 197, 94, 0.4)'
-        context.lineWidth = 10
-        context.beginPath()
-        context.arc(character.x, character.y, INTERACTION_RADIUS, 0, Math.PI * 2)
-        context.stroke()
-      }
-
-      context.fillStyle = character.color
-      context.beginPath()
-      context.arc(character.x, character.y, 18, 0, Math.PI * 2)
-      context.fill()
-
-      context.strokeStyle = isCurrent ? '#f8fafc' : isInteractionTarget ? '#facc15' : 'rgba(226,232,240,0.45)'
-      context.lineWidth = isCurrent || isInteractionTarget ? 3 : 1
-      context.stroke()
-
-      context.fillStyle = '#4d463f'
-      context.font = '14px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-      context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
-    })
-
-    if (currentCharacter && interactionTarget) {
-      context.fillStyle = '#facc15'
-      context.font = '15px sans-serif'
-      context.fillText(`Interaction ready: ${currentCharacter.name} ↔ ${interactionTarget.name}`, 24, height - 32)
-    }
-  }, [characters, currentCharacter, interactionTarget])
+  }, [])
 
   return (
     <div className="world-surface">
       <div className="world-status">
         <div>
           <p className="eyebrow">Room</p>
-          <h3>{characters.length} online</h3>
-          <p className="world-helper world-helper-strong">{playerStatusCopy}</p>
+          <h2>Agents: {agents.length}</h2>
         </div>
-        <p className="world-helper">{currentCharacter ? interactionStatusCopy : '첫 번째 에이전트를 추가하세요.'}</p>
+        <p className="world-helper">
+          {isLoading
+            ? 'Loading backend roster.'
+            : errorMessage
+              ? 'Backend roster unavailable.'
+              : agents.length > 0
+                ? 'Randomized once per load.'
+                : 'No backend agents returned.'}
+        </p>
       </div>
-      <canvas ref={canvasRef} width={WORLD_WIDTH} height={WORLD_HEIGHT} aria-label="2D world prototype canvas" />
-      <div className="world-feedback" aria-live="polite">
-        <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
-        {currentCharacter && interactionTarget ? (
-          <p>
-            Distance to {interactionTarget.name}: {Math.round(measureDistance(currentCharacter, interactionTarget))}px
-          </p>
-        ) : (
-          <p>Bring your player close to another avatar to unlock the interaction prompt.</p>
-        )}
+
+      <div className="world-canvas-stage">
+        <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
+        {!isLoading && !errorMessage && agents.length > 0 ? (
+          <div className="world-agent-layer" aria-label="Backend world agents">
+            {agents.map((agent) => (
+              <figure
+                key={agent.id}
+                className="world-agent"
+                style={{ left: `${agent.xPercent}%`, top: `${agent.yPercent}%` }}
+              >
+                <img src={agent.imageSrc} alt={`${agent.label} avatar`} className="world-agent-avatar" />
+                <figcaption>{agent.label}</figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : null}
       </div>
-      {characters.length > 0 ? (
-        <ul className="world-roster" aria-label="World roster">
-          {characters.map((character) => (
-            <li key={character.id}>
-              <span className="world-roster-dot" style={{ backgroundColor: character.color }} aria-hidden="true" />
-              {character.name} · {character.archetype}
-            </li>
-          ))}
-        </ul>
-      ) : null}
     </div>
   )
 }
