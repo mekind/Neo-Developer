@@ -15,5 +15,6 @@
 - 2026-04-26: Switched frontend deployment from GitHub Pages to Vercel and aligned the production Vite base path with root-hosted deploys.
 - 2026-04-26: Added a durable FE tone and typography guideline based on the accessibility-first warm-neutral demo direction.
 - 2026-04-26: Applied the warm-neutral accessibility-first tone guideline to the FE app with Korean-friendly copy, midtone surfaces, and Hangul-first font stack updates.
+- 2026-04-26: Compacted the FE shell into a more product-like surface by stripping placeholder copy and tightening UI density without changing feature logic.
 - 2026-04-26: Shifted the FE world viewport from React-drawn canvas rendering to a Phaser-backed map surface so the stage behaves more like the NeoD-style game canvas direction.
 - 2026-04-26: Configured frontend production CI to inject `VITE_API_BASE_URL=https://backend-kappa-brown-63.vercel.app` during the Vercel deploy workflow instead of relying on a source fallback.

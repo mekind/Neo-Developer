@@ -44,13 +44,13 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar panel-shell">
         <div>
-          <p className="eyebrow">demo-friendly baseline</p>
-          <h1>편하게 둘러보는 데모 공간</h1>
+          <p className="eyebrow">Neo Commons</p>
+          <h1>스쿨 커먼즈</h1>
         </div>
-        <p className="topbar-copy">
-          처음 보는 사람도 부담 없이 이해할 수 있도록, 백엔드에서 받은 agent roster를 Phaser 기반 월드 맵에
-          올려 React shell 바깥의 진짜 game surface처럼 보여줍니다.
-        </p>
+        <div className="topbar-summary" aria-label="Room summary">
+          <span className="status-pill">Live</span>
+          <strong>{agents.length}</strong>
+        </div>
       </header>
 
       <div className="app-body">
@@ -60,10 +60,9 @@ export default function App() {
 
         <section className="world-stage panel-shell" aria-label="world stage">
           <div className="world-stage-copy">
-            <p className="eyebrow">World viewport</p>
-            <p className="description">
-              NeoD처럼 월드 영역은 Phaser가 직접 렌더링하고, React는 주변 레이아웃과 안내 UI를 맡습니다.
-            </p>
+            <p className="eyebrow">Room</p>
+            <h2>Commons Floor</h2>
+            <p className="description">NeoD처럼 Phaser가 월드 surface를 직접 렌더링하고 React는 외곽 UI를 맡습니다.</p>
           </div>
           <WorldCanvas agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
         </section>

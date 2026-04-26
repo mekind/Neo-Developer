@@ -50,7 +50,6 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
 
           this.background = this.add.graphics()
           this.obstacleLayer = this.add.graphics()
-
           this.drawBackground()
           this.drawObstacles()
           this.syncAgents()
@@ -171,17 +170,17 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
     <div className="world-surface">
       <div className="world-status">
         <div>
-          <p className="eyebrow">Live world state</p>
-          <h2>Backend agents: {agents.length}</h2>
+          <p className="eyebrow">Room</p>
+          <h2>Agents: {agents.length}</h2>
         </div>
         <p className="world-helper">
           {isLoading
-            ? 'Loading backend agents into the world.'
+            ? 'Loading backend roster.'
             : errorMessage
-              ? 'Backend agent roster could not be loaded.'
+              ? 'Backend roster unavailable.'
               : agents.length > 0
-                ? 'Agents are mounted into the Phaser world surface and stay still until the next load.'
-                : 'No backend agents were returned for this world load.'}
+                ? 'Phaser-mounted once per load.'
+                : 'No backend agents returned.'}
         </p>
       </div>
 
