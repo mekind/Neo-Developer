@@ -43,6 +43,7 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const transcriptRef = useRef<HTMLDivElement | null>(null)
   const formRef = useRef<HTMLFormElement | null>(null)
+  const isComposingRef = useRef(false)
 
   const seededMessages = useMemo<ChatMessage[]>(() => {
     if (!agent) return []
@@ -167,8 +168,18 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
                 placeholder="메시지를 입력하세요"
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
+                onCompositionStart={() => {
+                  isComposingRef.current = true
+                }}
+                onCompositionEnd={() => {
+                  isComposingRef.current = false
+                }}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' && !event.shiftKey) {
+                    if (isComposingRef.current || event.nativeEvent.isComposing) {
+                      return
+                    }
+
                     event.preventDefault()
                     formRef.current?.requestSubmit()
                   }
