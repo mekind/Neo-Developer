@@ -1,15 +1,15 @@
 ---
 name: kkh-gh-pr-land
-description: Publish completed local work to GitHub after implementation is done or the final local commit is ready. Use when Codex needs to first summarize the completed work into repository docs for shared context, then push the current branch, create a pull request, inspect and resolve merge conflicts by understanding each side's intent, and merge the PR safely with GitHub or `gh`.
+description: Publish completed local work to GitHub after implementation is done or the final local commit is ready. Use when Codex needs to first summarize the completed work into repository docs for shared context, then push the current branch, create a pull request that always targets `main`, inspect and resolve merge conflicts by understanding each side's intent, and merge the PR safely into `main` with GitHub or `gh`.
 ---
 
-# GitHub PR Land
+# KKH GitHub PR Land
 
 ## Overview
 
 Use this skill only after the local implementation is complete and the branch is ready to publish.
 Before opening a PR, write a concise documentation update so the repository keeps durable context about what was done, why it was done, and where future agents should look next.
-Then push, open a PR, resolve merge friction intentionally, and merge without losing either side's meaning.
+Then push, open a PR to `main`, resolve merge friction intentionally, and merge without losing either side's meaning.
 
 ## Prerequisites
 
@@ -17,6 +17,7 @@ Then push, open a PR, resolve merge friction intentionally, and merge without lo
 - Require GitHub access through the available GitHub plugin or `gh` CLI.
 - Require local validation appropriate to the change before publishing.
 - Require the branch to be ready for review; do not use this skill to continue feature implementation.
+- Require the land target to be `main`.
 
 ## Workflow
 
@@ -43,9 +44,10 @@ Then push, open a PR, resolve merge friction intentionally, and merge without lo
 ### 3. Confirm branch and base
 
 - Detect the current branch with `git branch --show-current`.
-- Detect the default or intended base branch.
-- If the current branch is the default branch, create a focused branch before pushing.
-- Prefer preserving the user's existing branch naming when a non-default branch already exists.
+- Set the intended base branch to `main`.
+- If the current branch is `main`, create a focused branch before pushing; do not open a PR from `main` to `main`.
+- If the current branch was not originally created from `main`, inspect whether it still cleanly represents work intended to merge into `main`.
+- Do not retarget the PR to another branch unless the user explicitly overrides the rule.
 
 ### 4. Verify before publish
 
@@ -59,16 +61,18 @@ Then push, open a PR, resolve merge friction intentionally, and merge without lo
 - Prefer `git push -u origin $(git branch --show-current)` for first push.
 - If the branch already tracks a remote branch, use the normal push path.
 
-### 6. Create the PR
+### 6. Create the PR to `main`
 
+- Always target `main` as the base branch unless the user explicitly instructs otherwise.
 - Prefer the GitHub plugin when it can create the PR cleanly.
-- Use `gh pr create` when plugin coverage is insufficient or when repo/head/base inference is clearer through CLI.
+- Use `gh pr create --base main` when plugin coverage is insufficient or when repo/head/base inference is clearer through CLI.
 - Default to a draft PR unless the user explicitly asks for ready-for-review or immediate merge.
 - Write a concise PR title and body that explain what changed, why it changed, how it was verified, and what docs were updated for shared context.
 
-### 7. Check mergeability
+### 7. Check mergeability against `main`
 
 - Inspect the PR's merge state after creation.
+- Confirm the base branch is actually `main`.
 - If the PR is cleanly mergeable and required checks are green or otherwise acceptable for the repository, proceed toward merge.
 - If GitHub reports conflicts, stop treating this as a mechanical merge and inspect the conflicting files directly.
 
@@ -76,10 +80,10 @@ Then push, open a PR, resolve merge friction intentionally, and merge without lo
 
 When conflicts exist:
 
-- Fetch the latest base branch state.
+- Fetch the latest `main` state.
 - Open each conflicted file and identify:
   - what the current branch is trying to preserve or introduce
-  - what the base branch changed and why
+  - what `main` changed and why
   - whether both changes must survive in a merged result
 - Do not default to `--ours` or `--theirs` across the whole file.
 - Preserve behavior and meaning from both sides whenever they are compatible.
@@ -87,10 +91,11 @@ When conflicts exist:
 - After resolving, rerun the most relevant checks for the affected area.
 - Commit the conflict resolution clearly, then push the updated branch.
 
-### 9. Merge the PR
+### 9. Merge the PR into `main`
 
 - Re-check PR status after the conflict-resolution push.
 - Merge only when the PR is in an acceptable state for the repository.
+- Merge only into `main` unless the user explicitly overrides that rule.
 - Prefer the repository's normal merge method; use squash, merge-commit, or rebase merge according to repo convention or user instruction.
 - If auto-merge is the normal path and all conditions are satisfied, it is acceptable to enable it instead of waiting manually.
 
@@ -100,6 +105,7 @@ Summarize:
 
 - docs updated for shared context
 - current branch
+- PR base branch (`main`)
 - commit(s) pushed
 - PR number and URL
 - merge method used
@@ -128,8 +134,9 @@ Summarize:
 - Never merge with unresolved conflicts.
 - Never claim merge success without checking the actual PR state.
 - Never skip validation after meaningful conflict edits.
-- Never overwrite the base branch's intent without first understanding it.
+- Never overwrite `main`'s intent without first understanding it.
 - Never skip the docs-context update when the completed work introduces knowledge future agents will need.
+- Never open or merge the land PR against a non-`main` base unless the user explicitly overrides the rule.
 
 ## Output expectations
 

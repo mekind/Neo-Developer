@@ -1,4 +1,4 @@
 interface:
-  display_name: "Branch From Main"
-  short_description: "Create kkh timestamp branch from main"
-  default_prompt: "Use $kkh-branch-from-main to create a new branch from main named kkh/YYYYMMDD-HHMMSS and switch to it."
+  display_name: "KKH Branch From Main"
+  short_description: "KKH timestamp branch from origin/main"
+  default_prompt: "Use $kkh-branch-from-main to create a new branch from origin/main named kkh/YYYYMMDD-HHMMSS and switch to it."
