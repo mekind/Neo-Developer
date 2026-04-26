@@ -10,10 +10,10 @@ describe('App', () => {
     } as Response)
   })
 
-  it('renders the gather-like world layout shell', async () => {
+  it('renders the warm demo-friendly world layout shell', async () => {
     render(<App />)
-    expect(screen.getByRole('heading', { name: /gather-like world layout/i })).toBeInTheDocument()
-    expect(screen.getByRole('complementary')).toHaveTextContent(/sidebar ui placeholder/i)
+    expect(screen.getByRole('heading', { name: /편하게 둘러보는 데모 공간/i })).toBeInTheDocument()
+    expect(screen.getByRole('complementary')).toHaveTextContent(/낯설지 않게 시작하는 안내/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     await screen.findByRole('list', { name: /live items list/i })
   })

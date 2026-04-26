@@ -1,6 +1,7 @@
 # Frontend Wiki Index
 
 ## Core Topics
+- [[Frontend Tone & Typography Guideline]] ([Frontend Tone & Typography Guideline](topics/frontend-tone-and-typography-guideline.md))
 - [[Frontend Workspace Overview]] ([Frontend Workspace Overview](topics/frontend-workspace-overview.md))
 - [[Frontend Architecture — MVVM + Clean Architecture]] ([Frontend Architecture — MVVM + Clean Architecture](topics/frontend-architecture-mvvm-clean.md))
 - [[Frontend Stack Baseline]] ([Frontend Stack Baseline](topics/frontend-stack-baseline.md))

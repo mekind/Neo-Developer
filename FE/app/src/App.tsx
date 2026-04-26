@@ -32,11 +32,12 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar panel-shell">
         <div>
-          <p className="eyebrow">FE bootstrap</p>
-          <h1>Gather-like World Layout</h1>
+          <p className="eyebrow">demo-friendly baseline</p>
+          <h1>편하게 둘러보는 데모 공간</h1>
         </div>
         <p className="topbar-copy">
-          상단 바와 사이드바를 유지한 채, 따뜻한 학교 공용공간 톤의 월드에서 패널 기반 캐릭터 생성 플로우를 바로 검증합니다.
+          처음 보는 사람도 부담 없이 이해할 수 있도록, 따뜻한 중간 톤의 월드와 읽기 쉬운 안내 흐름으로
+          데모 경험을 정리합니다.
         </p>
       </header>
 
@@ -49,7 +50,8 @@ export default function App() {
           <div className="world-stage-copy">
             <p className="eyebrow">World viewport</p>
             <p className="description">
-              Gather-like 레이아웃을 유지하면서, 생성된 캐릭터가 따뜻한 학교 공용공간 톤의 월드에 즉시 나타나는 첫 상호작용 루프를 보여줍니다.
+              생성된 캐릭터가 따뜻한 공용 공간 톤의 월드에 바로 나타나며, 복잡한 설명보다 먼저 편안한 첫인상을
+              전달하도록 구성했습니다.
             </p>
           </div>
           <WorldCanvas characters={characters} currentCharacter={currentCharacter} />

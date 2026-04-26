@@ -10,3 +10,5 @@
 - 2026-04-26: Updated the FE shell to a Gather-like layout with a top bar, sidebar, and main world viewport; documented the new layout direction in the FE vault.
 - 2026-04-26: Shifted the world canvas placeholder from a cool abstract palette to a warm school commons mood and updated FE docs to reflect the tone direction.
 - 2026-04-26: Switched frontend deployment from GitHub Pages to Vercel and aligned the production Vite base path with root-hosted deploys.
+- 2026-04-26: Added a durable FE tone and typography guideline based on the accessibility-first warm-neutral demo direction.
+- 2026-04-26: Applied the warm-neutral accessibility-first tone guideline to the FE app with Korean-friendly copy, midtone surfaces, and Hangul-first font stack updates.
