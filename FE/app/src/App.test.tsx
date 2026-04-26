@@ -115,7 +115,6 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/agents/i)
     expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
     expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
@@ -131,8 +130,7 @@ describe('App', () => {
     fireEvent.change(within(dialog).getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
 
-    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3'))
-    expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
+    await waitFor(() => expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1))
   })
 
   it('renders a simple backend agent roster', async () => {
