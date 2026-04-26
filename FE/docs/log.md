@@ -6,3 +6,4 @@
 - 2026-04-26: Added FE stack baseline docs and created `FE/app/` Vite + TypeScript scaffold for a lightweight gather-like starting point.
 - 2026-04-26: Marked the FE documentation context as demo/prototype-oriented so future work stays scoped to the demo build.
 - 2026-04-26: Updated the FE shell to a Gather-like layout with a top bar, sidebar, and main world viewport; documented the new layout direction in the FE vault.
+- 2026-04-26: Shifted the world canvas placeholder from a cool abstract palette to a warm school commons mood and updated FE docs to reflect the tone direction.

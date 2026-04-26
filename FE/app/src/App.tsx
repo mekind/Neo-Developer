@@ -21,7 +21,7 @@ export default function App() {
           <div className="world-stage-copy">
             <p className="eyebrow">World viewport</p>
             <p className="description">
-              Gather Town처럼 실제 월드 화면은 상단 UI와 사이드 UI를 제외한 본문 영역을 최대한 사용합니다.
+              Gather Town처럼 실제 월드 화면은 상단 UI와 사이드 UI를 제외한 본문 영역을 최대한 사용하고, 현재는 따뜻한 학교 공용공간 톤으로 맞추고 있습니다.
             </p>
           </div>
           <WorldCanvas />
