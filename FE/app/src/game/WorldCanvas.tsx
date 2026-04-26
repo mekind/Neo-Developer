@@ -276,36 +276,36 @@ export function WorldCanvas({
     <div className="world-surface">
       <div className="world-status">
         <div>
-          <p className="eyebrow">Room</p>
-          <h2>Agents: {agents.length}</h2>
+          <p className="eyebrow">공간</p>
+          <h2>에이전트 {agents.length}명</h2>
           <p className="world-helper world-helper-strong">
-            Controlling {player.label} at ({player.xPercent.toFixed(0)}%, {player.yPercent.toFixed(0)}%).
+            {player.label} 위치 · X {player.xPercent.toFixed(0)}% / Y {player.yPercent.toFixed(0)}%
           </p>
         </div>
         <p className="world-helper">
           {isLoading
-            ? 'Loading backend roster.'
+            ? '에이전트 배치를 불러오는 중입니다.'
             : errorMessage
-              ? 'Backend roster unavailable.'
+              ? '에이전트 배치를 불러오지 못했습니다.'
               : interactionTarget
-                ? `Press Space near ${interactionTarget.label} to interact.`
+                ? `스페이스바로 ${interactionTarget.label}와 대화할 수 있어요.`
                 : agents.length > 0
-                  ? 'Main camera follows the player. Minimap shows the full room.'
-                  : 'No backend agents returned.'}
+                  ? '메인 카메라는 플레이어를 따라가고, 미니맵은 방 전체를 보여줍니다.'
+                  : '표시할 에이전트가 아직 없습니다.'}
         </p>
       </div>
 
       <div className="world-canvas-shell">
-        <div ref={mountRef} className="world-phaser-host" aria-label="Phaser map viewport" />
+        <div ref={mountRef} className="world-phaser-host" aria-label="Phaser 맵 화면" />
         <div className="world-canvas-hud" aria-hidden="true">
-          <span className="world-minimap-badge">Minimap</span>
+          <span className="world-minimap-badge">미니맵</span>
         </div>
-        {interactionTarget ? <div className="world-interaction-prompt">SPACE · Talk to {interactionTarget.label}</div> : null}
+        {interactionTarget ? <div className="world-interaction-prompt">SPACE · {interactionTarget.label}와 대화</div> : null}
       </div>
 
       <div className="world-feedback" aria-live="polite">
-        <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
-        {distanceToTarget !== null ? <p>Distance to {interactionTarget?.label}: {distanceToTarget.toFixed(1)}%</p> : null}
+        <p>{lastInteractionMessage ?? '아직 상호작용이 시작되지 않았습니다.'}</p>
+        {distanceToTarget !== null ? <p>{interactionTarget?.label}까지 거리: {distanceToTarget.toFixed(1)}%</p> : null}
       </div>
     </div>
   )

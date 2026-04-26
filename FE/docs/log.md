@@ -3,6 +3,7 @@
 - 2026-04-26: Centered the initial player spawn, switched the main Phaser camera to follow the player, and added a true in-canvas minimap camera so the room view is part of the game surface.
 - 2026-04-26: Added a default FE dummy NPC (`Noa`) to the loaded world roster so chat and interaction UI always have at least one safe local target during testing.
 - 2026-04-26: Added a header-level FE test trigger so the richer NPC chat dialog UI can be opened immediately before the real interaction event is wired.
+- 2026-04-26: Translated user-facing frontend labels, dialogs, and world guidance into Korean-first copy while preserving the same FE behavior.
 - 2026-04-26: Expanded the FE NPC chat dialog from a basic shell into a more complete chat-interface mock with transcript, prompt chips, composer, and send-button layout for future BE wiring.
 - 2026-04-26: Polished the minimal sidebar into a cleaner card-style agent lobby while keeping only the Add agent action and agent list.
 - 2026-04-26: Simplified the sidebar so it only shows the Add agent entry point plus the backend agent list, removing extra sidebar summary blocks.
