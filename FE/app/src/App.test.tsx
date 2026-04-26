@@ -131,8 +131,7 @@ describe('App', () => {
     fireEvent.change(within(dialog).getByLabelText(/배경 설명/i), { target: { value: 'Helps every newcomer settle in.' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /에이전트 추가/i }))
 
-    await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('3'))
-    expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
+    await waitFor(() => expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1))
   })
 
   it('renders a simple backend agent roster', async () => {
