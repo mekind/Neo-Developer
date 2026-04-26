@@ -35,6 +35,13 @@ python lpc-character-pipeline/scripts/generate_character.py \
 
 세부는 `scripts/README.md` 참고.
 
+## Frontend animation policy
+
+- `character.png`는 LPC 표준 전체 시트를 담고 있지만, 현재 frontend 정책은 **walk-only**다.
+- `frame-map.json`에는 `walk_*`와 `idle_*`가 모두 들어가지만, frontend는 `walk_n/w/s/e`만 authoritative 하게 사용한다.
+- idle rows는 layered clothing coverage가 불안정해서 재생 대상으로 쓰지 않는다.
+- 정지 상태가 필요하면 idle row 대신 **첫 walk frame 고정** 또는 **walk-derived pseudo-idle** 을 사용한다.
+
 ---
 
 ## 라이선스 (LPC 자산)
