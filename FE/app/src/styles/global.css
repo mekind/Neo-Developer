@@ -19,6 +19,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -51,6 +52,11 @@ textarea {
   padding: 20px;
 }
 
+.world-surface {
+  display: grid;
+  gap: 16px;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   text-transform: uppercase;
@@ -61,6 +67,7 @@ textarea {
 
 h1,
 h2,
+h3,
 p,
 ul {
   margin-top: 0;
@@ -76,6 +83,93 @@ ul {
   height: auto;
   display: block;
   border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.world-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+}
+
+.world-helper {
+  max-width: 30ch;
+  color: #cbd5e1;
+  margin-bottom: 0;
+}
+
+.world-roster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-left: 0;
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.world-roster li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(30, 41, 59, 0.85);
+}
+
+.world-roster-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.creation-form,
+.panel-section {
+  display: grid;
+  gap: 12px;
+}
+
+.creation-form {
+  margin: 20px 0;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field span,
+.panel-section h3 {
+  color: #f8fafc;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.95);
+  color: inherit;
+}
+
+button {
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #22c55e, #14b8a6);
+  color: #022c22;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.05);
+}
+
+.muted-list {
+  margin-top: 20px;
+  color: #94a3b8;
 }
 
 .action-list {
@@ -89,5 +183,10 @@ ul {
   .app-shell {
     grid-template-columns: 1fr;
     padding: 20px;
+  }
+
+  .world-status {
+    flex-direction: column;
+    align-items: start;
   }
 }
