@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import * as cronParser from 'cron-parser';
+import cronParser from 'cron-parser';
 import { AgentRepository } from '../repositories/agent.repository';
 import { MemoryDocumentRepository } from '../repositories/memory-document.repository';
 import { UserRepository } from '../repositories/user.repository';
