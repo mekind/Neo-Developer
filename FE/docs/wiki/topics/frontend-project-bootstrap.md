@@ -51,6 +51,10 @@ FE/
 
 ## First implementation direction
 
+The initial bootstrap page describes the pre-backend phase only.
+The first reusable FE-to-BE slice is documented separately in [[Frontend API Integration Baseline]]([Frontend API Integration Baseline](frontend-api-integration-baseline.md)).
+
+
 When actual feature work starts, the default shape is:
 - React handles shell UI and overlays
 - Canvas handles the room/world surface

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { archetypeOptions, type CharacterArchetype, type WorldCharacter } from '@/game/characters'
+import { listItems, type Item } from '@/services/items'
 
 type InteractionPanelProps = {
   characters: WorldCharacter[]
@@ -10,6 +11,33 @@ type InteractionPanelProps = {
 export function InteractionPanel({ characters, onCreateCharacter }: InteractionPanelProps) {
   const [name, setName] = useState('')
   const [archetype, setArchetype] = useState<CharacterArchetype>('scout')
+  const [items, setItems] = useState<Item[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadItems() {
+      try {
+        setIsLoading(true)
+        setErrorMessage(null)
+        const nextItems = await listItems()
+        if (isMounted) setItems(nextItems)
+      } catch (error) {
+        if (isMounted) {
+          setErrorMessage(error instanceof Error ? error.message : 'Failed to load items.')
+        }
+      } finally {
+        if (isMounted) setIsLoading(false)
+      }
+    }
+
+    void loadItems()
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -67,7 +95,7 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
             <span>{currentCharacter.archetype}</span>
           </p>
         ) : (
-          <p>Waiting for the first agent.</p>
+          <p>아직 에이전트가 없습니다.</p>
         )}
       </section>
 
@@ -86,8 +114,29 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
             ))}
           </ul>
         ) : (
-          <p>Agents appear here as soon as they join.</p>
+          <p>참여한 에이전트가 여기에 표시됩니다.</p>
         )}
+      </section>
+
+      <section className="panel-section" aria-labelledby="live-items-title">
+        <div className="panel-label-row">
+          <h3 id="live-items-title">Items</h3>
+          <span className="panel-count">{items.length}</span>
+        </div>
+
+        {isLoading ? <p>Loading items…</p> : null}
+        {errorMessage ? <p role="alert">{errorMessage}</p> : null}
+
+        {!isLoading && !errorMessage ? (
+          <ul className="agent-list" aria-label="Live items list">
+            {items.map((item) => (
+              <li key={item.id}>
+                <strong>{item.name}</strong>
+                <span>{item.price.toLocaleString()} KRW</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </section>
     </section>
   )
