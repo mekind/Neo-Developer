@@ -90,7 +90,7 @@ describe('App', () => {
     render(<App />)
     await screen.findByText('Hana')
 
-    fireEvent.click(screen.getByRole('button', { name: /open npc chat/i }))
+    fireEvent.click(screen.getByRole('button', { name: /npc 대화 열기/i }))
 
     expect(screen.getByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
   })

@@ -225,11 +225,11 @@ h3 {
 
 .dialog-panel,
 .chat-dialog-panel {
-  width: min(100%, 520px);
+  width: min(100%, 760px);
   display: grid;
-  gap: 14px;
-  padding: 18px;
-  border-radius: 18px;
+  gap: 16px;
+  padding: 22px;
+  border-radius: 22px;
   border: 1px solid rgba(114, 104, 90, 0.16);
   background: rgba(255, 252, 247, 0.98);
   box-shadow: 0 24px 60px rgba(50, 42, 31, 0.2);
@@ -291,18 +291,21 @@ h3 {
 
 .chat-transcript {
   display: grid;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 14px;
+  gap: 12px;
+  min-height: 340px;
+  max-height: 420px;
+  overflow: auto;
+  padding: 14px;
+  border-radius: 16px;
   background: rgba(244, 236, 227, 0.86);
 }
 
 .chat-bubble {
   display: grid;
   gap: 6px;
-  max-width: 100%;
-  padding: 12px 14px;
-  border-radius: 16px;
+  max-width: min(78%, 460px);
+  padding: 13px 15px;
+  border-radius: 18px;
 }
 
 .chat-bubble-agent {
@@ -347,5 +350,50 @@ h3 {
 
   .app-body {
     grid-template-columns: 1fr;
+  }
+}
+
+
+.chat-composer-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.chat-composer-row textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.chat-send-button {
+  min-width: 112px;
+  height: 100%;
+  align-self: stretch;
+  border: 1px solid rgba(114, 104, 90, 0.18);
+  border-radius: 14px;
+  padding: 0 18px;
+  background: linear-gradient(180deg, #f3e2ce, #e8cfb2);
+  color: #43362c;
+  font-weight: 700;
+}
+
+.chat-send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+  .chat-dialog-panel {
+    width: min(100%, 100%);
+    padding: 18px;
+  }
+
+  .chat-composer-row {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-send-button {
+    min-height: 48px;
   }
 }
