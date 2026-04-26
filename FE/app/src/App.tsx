@@ -16,12 +16,16 @@ export default function App() {
     isDialogOpen,
     activeChatAgent,
     isChatOpen,
+    chatMessages,
+    isChatSubmitting,
+    chatErrorMessage,
     openDialog,
     closeDialog,
     closeChatDialog,
     handleCreateAgent,
     handleAgentInteraction,
-    handleOpenTestChat,
+    handleOpenChat,
+    handleSendChatMessage,
   } = useAgentsPage()
   const { catalog: lpcSpriteCatalog, creditsText: localCreditsText, errorMessage: lpcErrorMessage } = useLpcSpriteBundle()
 
@@ -32,7 +36,7 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <TitleSection liveCount={agents.length} onOpenTestChat={handleOpenTestChat} isChatDisabled={agents.length === 0} />
+      <TitleSection liveCount={agents.length} onOpenChat={handleOpenChat} isChatDisabled={agents.length === 0} />
 
       <div className="app-body">
         <SidebarSection
@@ -47,7 +51,15 @@ export default function App() {
       </div>
 
       <AddAgentDialogSection isOpen={isDialogOpen} onClose={closeDialog} onCreateAgent={handleCreateAgent} />
-      <AgentChatDialogSection agent={activeChatAgent} isOpen={isChatOpen} onClose={closeChatDialog} />
+      <AgentChatDialogSection
+        agent={activeChatAgent}
+        isOpen={isChatOpen}
+        onClose={closeChatDialog}
+        messages={chatMessages}
+        isSubmitting={isChatSubmitting}
+        errorMessage={chatErrorMessage}
+        onSendMessage={handleSendChatMessage}
+      />
     </main>
   )
 }

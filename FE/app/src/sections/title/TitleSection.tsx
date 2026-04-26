@@ -1,10 +1,10 @@
 type TitleSectionProps = {
   liveCount: number
-  onOpenTestChat: () => void
+  onOpenChat: () => void
   isChatDisabled: boolean
 }
 
-export function TitleSection({ liveCount, onOpenTestChat, isChatDisabled }: TitleSectionProps) {
+export function TitleSection({ liveCount, onOpenChat, isChatDisabled }: TitleSectionProps) {
   return (
     <header className="topbar topbar-compact panel-shell">
       <h1>Myclaw</h1>
@@ -12,7 +12,7 @@ export function TitleSection({ liveCount, onOpenTestChat, isChatDisabled }: Titl
         <button
           type="button"
           className="secondary-button topbar-chat-trigger"
-          onClick={onOpenTestChat}
+          onClick={onOpenChat}
           disabled={isChatDisabled}
           aria-label="NPC 대화 열기"
         >

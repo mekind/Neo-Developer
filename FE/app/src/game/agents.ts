@@ -11,20 +11,12 @@ import {
 export interface BackendAgentRecord {
   id: string
   name?: string
+  persona?: Record<string, unknown> | null
   imageAsset?: string | null
   characterPngUrl?: string | null
   frameMap?: LpcFrameMap | null
   creditsText?: string | null
   lpcState?: LpcState | null
-}
-
-export interface CreatedAgentRecord {
-  id: string
-  name: string
-  archetype?: 'scout' | 'maker' | 'spark'
-  personaSummary?: string
-  backstoryPrompt?: string
-  createdAt?: string
 }
 
 export interface WorldAgent {
@@ -42,6 +34,7 @@ export interface WorldAgent {
   } | null
   xPercent: number
   yPercent: number
+  personaSummary?: string
 }
 
 export interface WorldPlayer {
@@ -94,12 +87,11 @@ const DEFAULT_DUMMY_AGENT: BackendAgentRecord = {
   id: 'dummy-agent-noa',
   name: 'Noa',
   imageAsset: `lpc:${DEFAULT_LPC_BUNDLE_ID}`,
+  persona: { summary: '기본 공간 안내 NPC' },
 }
 
 const LOCAL_LPC_AGENT_BUNDLE_BY_ID: Record<string, string> = {
   'dummy-agent-noa': DEFAULT_LPC_BUNDLE_ID,
-  'dummy-haru': DEFAULT_LPC_BUNDLE_ID,
-  'dummy-miso': DEFAULT_LPC_BUNDLE_ID,
 }
 
 function isAllowedImageAsset(value: string) {
@@ -189,16 +181,21 @@ function nextPosition(existing: Array<{ xPercent: number; yPercent: number }>) {
   }
 }
 
+function getPersonaSummary(persona: BackendAgentRecord['persona']) {
+  if (!persona || typeof persona !== 'object') return undefined
+  const summary = (persona as Record<string, unknown>).summary
+  return typeof summary === 'string' && summary.trim() ? summary : undefined
+}
+
 function buildWorldAgentBase(record: BackendAgentRecord, occupied: Array<{ xPercent: number; yPercent: number }>): WorldAgent {
   const position = nextPosition(occupied)
   occupied.push(position)
 
-  const resolvedImage = resolveAgentImage(record)
-
   return {
     id: record.id,
     label: record.name?.trim() || record.id,
-    ...resolvedImage,
+    personaSummary: getPersonaSummary(record.persona),
+    ...resolveAgentImage(record),
     ...position,
   }
 }
@@ -206,13 +203,12 @@ function buildWorldAgentBase(record: BackendAgentRecord, occupied: Array<{ xPerc
 export function buildWorldAgents(records: BackendAgentRecord[]): WorldAgent[] {
   const occupied: Array<{ xPercent: number; yPercent: number }> = []
   const withDummy = records.some((record) => record.id === DEFAULT_DUMMY_AGENT.id) ? records : [...records, DEFAULT_DUMMY_AGENT]
-
   return withDummy.map((record) => buildWorldAgentBase(record, occupied))
 }
 
-export function createLocalWorldAgent(existingAgents: WorldAgent[], record: CreatedAgentRecord): WorldAgent {
+export function buildWorldAgentForAppend(existingAgents: WorldAgent[], record: BackendAgentRecord): WorldAgent {
   const occupied = existingAgents.map((agent) => ({ xPercent: agent.xPercent, yPercent: agent.yPercent }))
-  return buildWorldAgentBase({ id: record.id, name: record.name, imageAsset: `lpc:${DEFAULT_LPC_BUNDLE_ID}` }, occupied)
+  return buildWorldAgentBase(record, occupied)
 }
 
 export function clampPercent(value: number, min: number, max: number) {

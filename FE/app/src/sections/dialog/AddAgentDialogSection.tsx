@@ -6,8 +6,8 @@ type AddAgentDialogSectionProps = {
   onCreateAgent: (name: string, persona: string) => Promise<void>
 }
 
-const nameLeft = ['Warm', 'Sunny', 'Kind', 'Brave', 'Calm', 'Bright']
-const nameRight = ['Guide', 'Buddy', 'Helper', 'Scout', 'Friend', 'Keeper']
+const nameLeft = ['따뜻한', '햇살같은', '다정한', '든든한', '차분한', '반가운']
+const nameRight = ['가이드', '도우미', '메이트', '탐험가', '친구', '지킴이']
 
 function createRandomAgentName() {
   const left = nameLeft[Math.floor(Math.random() * nameLeft.length)]
