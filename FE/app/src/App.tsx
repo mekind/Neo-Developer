@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import { useAgentsPage } from '@/hooks/useAgentsPage'
 import { useLpcSpriteBundle } from '@/hooks/useLpcSpriteBundle'
 import { AddAgentDialogSection } from '@/sections/dialog/AddAgentDialogSection'
@@ -17,6 +19,7 @@ export default function App() {
     chatMessages,
     isChatSubmitting,
     chatErrorMessage,
+    focusRequest,
     openDialog,
     closeDialog,
     closeChatDialog,
@@ -24,16 +27,35 @@ export default function App() {
     handleAgentInteraction,
     handleOpenChat,
     handleSendChatMessage,
+    handleFocusAgent,
   } = useAgentsPage()
-  const { catalog: lpcSpriteCatalog } = useLpcSpriteBundle()
+  const { catalog: lpcSpriteCatalog, creditsText: localCreditsText, errorMessage: lpcErrorMessage } = useLpcSpriteBundle()
+
+  const combinedCreditsText = useMemo(() => {
+    const parts = [localCreditsText, ...agents.map((agent) => agent.apiSprite?.creditsText ?? '').filter(Boolean)]
+    return Array.from(new Set(parts.filter(Boolean))).join('\n\n')
+  }, [agents, localCreditsText])
 
   return (
     <main className="app-shell">
       <TitleSection liveCount={agents.length} onOpenChat={handleOpenChat} isChatDisabled={agents.length === 0} />
 
       <div className="app-body">
-        <SidebarSection agents={agents} isLoading={isLoading} errorMessage={errorMessage} onOpenDialog={openDialog} />
-        <MapSection agents={agents} lpcSpriteCatalog={lpcSpriteCatalog} onAgentInteraction={handleAgentInteraction} />
+        <SidebarSection
+          agents={agents}
+          isLoading={isLoading}
+          errorMessage={errorMessage}
+          lpcCreditsText={combinedCreditsText || null}
+          lpcErrorMessage={lpcErrorMessage}
+          onOpenDialog={openDialog}
+          onFocusAgent={handleFocusAgent}
+        />
+        <MapSection
+          agents={agents}
+          lpcSpriteCatalog={lpcSpriteCatalog}
+          onAgentInteraction={handleAgentInteraction}
+          focusRequest={focusRequest}
+        />
       </div>
 
       <AddAgentDialogSection isOpen={isDialogOpen} onClose={closeDialog} onCreateAgent={handleCreateAgent} />

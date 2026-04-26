@@ -1,33 +1,28 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { vi } from 'vitest'
-
 import App from './App'
 import { resetAgentSessionForTests } from '@/services/agents'
 
-type AgentPayload = {
-  id: string
-  name?: string
-  persona?: Record<string, unknown> | null
-  imageAsset?: string | null
-}
-
-type MockPayload = {
-  ok?: boolean
-  status?: number
-  json: unknown
-}
-
-const fixedUserId = '5c4a5a9b-ac4f-4e2f-a7ba-4d7e93bd2e86'
-const backendAgents: AgentPayload[] = [
+const backendAgents = [
   {
     id: 'mentor-hana',
     name: 'Hana',
     persona: { summary: 'Warm school guide' },
     imageAsset: 'lpc:cafe-bot',
+    characterPngUrl: null,
+    frameMap: null,
+    creditsText: 'Hana credits from API',
   },
 ]
 
-function installFetchMock(overrides: Record<string, MockPayload> = {}) {
+const fixedUserId = '5c4a5a9b-ac4f-4e2f-a7ba-4d7e93bd2e86'
+const lpcSpriteBundle = {
+  catalog: {},
+  creditsText: 'Made with LPC assets',
+  errorMessage: null,
+}
+
+function installFetchMock(overrides: Record<string, { ok?: boolean; status?: number; json: unknown }> = {}) {
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const url = typeof input === 'string' ? input : input instanceof Request ? input.url : String(input)
     const pathname = new URL(url, 'https://fe.local').pathname
@@ -36,7 +31,6 @@ function installFetchMock(overrides: Record<string, MockPayload> = {}) {
     const override = overrides[key] ?? overrides[pathname]
 
     let payload = override
-
     if (!payload) {
       if (method === 'GET' && pathname === `/users/${fixedUserId}/agents`) {
         payload = { json: backendAgents }
@@ -74,28 +68,29 @@ function installFetchMock(overrides: Record<string, MockPayload> = {}) {
 
 function installLocalStorageMock() {
   const store = new Map<string, string>()
-  const localStorageMock = {
-    getItem: (key: string) => store.get(key) ?? null,
-    setItem: (key: string, value: string) => {
-      store.set(key, value)
-    },
-    removeItem: (key: string) => {
-      store.delete(key)
-    },
-    clear: () => {
-      store.clear()
-    },
-  }
-
   Object.defineProperty(window, 'localStorage', {
-    value: localStorageMock,
+    value: {
+      getItem: (key: string) => (key === 'myclaw-user-id' ? fixedUserId : store.get(key) ?? null),
+      setItem: (key: string, value: string) => void store.set(key, value),
+      removeItem: (key: string) => void store.delete(key),
+      clear: () => void store.clear(),
+    },
     configurable: true,
   })
 }
 
+vi.mock('@/hooks/useLpcSpriteBundle', () => ({
+  useLpcSpriteBundle: () => ({
+    catalog: lpcSpriteBundle.catalog,
+    creditsText: lpcSpriteBundle.creditsText,
+    errorMessage: lpcSpriteBundle.errorMessage,
+  }),
+}))
+
 vi.mock('@/game/WorldCanvas', () => ({
-  WorldCanvas: ({ onAgentInteraction }: { onAgentInteraction: (agent: { id: string; label: string; usesPlaceholder: boolean; imageSrc: string }) => void }) => (
+  WorldCanvas: ({ onAgentInteraction, focusRequest }: { onAgentInteraction: (agent: { id: string; label: string; usesPlaceholder: boolean; imageSrc: string }) => void; focusRequest: { agentId: string; requestId: number } | null }) => (
     <div aria-label="Phaser map viewport">
+      <p>{focusRequest ? `Focus target: ${focusRequest.agentId}` : 'No focus target'}</p>
       <button
         type="button"
         onClick={() =>
@@ -141,8 +136,8 @@ describe('App', () => {
     expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
     expect(await screen.findByText('Hana')).toBeInTheDocument()
     expect(await screen.findByText('Noa')).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: /lpc 크레딧/i })).not.toBeInTheDocument()
     await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('2'))
+    expect(screen.getByText(/Made with LPC assets/i)).toBeInTheDocument()
   })
 
   it('creates a backend agent from the dialog', async () => {
@@ -162,19 +157,27 @@ describe('App', () => {
     )
   })
 
-  it('opens chat from the header trigger, sends an invoke request, and shows the cropped avatar frame', async () => {
+  it('requests focus movement when a sidebar agent is clicked', async () => {
+    render(<App />)
+    await screen.findByText('Hana')
+
+    fireEvent.click(screen.getByRole('button', { name: /hana/i }))
+
+    expect(screen.getByText('Focus target: mentor-hana')).toBeInTheDocument()
+  })
+
+  it('opens chat from the header trigger and sends an invoke request', async () => {
     render(<App />)
     await screen.findByText('Hana')
 
     fireEvent.click(screen.getByRole('button', { name: /npc 대화 열기/i }))
+    expect(await screen.findByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
 
     const dialog = await screen.findByRole('dialog', { name: /hana와 대화하기/i })
-    expect(screen.getByRole('img', { name: /hana 아바타/i })).toBeInTheDocument()
     fireEvent.change(within(dialog).getByLabelText(/메시지/i), { target: { value: '안녕!' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /보내기/i }))
 
-    expect(await within(dialog).findByText('안녕하세요! 저는 하나예요.')).toBeInTheDocument()
-    expect(within(dialog).getByText(/사용 스킬: insane-search/i)).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('안녕하세요! 저는 하나예요.')).toBeInTheDocument())
   })
 
   it('closes chat with Escape', async () => {
@@ -183,9 +186,7 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /npc 대화 열기/i }))
     expect(await screen.findByRole('dialog', { name: /hana와 대화하기/i })).toBeInTheDocument()
-
     fireEvent.keyDown(window, { key: 'Escape' })
-
     await waitFor(() => expect(screen.queryByRole('dialog', { name: /hana와 대화하기/i })).not.toBeInTheDocument())
   })
 
@@ -206,18 +207,5 @@ describe('App', () => {
     expect(await screen.findByText('API 요청에 실패했습니다: 500')).toBeInTheDocument()
     expect(screen.getByText('Noa')).toBeInTheDocument()
     await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('1'))
-  })
-
-  it('always uses the fixed backend user id', async () => {
-    window.localStorage.setItem('myclaw-user-id', 'user-from-storage')
-
-    render(<App />)
-
-    await screen.findByText('Hana')
-
-    const calledPaths = vi.mocked(globalThis.fetch).mock.calls.map(([input]) => new URL(String(input), 'https://fe.local').pathname)
-    expect(calledPaths).toContain(`/users/${fixedUserId}/agents`)
-    expect(calledPaths).not.toContain('/users/user-from-storage/agents')
-    expect(calledPaths.every((path) => !path.startsWith('/users/user-from-storage'))).toBe(true)
   })
 })

@@ -14,6 +14,7 @@ type WorldCanvasProps = {
   agents: WorldAgent[]
   lpcSpriteCatalog: LpcSpriteCatalog
   onAgentInteraction: (agent: WorldAgent) => void
+  focusRequest: { agentId: string; requestId: number } | null
 }
 
 type FacingDirection = 'n' | 's' | 'e' | 'w'
@@ -161,14 +162,16 @@ function resolveAgentBundle(agent: WorldAgent, catalog: LpcSpriteCatalog): Resol
   return resolveLocalBundle(agent.spriteBundleId, catalog)
 }
 
-export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction }: WorldCanvasProps) {
+export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction, focusRequest }: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
   const interactionCallbackRef = useRef(onAgentInteraction)
+  const focusRequestRef = useRef(focusRequest)
 
   agentsRef.current = agents
   interactionCallbackRef.current = onAgentInteraction
+  focusRequestRef.current = focusRequest
 
   useEffect(() => {
     let cancelled = false
@@ -199,6 +202,8 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction }: Wo
         }
         private currentInteractionTarget: WorldAgent | null = null
         private speechByAgent = new Map<string, number>()
+        private lastHandledFocusRequestId = 0
+        private autoMoveTarget: { x: number; y: number } | null = null
 
         preload() {
           this.load.image(ROOM_TEXTURE_KEY, ROOM_TEXTURE_PATH)
@@ -291,7 +296,9 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction }: Wo
         }
 
         update(time: number, delta: number) {
-          const movement = resolvePlayerMovementStep(getInputVector(this.cursors), this.playerState.velocity, PLAYER_MOVEMENT_SPEED, delta)
+          this.syncFocusRequest()
+          const inputVector = this.autoMoveTarget ? this.getAutoMoveVector() : getInputVector(this.cursors)
+          const movement = resolvePlayerMovementStep(inputVector, this.playerState.velocity, PLAYER_MOVEMENT_SPEED, delta)
           this.playerState.velocity = movement.velocity
           this.playerFacing = getFacingDirection(movement.velocity, this.playerFacing)
 
@@ -326,6 +333,40 @@ export function WorldCanvas({ agents, lpcSpriteCatalog, onAgentInteraction }: Wo
           })
         }
 
+        private syncFocusRequest() {
+          const request = focusRequestRef.current
+          if (!request || request.requestId === this.lastHandledFocusRequestId) return
+          this.lastHandledFocusRequestId = request.requestId
+          const agent = agentsRef.current.find((entry) => entry.id === request.agentId)
+          if (!agent) return
+          const dx = projectX(agent.xPercent) - projectX(this.playerState.xPercent)
+          const dy = projectY(agent.yPercent) - projectY(this.playerState.yPercent)
+          const distance = Math.hypot(dx, dy)
+          const standOff = PLAYER_RADIUS + AGENT_RADIUS + 16
+          if (distance <= standOff) {
+            this.autoMoveTarget = null
+            return
+          }
+          const ratio = (distance - standOff) / distance
+          this.autoMoveTarget = {
+            x: projectX(this.playerState.xPercent) + dx * ratio,
+            y: projectY(this.playerState.yPercent) + dy * ratio,
+          }
+        }
+
+        private getAutoMoveVector(): MovementVector {
+          if (!this.autoMoveTarget) return { x: 0, y: 0 }
+          const playerX = projectX(this.playerState.xPercent)
+          const playerY = projectY(this.playerState.yPercent)
+          const dx = this.autoMoveTarget.x - playerX
+          const dy = this.autoMoveTarget.y - playerY
+          const distance = Math.hypot(dx, dy)
+          if (distance <= 6) {
+            this.autoMoveTarget = null
+            return { x: 0, y: 0 }
+          }
+          return { x: dx / distance, y: dy / distance }
+        }
         private resolveCollision(current: { x: number; y: number }, attempted: { x: number; y: number }) {
           const tryPoint = (candidate: { x: number; y: number }) => {
             if (OBSTACLES.some((rect) => circleIntersectsRect(candidate.x, candidate.y, PLAYER_RADIUS, rect))) return false

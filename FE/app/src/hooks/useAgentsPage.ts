@@ -29,6 +29,7 @@ export function useAgentsPage() {
   const [chatMessagesByAgentId, setChatMessagesByAgentId] = useState<Record<string, ChatMessage[]>>({})
   const [isChatSubmitting, setIsChatSubmitting] = useState(false)
   const [chatErrorMessage, setChatErrorMessage] = useState<string | null>(null)
+  const [focusRequest, setFocusRequest] = useState<{ agentId: string; requestId: number } | null>(null)
 
   const agents = useMemo(() => backendAgents, [backendAgents])
   const activeChatMessages = activeChatAgent ? (chatMessagesByAgentId[activeChatAgent.id] ?? []) : []
@@ -112,6 +113,13 @@ export function useAgentsPage() {
     }
   }
 
+  const handleFocusAgent = (agentId: string) => {
+    setFocusRequest((current) => ({
+      agentId,
+      requestId: (current?.requestId ?? 0) + 1,
+    }))
+  }
+
   return {
     agents,
     isLoading,
@@ -122,6 +130,7 @@ export function useAgentsPage() {
     chatMessages: activeChatMessages,
     isChatSubmitting,
     chatErrorMessage,
+    focusRequest,
     openDialog: () => setIsDialogOpen(true),
     closeDialog: () => setIsDialogOpen(false),
     closeChatDialog: handleCloseChat,
@@ -129,5 +138,6 @@ export function useAgentsPage() {
     handleAgentInteraction,
     handleOpenChat,
     handleSendChatMessage,
+    handleFocusAgent,
   }
 }

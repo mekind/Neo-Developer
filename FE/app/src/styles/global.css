@@ -198,6 +198,29 @@ h3 {
   font-weight: 700;
 }
 
+
+.agent-list-button {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.agent-list-button:hover {
+  background: rgba(255, 252, 247, 0.72);
+}
+
+.agent-list-button strong {
+  color: #2f372d;
+}
+
 .world-stage {
   min-height: 0;
   overflow: hidden;
