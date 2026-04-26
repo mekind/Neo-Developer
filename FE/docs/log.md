@@ -1,4 +1,5 @@
 # FE Vault Activity Log
+- 2026-04-26: Polished the NPC add dialog close control into a pill-style icon+label button so the dismiss action reads more clearly in the current FE-only dialog flow.
 - 2026-04-26: Connected the sidebar Add agent button to the FE-only NPC dialog path and converted the dialog copy to Korean-first labels for the current demo flow.
 - 2026-04-26: Added a header-level FE test trigger so the richer NPC chat dialog UI can be opened immediately before the real interaction event is wired.
 - 2026-04-26: Expanded the FE NPC chat dialog from a basic shell into a more complete chat-interface mock with transcript, prompt chips, composer, and send-button layout for future BE wiring.
