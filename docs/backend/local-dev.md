@@ -11,9 +11,26 @@
 
 ```bash
 cd backend
-npm install
+cp .env.example .env       # DATABASE_URL / DIRECT_URL 채우기 (Neon dev branch 또는 로컬 Postgres)
+npm install                # postinstall에서 prisma generate 자동 실행
+npx prisma migrate dev     # 첫 실행 시 (로컬 DB에 스키마 적용)
 npm run start:dev          # watch 모드, http://localhost:3000
 ```
+
+### Prisma 명령
+
+| 명령 | 용도 |
+|---|---|
+| `npx prisma migrate dev --name <name>` | 스키마 변경 후 새 마이그레이션 생성 + 로컬 DB 적용 |
+| `npx prisma migrate deploy` | 이미 만들어진 마이그레이션을 운영 DB에 적용 (CI에서 사용) |
+| `npx prisma generate` | TypeScript 클라이언트 재생성 (`postinstall`로 자동) |
+| `npx prisma studio` | 브라우저 GUI로 DB 들여다보기 |
+| `npx prisma db push` | 마이그레이션 없이 스키마만 푸시 (스크래치 작업용, 운영 금지) |
+
+### 로컬 DB 옵션
+
+1. **Neon dev branch (권장)** — Vercel Postgres 가입 후 dev branch URL을 `.env`에 넣으면 끝.
+2. **Docker Postgres** — `docker run -d --name myclaw-pg -e POSTGRES_PASSWORD=dev -p 5432:5432 postgres:16` 후 `DATABASE_URL="postgresql://postgres:dev@localhost:5432/postgres"` `DIRECT_URL=` 동일.
 
 기타 스크립트 (`backend/package.json`):
 

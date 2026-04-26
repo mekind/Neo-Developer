@@ -5,6 +5,7 @@
 - **NestJS 10** (Express 어댑터)
 - **TypeScript 5** (strict null checks)
 - **class-validator / class-transformer** (DTO 검증)
+- **Prisma 5 + PostgreSQL** (Vercel Postgres / Neon, llm-wiki 스타일 Memory도 Postgres에 저장)
 - **Vercel @vercel/node** (서버리스 배포)
 - **Node 20.13.1**
 
@@ -13,24 +14,57 @@
 ```
 backend/
 ├── api/
-│   └── index.ts            # Vercel 서버리스 엔트리 (Express 어댑터로 NestApp 감쌈)
+│   └── index.ts                    # Vercel 서버리스 엔트리 (Express 어댑터로 NestApp 감쌈)
+├── prisma/
+│   ├── schema.prisma               # User, Profile, Agent, MemoryDocument, Skill 모델
+│   └── migrations/
+│       ├── migration_lock.toml     # provider = postgresql
+│       └── 20260426000000_init/migration.sql
 ├── src/
-│   ├── main.ts             # 로컬 실행 엔트리 (node dist/main.js)
-│   ├── app.module.ts       # 루트 모듈
-│   └── items/
-│       ├── items.module.ts
-│       ├── items.controller.ts
-│       ├── items.service.ts        # 인메모리 배열 CRUD
-│       └── dto/
-│           ├── create-item.dto.ts  # name, description?, price (>= 0)
-│           └── update-item.dto.ts  # 모든 필드 optional
-├── vercel.json             # 모든 경로를 api/index.ts로 라우팅
+│   ├── main.ts                     # 로컬 실행 엔트리 (node dist/main.js)
+│   ├── app.module.ts               # 루트 모듈
+│   ├── prisma/
+│   │   ├── prisma.module.ts        # @Global, exports PrismaService
+│   │   └── prisma.service.ts       # PrismaClient + lifecycle hooks
+│   ├── health/
+│   │   ├── health.module.ts
+│   │   └── health.controller.ts    # GET /health (DB ping 포함)
+│   ├── repositories/               # P0 도메인 리포지토리 인터페이스 + Prisma 어댑터
+│   │   ├── repositories.module.ts
+│   │   ├── user.repository.ts
+│   │   ├── profile.repository.ts
+│   │   ├── agent.repository.ts
+│   │   ├── memory-document.repository.ts
+│   │   └── skill.repository.ts
+│   └── items/                      # (mock CRUD, 추후 BE-17에서 제거 예정)
+├── vercel.json                     # 모든 경로를 api/index.ts로 라우팅
+├── .env.example
 ├── nest-cli.json
 ├── tsconfig.json
 ├── tsconfig.build.json
 ├── package.json
 └── package-lock.json
 ```
+
+## Prisma 통합 (BE-01)
+
+- `PrismaModule`은 `@Global()` 처리 → 어디서나 `PrismaService` 주입
+- `PrismaService`는 `OnModuleInit`/`OnModuleDestroy`로 connection 수명 관리
+- `RepositoriesModule`이 5개 레포지토리(`User`, `Profile`, `Agent`, `MemoryDocument`, `Skill`)를 export — 도메인 모듈에서 import해서 사용
+- 마이그레이션: `prisma migrate dev` (로컬), `prisma migrate deploy` (CI에서 배포 직전)
+- 클라이언트 생성: `postinstall`로 자동 (`prisma generate`)
+
+### 데이터 모델 요약
+
+| Model | Purpose |
+|---|---|
+| `User` | 익명 사용자 (uuid 1개 = 1 사용자) |
+| `Profile` | 닉네임/목적/기술수준 등 온보딩 결과 (1:1) |
+| `Agent` | 사용자의 에이전트 (3개 제한은 서비스 레이어에서 enforce) |
+| `MemoryDocument` | llm-wiki 패턴 문서 (`(userId, path)` 복합 PK, 본문 + frontmatter) |
+| `Skill` | Tool 카탈로그 (사전 정의된 skill 목록) |
+
+> Agent의 `persona.md`/`SOUL.md`/`config.md`는 별도 컬럼이 아닌 `MemoryDocument` 행으로 저장 (`path = agents/{agentId}/{persona|SOUL|config}`).
 
 ## 두 종류의 엔트리 포인트
 
