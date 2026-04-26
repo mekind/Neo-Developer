@@ -14,7 +14,7 @@ export function TitleSection({ liveCount, onOpenTestChat, isChatDisabled }: Titl
           className="secondary-button topbar-chat-trigger"
           onClick={onOpenTestChat}
           disabled={isChatDisabled}
-          aria-label="Open NPC Chat"
+          aria-label="NPC 대화 열기"
         >
           NPC 대화 열기
         </button>
