@@ -1,4 +1,4 @@
-import { buildWorldAgents, PLACEHOLDER_AGENT_IMAGE } from './agents'
+import { buildWorldAgents, buildWorldPlayer, PLACEHOLDER_AGENT_IMAGE } from './agents'
 
 describe('buildWorldAgents', () => {
   it('falls back to id when name is missing, uses the placeholder for missing image assets, and appends the default dummy agent', () => {
@@ -46,5 +46,12 @@ describe('buildWorldAgents', () => {
     expect(firstBuild[0]?.yPercent).not.toBe(secondBuild[0]?.yPercent)
     expect(firstBuild[1]?.xPercent).not.toBe(secondBuild[1]?.xPercent)
     expect(firstBuild[1]?.yPercent).not.toBe(secondBuild[1]?.yPercent)
+  })
+})
+
+
+describe('buildWorldPlayer', () => {
+  it('starts the player from the room center', () => {
+    expect(buildWorldPlayer()).toMatchObject({ xPercent: 50, yPercent: 50 })
   })
 })
