@@ -30,6 +30,8 @@ interface Item {
 | POST | `/items` | 생성 | 201 |
 | PATCH | `/items/:id` | 부분 수정 | 200 |
 | DELETE | `/items/:id` | 삭제 | 200 |
+| POST | `/memory/users/:userId/bootstrap` | 사용자 메모리 기본 구조 생성/갱신 | 201 |
+| GET | `/memory/users/:userId` | 사용자 메모리 상태 조회 | 200 |
 
 ---
 
@@ -248,4 +250,94 @@ curl -s -X PATCH $BASE/items/<id> \
   -H 'Content-Type: application/json' \
   -d '{"price":3500}'
 curl -s -X DELETE $BASE/items/<id>
+```
+
+
+---
+
+## 6. 사용자 메모리 부트스트랩
+
+```
+POST /memory/users/:userId/bootstrap
+```
+
+사용자별 메모리 루트(`~/.cmux/users/<userId>/`) 아래에 아래 구조를 만듭니다. 테스트/로컬 격리를 위해 `CMUX_MEMORY_ROOT`로 루트를 덮어쓸 수 있습니다.
+
+```text
+<root>/<userId>/
+├── profile.md
+├── index.md
+└── agents/
+```
+
+**Request Body**
+
+```json
+{
+  "name": "수진",
+  "purpose": "반복업무 자동화",
+  "interests": ["marketing", "ops"]
+}
+```
+
+| 필드 | 타입 | 필수 | 제약 |
+|---|---|---|---|
+| `name` | string | ❌ | — |
+| `purpose` | string | ❌ | — |
+| `interests` | string[] | ❌ | 배열의 모든 원소가 string |
+
+**Response 201**
+
+```json
+{
+  "userId": "sujin",
+  "exists": true,
+  "createdAt": "2026-04-26T05:12:00.000Z",
+  "updatedAt": "2026-04-26T05:12:00.000Z",
+  "paths": {
+    "root": "/Users/kkh/.cmux/users/sujin",
+    "profile": "/Users/kkh/.cmux/users/sujin/profile.md",
+    "index": "/Users/kkh/.cmux/users/sujin/index.md",
+    "agents": "/Users/kkh/.cmux/users/sujin/agents"
+  },
+  "files": {
+    "profile": true,
+    "index": true,
+    "agents": true
+  },
+  "profilePreview": "# User Profile\n..."
+}
+```
+
+**Response 400**
+
+`userId`는 영문자, 숫자, `-`, `_` 만 허용합니다.
+
+---
+
+## 7. 사용자 메모리 상태 조회
+
+```
+GET /memory/users/:userId
+```
+
+**Response 200**
+
+```json
+{
+  "userId": "sujin",
+  "exists": true,
+  "paths": {
+    "root": "/Users/kkh/.cmux/users/sujin",
+    "profile": "/Users/kkh/.cmux/users/sujin/profile.md",
+    "index": "/Users/kkh/.cmux/users/sujin/index.md",
+    "agents": "/Users/kkh/.cmux/users/sujin/agents"
+  },
+  "files": {
+    "profile": true,
+    "index": true,
+    "agents": true
+  },
+  "profilePreview": "# User Profile\n..."
+}
 ```
