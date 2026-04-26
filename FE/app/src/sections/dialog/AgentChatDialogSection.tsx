@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import type { WorldAgent } from '@/game/agents'
 
@@ -8,18 +8,73 @@ type AgentChatDialogSectionProps = {
   onClose: () => void
 }
 
+type ChatMessage = {
+  id: string
+  speaker: 'agent' | 'user'
+  text: string
+}
+
 const starterPrompts = ['오늘 일정 알려줘', '이 공간 설명해줘', '처음 온 사람에게 팁 있어?']
 
 function buildNpcGreeting(agent: WorldAgent) {
   return agent.usesPlaceholder
-    ? `${agent.label}: 아직 프로필 이미지는 임시 상태지만, 여기서 바로 대화를 이어갈 수 있어요.`
-    : `${agent.label}: 스쿨 커먼즈에 온 걸 환영해요. 무엇을 도와드릴까요?`
+    ? `${agent.label}: 아직 준비 중인 정보가 조금 있지만, 여기서 바로 대화를 시작할 수 있어요.`
+    : `${agent.label}: 반가워요. 스쿨 커먼즈에서 필요한 일이 있으면 편하게 말씀해 주세요.`
+}
+
+function buildNpcReply(agent: WorldAgent, message: string) {
+  if (/일정|schedule/i.test(message)) {
+    return `${agent.label}: 오늘 일정은 곧 이 대화창에서 바로 확인할 수 있게 연결할 예정이에요.`
+  }
+
+  if (/설명|공간|room|commons/i.test(message)) {
+    return `${agent.label}: 이곳은 사람들과 에이전트가 함께 머무는 공용 공간이에요. 필요한 정보는 여기서 계속 이어서 안내할게요.`
+  }
+
+  if (/팁|tip|처음/i.test(message)) {
+    return `${agent.label}: 처음에는 주변 에이전트와 가볍게 대화를 시작하고, 필요한 작업은 하나씩 요청하는 방식이 가장 편해요.`
+  }
+
+  return `${agent.label}: 좋은 질문이에요. 이 대화 인터페이스가 backend와 연결되면 더 자연스럽게 이어서 답변해 드릴게요.`
 }
 
 export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDialogSectionProps) {
   const [draft, setDraft] = useState('')
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+
+  const seededMessages = useMemo<ChatMessage[]>(() => {
+    if (!agent) return []
+    return [
+      {
+        id: `greeting-${agent.id}`,
+        speaker: 'agent',
+        text: buildNpcGreeting(agent),
+      },
+    ]
+  }, [agent])
+
+  const transcript = messages.length > 0 ? messages : seededMessages
 
   if (!isOpen || !agent) return null
+
+  const submitMessage = () => {
+    const trimmed = draft.trim()
+    if (!trimmed) return
+
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      speaker: 'user',
+      text: trimmed,
+    }
+    const agentReply: ChatMessage = {
+      id: `agent-${Date.now() + 1}`,
+      speaker: 'agent',
+      text: buildNpcReply(agent, trimmed),
+    }
+
+    setMessages((current) => [...current, userMessage, agentReply])
+    setDraft('')
+  }
 
   return (
     <div className="dialog-backdrop" role="presentation">
@@ -28,7 +83,7 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
           <div className="chat-dialog-title-wrap">
             <p className="eyebrow">NPC 대화</p>
             <h3 id="npc-chat-title">{agent.label}와 대화하기</h3>
-            <p className="chat-dialog-subtitle">BE 연결 전 단계의 대화 인터페이스 목업입니다.</p>
+            <p className="chat-dialog-subtitle">필요한 내용을 바로 묻고 답을 이어갈 수 있는 대화창입니다.</p>
           </div>
           <button type="button" className="secondary-button" onClick={onClose}>
             닫기
@@ -41,21 +96,21 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
           </div>
           <div className="chat-agent-meta">
             <strong>{agent.label}</strong>
-            <span>{agent.usesPlaceholder ? '임시 프로필 이미지' : '연결된 프로필 이미지'}</span>
+            <span>{agent.usesPlaceholder ? '기본 프로필 이미지 사용 중' : '프로필 이미지 연결됨'}</span>
           </div>
           <span className="chat-agent-status">온라인</span>
         </section>
 
         <div className="chat-transcript" aria-label="NPC 대화 내용">
-          <article className="chat-bubble chat-bubble-agent">
-            <span className="chat-bubble-speaker">{agent.label}</span>
-            <p>{buildNpcGreeting(agent)}</p>
-          </article>
-
-          <article className="chat-bubble chat-bubble-user chat-bubble-muted">
-            <span className="chat-bubble-speaker">나</span>
-            <p>여기에 사용자가 보낸 메시지가 순서대로 쌓이게 됩니다.</p>
-          </article>
+          {transcript.map((message) => (
+            <article
+              key={message.id}
+              className={`chat-bubble ${message.speaker === 'agent' ? 'chat-bubble-agent' : 'chat-bubble-user'}`}
+            >
+              <span className="chat-bubble-speaker">{message.speaker === 'agent' ? agent.label : '나'}</span>
+              <p>{message.text}</p>
+            </article>
+          ))}
         </div>
 
         <section className="chat-starter-prompts" aria-label="추천 질문">
@@ -66,24 +121,35 @@ export function AgentChatDialogSection({ agent, isOpen, onClose }: AgentChatDial
           ))}
         </section>
 
-        <form className="chat-composer" onSubmit={(event) => event.preventDefault()} aria-label="NPC 대화 입력창">
+        <form
+          className="chat-composer"
+          onSubmit={(event) => {
+            event.preventDefault()
+            submitMessage()
+          }}
+          aria-label="NPC 대화 입력창"
+        >
           <label className="field chat-composer-field">
             <span>메시지</span>
-            <textarea
-              name="message"
-              rows={3}
-              placeholder="NPC에게 보낼 메시지를 입력하세요."
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-            />
+            <div className="chat-composer-row">
+              <textarea
+                name="message"
+                rows={5}
+                placeholder="메시지를 입력하고 Enter로 보내세요. Shift+Enter는 줄바꿈입니다."
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault()
+                    submitMessage()
+                  }
+                }}
+              />
+              <button type="submit" className="chat-send-button" disabled={!draft.trim()}>
+                보내기
+              </button>
+            </div>
           </label>
-
-          <div className="chat-composer-actions">
-            <p>현재는 UI만 준비된 상태이며, 실제 전송은 이후 BE/대화 상태와 연결됩니다.</p>
-            <button type="submit" disabled={!draft.trim()}>
-              보내기
-            </button>
-          </div>
         </form>
       </section>
     </div>
