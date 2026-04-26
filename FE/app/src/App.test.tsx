@@ -101,8 +101,7 @@ describe('App', () => {
   it('renders the shell with the game viewport, seeded dummy npcs, and combined LPC credits', async () => {
     render(<App />)
 
-<<<<<<< HEAD
-    expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /myclaw/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/Phaser map viewport/i)).toBeInTheDocument()
     expect(await screen.findByText('Hana')).toBeInTheDocument()
     expect(await screen.findByText('Haru')).toBeInTheDocument()
@@ -110,13 +109,6 @@ describe('App', () => {
     expect(screen.getByText(/made with lpc assets/i)).toBeInTheDocument()
     expect(screen.getByText(/hana credits from api/i)).toBeInTheDocument()
     await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('4'))
-=======
-    expect(screen.getByRole('heading', { name: /myclaw/i })).toBeInTheDocument()
-    expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
-    expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
-    expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
->>>>>>> 672c600 (Rename the room title to Myclaw)
   })
 
   it('adds a local npc from the dialog', async () => {
