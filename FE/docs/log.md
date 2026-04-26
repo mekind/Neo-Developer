@@ -1,4 +1,5 @@
 # FE Vault Activity Log
+- 2026-04-26: Polished the NPC add dialog close control into a pill-style icon+label button so the dismiss action reads more clearly in the current FE-only dialog flow.
 - 2026-04-26: Updated the FE header chat trigger to fall back to a local mock NPC so the dialog always opens during testing even if no backend agent is currently loaded.
 - 2026-04-26: Added a default FE dummy NPC (`Noa`) to the loaded world roster so chat and interaction UI always have at least one safe local target during testing.
 - 2026-04-26: Added a header-level FE test trigger so the richer NPC chat dialog UI can be opened immediately before the real interaction event is wired.
