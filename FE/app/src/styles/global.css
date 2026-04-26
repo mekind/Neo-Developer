@@ -32,8 +32,7 @@ body,
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at top, rgba(255, 251, 245, 0.96), rgba(230, 224, 214, 0.96) 54%, #d8d0c4 100%);
+  background: radial-gradient(circle at top, rgba(255, 251, 245, 0.96), rgba(230, 224, 214, 0.96) 54%, #d8d0c4 100%);
 }
 
 button,
@@ -151,7 +150,8 @@ figure {
 }
 
 .eyebrow,
-.panel-kicker {
+.panel-kicker,
+.section-label {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -160,41 +160,56 @@ figure {
   color: #9b6a4f;
 }
 
+.description,
 .sidebar p,
 .world-helper,
 .panel-section h3,
-.agent-list span {
+.agent-list span,
+.action-list {
   color: #4c5648;
-}
-
-.world-helper {
-  margin-bottom: 0;
 }
 
 .world-surface {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 12px;
   padding: 10px;
   overflow: hidden;
 }
 
-.world-canvas-stage {
-  position: relative;
-  min-height: 0;
-  flex: 1;
+.world-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
 }
 
-.world-surface canvas {
-  width: 100%;
-  height: 100%;
+.world-helper,
+.world-helper-strong,
+.world-feedback p {
+  margin-bottom: 0;
+}
+
+.world-helper {
+  max-width: 24ch;
+  text-align: right;
+}
+
+.world-canvas-shell {
+  position: relative;
   min-height: 0;
-  display: block;
+  overflow: hidden;
   border-radius: 16px;
   border: 1px solid rgba(114, 104, 90, 0.12);
   background: #eef1eb;
+}
+
+.world-phaser-host {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
 }
 
 .world-agent-layer {
@@ -251,23 +266,6 @@ figure {
   font-weight: 700;
 }
 
-.world-status {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-}
-
-.world-helper-strong,
-.world-feedback p {
-  margin-bottom: 0;
-}
-
-.world-helper {
-  max-width: 24ch;
-  text-align: right;
-}
-
 .world-feedback {
   display: flex;
   justify-content: space-between;
@@ -317,6 +315,26 @@ figure {
   color: #2f372d;
 }
 
+.creation-form,
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field input,
+.field textarea,
+.creation-form button {
+  border-radius: 12px;
+  border: 1px solid rgba(114, 104, 90, 0.18);
+  padding: 10px 12px;
+  background: rgba(255, 252, 247, 0.92);
+}
+
+.creation-form button {
+  cursor: pointer;
+  font-weight: 700;
+}
+
 @media (max-width: 960px) {
   .app-shell {
     padding: 12px;
@@ -328,7 +346,8 @@ figure {
     display: grid;
   }
 
-  .world-status {
+  .world-status,
+  .world-feedback {
     flex-direction: column;
     align-items: flex-start;
   }

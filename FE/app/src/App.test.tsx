@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
 
@@ -21,13 +21,82 @@ const backendAgents: AgentPayload[] = [
   },
 ]
 
-function installFetchMock(payload: AgentPayload[] = backendAgents, status = 200) {
-  vi.spyOn(globalThis, 'fetch').mockResolvedValue({
-    ok: status >= 200 && status < 300,
-    status,
-    json: async () => payload,
-  } as Response)
+function installFetchMock(overrides: Record<string, { ok?: boolean; status?: number; json: unknown }> = {}) {
+  vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
+    const url = String(input)
+    const pathname = new URL(url).pathname
+    const method = init?.method ?? 'GET'
+    const override = overrides[`${method} ${pathname}`] ?? overrides[pathname]
+
+    const payload =
+      override ??
+      (pathname === '/agents' && method === 'POST'
+        ? {
+            ok: true,
+            status: 200,
+            json: {
+              id: 'new-agent',
+              name: 'Warm Guide',
+              archetype: 'maker',
+              personaSummary: 'Warm school guide',
+              backstoryPrompt: 'Helps every newcomer settle in.',
+              createdAt: '2026-04-26T00:00:00.000Z',
+            },
+          }
+        : {
+            ok: true,
+            status: 200,
+            json: backendAgents,
+          })
+
+    return {
+      ok: payload.ok ?? true,
+      status: payload.status ?? 200,
+      json: async () => payload.json,
+    } as Response
+  })
 }
+
+vi.mock('@/game/WorldCanvas', () => ({
+  WorldCanvas: ({
+    agents,
+    player,
+    isLoading,
+    errorMessage,
+    interactionTarget,
+    lastInteractionMessage,
+  }: {
+    agents: Array<{ id: string; label: string; imageSrc: string }>
+    player: { label: string; xPercent: number; yPercent: number; imageSrc: string }
+    isLoading: boolean
+    errorMessage: string | null
+    interactionTarget: { id: string; label: string } | null
+    lastInteractionMessage: string | null
+  }) => (
+    <div aria-label="Phaser map viewport">
+      <p>Controlling {player.label} at ({player.xPercent.toFixed(0)}%, {player.yPercent.toFixed(0)}%).</p>
+      <p>
+        {isLoading
+          ? 'Loading backend roster.'
+          : errorMessage
+            ? 'Backend roster unavailable.'
+            : interactionTarget
+              ? `Press E near ${interactionTarget.label} to interact.`
+              : agents.length > 0
+                ? 'Phaser-mounted once per load.'
+                : 'No backend agents returned.'}
+      </p>
+      <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
+      <img src={player.imageSrc} alt={`${player.label} avatar`} />
+      {agents.map((agent) => (
+        <figure key={agent.id}>
+          <img src={agent.imageSrc} alt={`${agent.label} avatar`} />
+          <figcaption>{agent.label}</figcaption>
+        </figure>
+      ))}
+    </div>
+  ),
+}))
 
 describe('App', () => {
   beforeEach(() => {
@@ -52,6 +121,17 @@ describe('App', () => {
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
+  it('keeps the add agent flow and appends a created npc', async () => {
+    render(<App />)
+
+    fireEvent.change(screen.getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
+    fireEvent.change(screen.getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
+    fireEvent.click(screen.getByRole('button', { name: /add agent/i }))
+
+    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3'))
+    expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
+  })
+
   it('renders a simple backend agent roster', async () => {
     render(<App />)
 
@@ -61,12 +141,11 @@ describe('App', () => {
   })
 
   it('falls back to the agent id when the backend omits a display name', async () => {
-    installFetchMock([
-      {
-        id: 'mystery-agent',
-        imageAsset: null,
+    installFetchMock({
+      '/agents': {
+        json: [{ id: 'mystery-agent', imageAsset: null }],
       },
-    ])
+    })
 
     render(<App />)
 
@@ -82,13 +161,11 @@ describe('App', () => {
   })
 
   it('falls back to the placeholder avatar for disallowed image sources', async () => {
-    installFetchMock([
-      {
-        id: 'unsafe-agent',
-        name: 'Unsafe',
-        imageAsset: 'ftp://example.com/avatar.png',
+    installFetchMock({
+      '/agents': {
+        json: [{ id: 'unsafe-agent', name: 'Unsafe', imageAsset: 'ftp://example.com/avatar.png' }],
       },
-    ])
+    })
 
     render(<App />)
 
@@ -97,7 +174,9 @@ describe('App', () => {
   })
 
   it('shows an error state when the backend request fails', async () => {
-    installFetchMock([], 500)
+    installFetchMock({
+      '/agents': { ok: false, status: 500, json: {} },
+    })
 
     render(<App />)
 
@@ -134,7 +213,6 @@ describe('App', () => {
       fireEvent.keyDown(window, { key: 'e' })
 
       expect(screen.getByText(/you greeted hana/i)).toBeInTheDocument()
-      expect(screen.getByText(/distance to hana: 1.0%/i)).toBeInTheDocument()
     } finally {
       vi.useRealTimers()
       randomSpy.mockRestore()

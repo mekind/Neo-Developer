@@ -3,27 +3,25 @@
 ## Summary
 
 Adjusted the FE world prototype so the controllable avatar is always the user player,
-while generated agents are treated as separate NPCs in the world.
+while backend-provided agents stay separate NPCs inside the Phaser-backed commons map.
 
 ## What changed
 
 - `FE/app/src/App.tsx`
-  - separates player-avatar state from agent-NPC state
+  - separates player-avatar state from backend agent-roster state
   - keeps keyboard movement attached only to the user avatar
-  - treats nearby agents as interaction targets
-- `FE/app/src/game/characters.ts`
-  - adds explicit player vs agent character kinds
-  - adds a dedicated player-avatar builder
+  - preserves the add-agent flow without handing player control to created NPCs
+- `FE/app/src/game/agents.ts`
+  - adds a dedicated player-avatar builder plus player-movement helpers
+  - keeps backend agent placement/randomization helpers for NPCs
 - `FE/app/src/game/WorldCanvas.tsx`
-  - labels player and NPC roles more clearly in the viewport
-  - keeps nearby-agent interaction feedback focused on NPCs
+  - keeps the Phaser-backed world host
+  - overlays the controllable player and NPC markers with nearby-interaction feedback
 - `FE/app/src/components/InteractionPanel.tsx`
-  - reframes the sidebar copy around “user avatar + agent NPC roster”
-- `FE/app/src/services/agents.ts`
-  - adds the FE read path for loading agent NPCs from `/agents`
+  - reframes the sidebar around “current player + backend agent roster + add agent”
 - `FE/app/src/App.test.tsx`
   - locks the player-only movement contract
-  - covers agent creation without replacing the player avatar
+  - covers created agents appending as NPCs instead of replacing the player avatar
 
 ## Intent
 
@@ -50,5 +48,5 @@ Still intentionally excludes:
 ## Follow-up notes
 
 - movement responsiveness is the most important success bar for this pass
-- FE now assumes an agent-list read path exists at `/agents`; if backend rollout lags behind, the world should be expected to show an empty or errored NPC state
-- if richer world simulation appears later, consider extracting the local loop into dedicated world-state logic
+- Phaser currently remains the world surface owner; if deeper movement rules arrive later, keep player control state separate from backend agent roster state
+- if richer world simulation appears later, consider extracting the local loop into dedicated world-state logic or scene-specific modules

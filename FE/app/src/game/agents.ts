@@ -4,6 +4,15 @@ export interface BackendAgentRecord {
   imageAsset?: string | null
 }
 
+export interface CreatedAgentRecord {
+  id: string
+  name: string
+  archetype?: 'scout' | 'maker' | 'spark'
+  personaSummary?: string
+  backstoryPrompt?: string
+  createdAt?: string
+}
+
 export interface WorldAgent {
   id: string
   label: string
@@ -107,6 +116,31 @@ function nextPosition(existing: Array<{ xPercent: number; yPercent: number }>) {
   }
 }
 
+function buildWorldAgentBase(record: BackendAgentRecord, occupied: Array<{ xPercent: number; yPercent: number }>): WorldAgent {
+  const position = nextPosition(occupied)
+  occupied.push(position)
+
+  const resolvedImage = resolveAgentImage(record.imageAsset)
+
+  return {
+    id: record.id,
+    label: record.name?.trim() || record.id,
+    ...resolvedImage,
+    ...position,
+  }
+}
+
+export function buildWorldAgents(records: BackendAgentRecord[]): WorldAgent[] {
+  const occupied: Array<{ xPercent: number; yPercent: number }> = []
+  return records.map((record) => buildWorldAgentBase(record, occupied))
+}
+
+export function appendCreatedAgent(existingAgents: WorldAgent[], record: CreatedAgentRecord): WorldAgent[] {
+  const occupied = existingAgents.map((agent) => ({ xPercent: agent.xPercent, yPercent: agent.yPercent }))
+  const nextAgent = buildWorldAgentBase({ id: record.id, name: record.name, imageAsset: null }, occupied)
+  return [...existingAgents, nextAgent]
+}
+
 export function clampPercent(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
 }
@@ -119,22 +153,4 @@ export function buildWorldPlayer(): WorldPlayer {
     xPercent: 12,
     yPercent: 32,
   }
-}
-
-export function buildWorldAgents(records: BackendAgentRecord[]): WorldAgent[] {
-  const occupied: Array<{ xPercent: number; yPercent: number }> = []
-
-  return records.map((record) => {
-    const position = nextPosition(occupied)
-    occupied.push(position)
-
-    const resolvedImage = resolveAgentImage(record.imageAsset)
-
-    return {
-      id: record.id,
-      label: record.name?.trim() || record.id,
-      ...resolvedImage,
-      ...position,
-    }
-  })
 }
