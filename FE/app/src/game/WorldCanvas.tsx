@@ -20,11 +20,9 @@ const VIEWPORT_WIDTH = 1280
 const VIEWPORT_HEIGHT = 720
 const PLAYER_RADIUS = 32
 const AGENT_RADIUS = 28
-const MINIMAP_X = 1040
-const MINIMAP_Y = 24
 const MINIMAP_WIDTH = 180
 const MINIMAP_HEIGHT = 102
-const MINIMAP_PADDING = 8
+const MINIMAP_MARGIN = 24
 const CAMERA_LERP = 0.16
 const SPEECH_MS = 1200
 const OBSTACLES = [
@@ -51,13 +49,6 @@ function unprojectY(y: number) {
   return (y / MAP_HEIGHT) * 100
 }
 
-function projectMiniMapPoint(xPercent: number, yPercent: number) {
-  return {
-    x: MINIMAP_X + MINIMAP_PADDING + (xPercent / 100) * (MINIMAP_WIDTH - MINIMAP_PADDING * 2),
-    y: MINIMAP_Y + MINIMAP_PADDING + (yPercent / 100) * (MINIMAP_HEIGHT - MINIMAP_PADDING * 2),
-  }
-}
-
 function getInputVector(cursors: Phaser.Types.Input.Keyboard.CursorKeys): MovementVector {
   return {
     x: Number(Boolean(cursors.right?.isDown)) - Number(Boolean(cursors.left?.isDown)),
@@ -82,6 +73,15 @@ function circlesOverlap(ax: number, ay: number, ar: number, bx: number, by: numb
   return Math.hypot(ax - bx, ay - by) < ar + br
 }
 
+function getMinimapViewport(gameWidth: number) {
+  return {
+    x: Math.max(MINIMAP_MARGIN, gameWidth - MINIMAP_WIDTH - MINIMAP_MARGIN),
+    y: MINIMAP_MARGIN,
+    width: MINIMAP_WIDTH,
+    height: MINIMAP_HEIGHT,
+  }
+}
+
 export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
@@ -103,10 +103,11 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
       class BackendRosterScene extends Phaser.Scene {
         private background!: Phaser.GameObjects.Graphics
         private obstacleLayer!: Phaser.GameObjects.Graphics
-        private minimapLayer!: Phaser.GameObjects.Graphics
         private playerMarker!: Phaser.GameObjects.Arc
+        private playerHalo!: Phaser.GameObjects.Arc
         private playerLabel!: Phaser.GameObjects.Text
         private promptText!: Phaser.GameObjects.Text
+        private minimapCamera!: Phaser.Cameras.Scene2D.Camera
         private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text; speech: Phaser.GameObjects.Text }>()
         private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
         private spaceKey?: Phaser.Input.Keyboard.Key
@@ -123,7 +124,8 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
 
           this.background = this.add.graphics()
           this.obstacleLayer = this.add.graphics()
-          this.minimapLayer = this.add.graphics().setScrollFactor(0)
+          this.playerHalo = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), PLAYER_RADIUS * 2.6, 0x22c55e, 0.12)
+          this.playerHalo.setStrokeStyle(3, 0x22c55e, 0.28)
           this.playerMarker = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), PLAYER_RADIUS, 0x22c55e)
           this.playerMarker.setStrokeStyle(5, 0xfffbeb, 1)
           this.playerLabel = this.add.text(0, 0, this.playerState.label, {
@@ -147,6 +149,13 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
 
           this.drawBackground()
           this.drawObstacles()
+
+          this.minimapCamera = this.cameras.add(0, 0, 10, 10)
+          this.minimapCamera.setBackgroundColor('#f8efe0')
+          this.minimapCamera.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
+          this.minimapCamera.ignore([this.playerLabel, this.playerHalo, this.promptText])
+
+          this.syncInteractionUi()
           this.syncSprites(this.time.now)
           this.cameras.main.startFollow(this.playerMarker, true, CAMERA_LERP, CAMERA_LERP)
 
@@ -179,9 +188,8 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
           this.playerState.xPercent = unprojectX(resolved.x)
           this.playerState.yPercent = unprojectY(resolved.y)
 
-          this.syncSprites(time)
           this.syncInteractionUi()
-          this.drawMinimap()
+          this.syncSprites(time)
         }
 
         private resolveCollision(current: { x: number; y: number }, attempted: { x: number; y: number }) {
@@ -211,6 +219,7 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
           const playerX = projectX(this.playerState.xPercent)
           const playerY = projectY(this.playerState.yPercent)
 
+          this.playerHalo.setPosition(playerX, playerY)
           this.playerMarker.setPosition(playerX, playerY)
           this.playerLabel.setPosition(playerX - 30, playerY + 44).setText(this.playerState.label)
 
@@ -218,9 +227,11 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
             const existing = this.agentSprites.get(agent.id)
             const x = projectX(agent.xPercent)
             const y = projectY(agent.yPercent)
+            const isInteractionTarget = this.currentInteractionTarget?.id === agent.id
+            const fillColor = isInteractionTarget ? 0xf59e0b : agent.usesPlaceholder ? 0xfde68a : 0x93c5fd
 
             if (!existing) {
-              const body = this.add.circle(x, y, AGENT_RADIUS, agent.usesPlaceholder ? 0xfde68a : 0x93c5fd)
+              const body = this.add.circle(x, y, AGENT_RADIUS, fillColor)
               body.setStrokeStyle(4, 0xfffbeb, 1)
 
               const label = this.add.text(x - 40, y + 36, agent.label, {
@@ -242,11 +253,12 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
                 .setVisible(false)
 
               this.agentSprites.set(agent.id, { body, label, speech })
+              this.minimapCamera.ignore([label, speech])
               return
             }
 
             existing.body.setPosition(x, y)
-            existing.body.setFillStyle(agent.usesPlaceholder ? 0xfde68a : 0x93c5fd)
+            existing.body.setFillStyle(fillColor)
             existing.label.setPosition(x - 40, y + 36).setText(agent.label)
             existing.speech.setPosition(x, y - 54)
             existing.speech.setVisible((this.speechByAgent.get(agent.id) ?? 0) > time)
@@ -313,50 +325,15 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
           })
         }
 
-        private drawMinimap() {
-          const camera = this.cameras.main
-          this.minimapLayer.clear()
-          this.minimapLayer.fillStyle(0x161e18, 0.82)
-          this.minimapLayer.fillRoundedRect(MINIMAP_X, MINIMAP_Y, MINIMAP_WIDTH, MINIMAP_HEIGHT, 16)
-          this.minimapLayer.fillStyle(0xdcedef, 0.92)
-          this.minimapLayer.fillRoundedRect(
-            MINIMAP_X + MINIMAP_PADDING,
-            MINIMAP_Y + MINIMAP_PADDING,
-            MINIMAP_WIDTH - MINIMAP_PADDING * 2,
-            MINIMAP_HEIGHT - MINIMAP_PADDING * 2,
-            10,
-          )
-          this.minimapLayer.fillStyle(0xd0ae80, 1)
-          this.minimapLayer.fillRect(
-            MINIMAP_X + MINIMAP_PADDING,
-            MINIMAP_Y + MINIMAP_PADDING + (MINIMAP_HEIGHT - MINIMAP_PADDING * 2) * 0.58,
-            MINIMAP_WIDTH - MINIMAP_PADDING * 2,
-            (MINIMAP_HEIGHT - MINIMAP_PADDING * 2) * 0.42,
-          )
-
-          agentsRef.current.forEach((agent) => {
-            const point = projectMiniMapPoint(agent.xPercent, agent.yPercent)
-            this.minimapLayer.fillStyle(agent.usesPlaceholder ? 0xfde68a : 0x93c5fd, 1)
-            this.minimapLayer.fillCircle(point.x, point.y, 4)
-          })
-
-          const playerPoint = projectMiniMapPoint(this.playerState.xPercent, this.playerState.yPercent)
-          this.minimapLayer.fillStyle(0x22c55e, 1)
-          this.minimapLayer.fillCircle(playerPoint.x, playerPoint.y, 5)
-
-          const viewportRect = {
-            x: MINIMAP_X + MINIMAP_PADDING + (camera.worldView.x / MAP_WIDTH) * (MINIMAP_WIDTH - MINIMAP_PADDING * 2),
-            y: MINIMAP_Y + MINIMAP_PADDING + (camera.worldView.y / MAP_HEIGHT) * (MINIMAP_HEIGHT - MINIMAP_PADDING * 2),
-            width: (camera.worldView.width / MAP_WIDTH) * (MINIMAP_WIDTH - MINIMAP_PADDING * 2),
-            height: (camera.worldView.height / MAP_HEIGHT) * (MINIMAP_HEIGHT - MINIMAP_PADDING * 2),
-          }
-          this.minimapLayer.lineStyle(2, 0xffffff, 0.92)
-          this.minimapLayer.strokeRoundedRect(viewportRect.x, viewportRect.y, viewportRect.width, viewportRect.height, 8)
-        }
-
         private handleResize(gameSize: { width: number; height: number }) {
           this.cameras.main.setViewport(0, 0, gameSize.width, gameSize.height)
           this.promptText.setPosition(gameSize.width / 2, Math.max(40, gameSize.height - 56))
+
+          const minimap = getMinimapViewport(gameSize.width)
+          this.minimapCamera.setViewport(minimap.x, minimap.y, minimap.width, minimap.height)
+          this.minimapCamera.setZoom(Math.min(minimap.width / MAP_WIDTH, minimap.height / MAP_HEIGHT))
+          this.minimapCamera.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2)
+          this.minimapCamera.setRoundPixels(true)
         }
       }
 
