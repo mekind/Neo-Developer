@@ -12,6 +12,7 @@ export interface IAgentRepository {
   create(input: AgentCreateInput): Promise<Agent>;
   findById(id: string): Promise<Agent | null>;
   listByUser(userId: string): Promise<Agent[]>;
+  listAll(): Promise<Agent[]>;
   countByUser(userId: string): Promise<number>;
   update(id: string, patch: Partial<AgentCreateInput>): Promise<Agent>;
   delete(id: string): Promise<void>;
@@ -32,6 +33,12 @@ export class AgentRepository implements IAgentRepository {
   listByUser(userId: string) {
     return this.prisma.agent.findMany({
       where: { userId },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  listAll() {
+    return this.prisma.agent.findMany({
       orderBy: { createdAt: 'asc' },
     });
   }

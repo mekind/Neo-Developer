@@ -4,17 +4,24 @@ import { MemoryDocumentRepository } from './memory-document.repository';
 import { ProfileRepository } from './profile.repository';
 import { SkillRepository } from './skill.repository';
 import { UserRepository } from './user.repository';
-
-const repositories = [
-  UserRepository,
-  ProfileRepository,
-  AgentRepository,
-  MemoryDocumentRepository,
-  SkillRepository,
-];
+import { NotificationRepository } from './notification.repository';
 
 @Module({
-  providers: repositories,
-  exports: repositories,
+  providers: [
+    UserRepository,
+    ProfileRepository,
+    AgentRepository,
+    MemoryDocumentRepository,
+    SkillRepository,
+    NotificationRepository,
+  ],
+  exports: [
+    UserRepository,
+    ProfileRepository,
+    AgentRepository,
+    MemoryDocumentRepository,
+    SkillRepository,
+    NotificationRepository,
+  ],
 })
 export class RepositoriesModule {}
