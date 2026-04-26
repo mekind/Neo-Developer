@@ -1,13 +1,24 @@
 import { useEffect, useRef } from 'react'
 
-import { type WorldCharacter } from './characters'
+import { INTERACTION_RADIUS, WORLD_HEIGHT, WORLD_WIDTH, measureDistance, type WorldCharacter } from './characters'
 
 type WorldCanvasProps = {
   characters: WorldCharacter[]
   currentCharacter: WorldCharacter | null
+  interactionTarget: WorldCharacter | null
+  playerStatusCopy: string
+  interactionStatusCopy: string
+  lastInteractionMessage: string | null
 }
 
-export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) {
+export function WorldCanvas({
+  characters,
+  currentCharacter,
+  interactionTarget,
+  playerStatusCopy,
+  interactionStatusCopy,
+  lastInteractionMessage,
+}: WorldCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -92,7 +103,7 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
     context.font = 'bold 18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
     context.fillText('Warm school commons prototype', 28, 42)
     context.font = '16px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-    context.fillText('새 에이전트는 생성 중 상태를 거쳐 완료 후 월드에 정식 반영됩니다.', 28, 68)
+    context.fillText('새 에이전트는 생성 중 상태를 거쳐 완료 후 월드에서 움직이고 상호작용할 수 있습니다.', 28, 68)
 
     if (characters.length === 0) {
       context.fillStyle = 'rgba(77, 70, 63, 0.72)'
@@ -102,13 +113,15 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
     }
 
     characters.forEach((character, index) => {
+      const isCurrent = currentCharacter?.id === character.id
+      const isInteractionTarget = interactionTarget?.id === character.id
+
       context.save()
-      context.strokeStyle = currentCharacter?.id === character.id ? '#fffaf3' : 'rgba(77, 70, 63, 0.45)'
-      context.lineWidth = currentCharacter?.id === character.id ? 3 : 1
 
       if (character.status === 'pending') {
         context.setLineDash([6, 4])
         context.strokeStyle = '#9b6a4f'
+        context.lineWidth = 3
         context.beginPath()
         context.arc(character.x, character.y, 18, 0, Math.PI * 2)
         context.stroke()
@@ -123,10 +136,21 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
         context.font = '12px Pretendard, SUIT, "Noto Sans KR", sans-serif'
         context.fillText('Generating…', character.x - 34, character.y - 28)
       } else {
+        if (isCurrent) {
+          context.strokeStyle = 'rgba(34, 197, 94, 0.4)'
+          context.lineWidth = 10
+          context.beginPath()
+          context.arc(character.x, character.y, INTERACTION_RADIUS, 0, Math.PI * 2)
+          context.stroke()
+        }
+
         context.fillStyle = character.color
         context.beginPath()
         context.arc(character.x, character.y, 18, 0, Math.PI * 2)
         context.fill()
+
+        context.strokeStyle = isCurrent ? '#f8fafc' : isInteractionTarget ? '#facc15' : 'rgba(226,232,240,0.45)'
+        context.lineWidth = isCurrent || isInteractionTarget ? 3 : 1
         context.stroke()
       }
 
@@ -135,24 +159,39 @@ export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) 
       context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
       context.restore()
     })
-  }, [characters, currentCharacter])
+
+    if (currentCharacter?.status === 'ready' && interactionTarget) {
+      context.fillStyle = '#facc15'
+      context.font = '15px sans-serif'
+      context.fillText(
+        `Interaction ready: ${currentCharacter.name} ↔ ${interactionTarget.name}`,
+        24,
+        height - 32,
+      )
+    }
+  }, [characters, currentCharacter, interactionTarget])
 
   return (
     <div className="world-surface">
       <div className="world-status">
         <div>
           <p className="eyebrow">Live world state</p>
-          <h2>Agents in world: {characters.length}</h2>
+          <h2>Spawned avatars: {characters.length}</h2>
+          <p className="world-helper world-helper-strong">{playerStatusCopy}</p>
         </div>
-        <p className="world-helper">
-          {currentCharacter
-            ? currentCharacter.status === 'pending'
-              ? `${currentCharacter.name} is pending while the backend finishes image generation.`
-              : `${currentCharacter.name} is the latest fully created agent on the canvas.`
-            : '첫 번째 에이전트를 만들면 월드에 대기 상태가 먼저 표시됩니다.'}
-        </p>
+        <p className="world-helper">{interactionStatusCopy}</p>
       </div>
-      <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
+      <canvas ref={canvasRef} width={WORLD_WIDTH} height={WORLD_HEIGHT} aria-label="2D world prototype canvas" />
+      <div className="world-feedback" aria-live="polite">
+        <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
+        {currentCharacter?.status === 'ready' && interactionTarget ? (
+          <p>
+            Distance to {interactionTarget.name}: {Math.round(measureDistance(currentCharacter, interactionTarget))}px
+          </p>
+        ) : (
+          <p>Bring your player close to another ready avatar to unlock the interaction prompt.</p>
+        )}
+      </div>
       {characters.length > 0 ? (
         <ul className="world-roster" aria-label="World roster">
           {characters.map((character) => (

@@ -14,6 +14,12 @@ The frontend now includes a minimal read-only API slice that:
 - validates the `/items` response shape before exposing typed data to the UI
 - renders the live-data proof inside `InteractionPanel`
 
+It now also includes the first write-path slice for persona-based agent creation:
+- shared POST transport in `lib/api-client.ts`
+- endpoint-specific request/response validation in `services/agents.ts`
+- dialog-driven submit UI in `InteractionPanel.tsx`
+- immediate world-spawn mapping in `App.tsx`
+
 ## Why this shape
 
 The goal of this first pass was not just to prove connectivity.
@@ -30,6 +36,7 @@ FE/app/src/
 ├── lib/
 │   └── api-client.ts
 ├── services/
+│   ├── agents.ts
 │   └── items.ts
 └── vite-env.d.ts
 ```
@@ -43,6 +50,7 @@ FE/app/src/
 
 ### `lib/api-client.ts`
 - owns shared fetch + HTTP error handling
+- owns shared GET + POST JSON transport helpers
 - returns `unknown` instead of pretending unchecked runtime typing is safe
 - should stay transport-focused rather than endpoint-specific
 
@@ -51,10 +59,16 @@ FE/app/src/
 - validates the response shape before returning typed `Item[]`
 - is the current lightweight stand-in for a repository/data-access slice
 
+### `services/agents.ts`
+- owns the `/agents` write endpoint boundary
+- validates the returned creation payload before returning typed data
+- keeps persona-create details out of `App.tsx` and out of the generic transport layer
+
 ### `components/InteractionPanel.tsx`
 - owns loading/error/render behavior for the first visible demo
 - consumes typed item data rather than raw backend payloads
 - keeps the proof inside the existing shell instead of redesigning layout
+- now also owns the first persona dialog submit UX
 
 ## Constraints preserved in this first pass
 

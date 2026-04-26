@@ -1,13 +1,13 @@
-import { IsIn, IsNotEmpty, IsString } from 'class-validator';
-
-const ARCHETYPES = ['scout', 'maker', 'spark'] as const;
+import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CreateAgentDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  @MaxLength(120)
+  personaSummary: string;
 
   @IsString()
-  @IsIn(ARCHETYPES)
-  archetype: (typeof ARCHETYPES)[number];
+  @IsNotEmpty()
+  @MaxLength(2000)
+  backstoryPrompt: string;
 }

@@ -18,13 +18,13 @@ open a dialog, submit to the backend, show a pending placeholder on the main scr
   - updates the summary/list copy to distinguish pending vs complete agents
 - `FE/app/src/game/WorldCanvas.tsx`
   - reflects pending vs complete state in world status and roster rendering
-  - shows generated avatars when backend creation succeeds
+  - shows backend-created agents as ready and renders avatars when the backend response provides one
 - `FE/app/src/game/characters.ts`
   - adds shared pending/ready agent state helpers and backend-created agent mapping
 - `FE/app/src/services/agents.ts`
   - adds the typed frontend `/agents` creation service
 - `backend/src/agents/*`
-  - adds a NestJS agent-creation slice that returns an in-memory created agent plus generated SVG avatar data
+  - integrates with the existing NestJS agent-creation slice as the completion boundary for the FE flow
 - `FE/app/src/App.test.tsx`
   - replaces the old immediate-spawn assertions with dialog/pending/success/failure flow coverage
 
@@ -32,7 +32,7 @@ open a dialog, submit to the backend, show a pending placeholder on the main scr
 
 The earlier prototype treated local UI insertion as the creation boundary.
 That no longer matches the intended product flow.
-For this pass, backend completion and generated image availability define when an agent is actually created.
+For this pass, backend completion defines when an agent is actually created, and the FE remains ready to show richer avatar data when the backend contract provides it.
 
 ## Scope boundary
 
@@ -49,7 +49,7 @@ This first pass intentionally does **not** add:
 - submit sends the request to the backend
 - the main screen shows a pending placeholder while backend work is in flight
 - the UI does not present the pending agent as fully created
-- backend success transitions the placeholder into a final main-screen agent with generated avatar data
+- backend success transitions the placeholder into a final main-screen agent
 
 ## Follow-up notes
 

@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 
-import { archetypeOptions, type CharacterArchetype, type WorldCharacter } from '@/game/characters'
+import { type WorldCharacter } from '@/game/characters'
 import { listItems, type Item } from '@/services/items'
 
 type InteractionPanelProps = {
   characters: WorldCharacter[]
-  onCreateCharacter: (name: string, archetype: CharacterArchetype) => Promise<void>
+  onCreateCharacter: (personaSummary: string, backstoryPrompt: string) => Promise<void>
   isCreatingAgent: boolean
   createAgentError: string | null
 }
@@ -22,9 +22,11 @@ export function InteractionPanel({
   isCreatingAgent,
   createAgentError,
 }: InteractionPanelProps) {
-  const [name, setName] = useState('')
-  const [archetype, setArchetype] = useState<CharacterArchetype>('scout')
+  const dialogTitleId = useId()
+  const dialogDescriptionId = useId()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [personaSummary, setPersonaSummary] = useState('')
+  const [backstoryPrompt, setBackstoryPrompt] = useState('')
   const [items, setItems] = useState<Item[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -61,13 +63,16 @@ export function InteractionPanel({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const trimmedName = name.trim()
-    if (!trimmedName || isCreatingAgent) return
+    const trimmedPersonaSummary = personaSummary.trim()
+    const trimmedBackstoryPrompt = backstoryPrompt.trim()
+
+    if (!trimmedPersonaSummary || !trimmedBackstoryPrompt || isCreatingAgent) return
 
     setIsDialogOpen(false)
-    setName('')
+    setPersonaSummary('')
+    setBackstoryPrompt('')
 
-    await onCreateCharacter(trimmedName, archetype)
+    await onCreateCharacter(trimmedPersonaSummary, trimmedBackstoryPrompt)
   }
 
   const currentCharacter = characters.at(-1)
@@ -81,54 +86,73 @@ export function InteractionPanel({
         우선합니다.
       </p>
 
-      <div className="creation-panel-actions">
+      <div className="creation-form">
         <button type="button" onClick={() => setIsDialogOpen(true)} disabled={isCreatingAgent}>
-          {isCreatingAgent ? 'Creating agent…' : 'Create agent'}
+          {isCreatingAgent ? 'Creating character…' : 'Open persona dialog'}
         </button>
-        <p className="helper-copy">폼 다이얼로그에서 생성 요청을 보내고, 메인 화면에서 진행 상태를 확인합니다.</p>
+        <p className="helper-copy">Submit persona data to the backend, then watch the main screen move from pending to ready.</p>
       </div>
 
       {createAgentError ? <p role="alert">{createAgentError}</p> : null}
 
       {isDialogOpen ? (
         <div className="dialog-backdrop" role="presentation">
-          <div className="dialog-shell" role="dialog" aria-modal="true" aria-labelledby="create-agent-title">
+          <div
+            className="dialog-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={dialogTitleId}
+            aria-describedby={dialogDescriptionId}
+          >
             <div className="dialog-header">
               <div>
-                <p className="section-label">new agent</p>
-                <h3 id="create-agent-title">Create an agent</h3>
+                <p className="eyebrow">Agent creation</p>
+                <h3 id={dialogTitleId}>Create persona character</h3>
               </div>
-              <button type="button" className="secondary-button" onClick={() => setIsDialogOpen(false)}>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => setIsDialogOpen(false)}
+                disabled={isCreatingAgent}
+              >
                 Close
               </button>
             </div>
 
+            <p id={dialogDescriptionId} className="dialog-copy">
+              Submit a short persona summary plus a longer backstory prompt. The main screen will show a pending
+              placeholder until backend image generation finishes.
+            </p>
+
             <form className="creation-form" onSubmit={handleSubmit}>
               <label className="field">
-                <span>Agent name</span>
+                <span>Persona summary</span>
                 <input
-                  name="name"
-                  placeholder="e.g. Nova"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
+                  name="personaSummary"
+                  placeholder="e.g. Warm school guide who helps newcomers feel at home"
+                  value={personaSummary}
+                  onChange={(event) => setPersonaSummary(event.target.value)}
                   required
                 />
               </label>
 
               <label className="field">
-                <span>Archetype</span>
-                <select value={archetype} onChange={(event) => setArchetype(event.target.value as CharacterArchetype)}>
-                  {archetypeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <span>Backstory / prompt</span>
+                <textarea
+                  name="backstoryPrompt"
+                  placeholder="Describe how this agent behaves, speaks, and supports the shared world."
+                  value={backstoryPrompt}
+                  onChange={(event) => setBackstoryPrompt(event.target.value)}
+                  rows={5}
+                  required
+                />
               </label>
 
-              <button type="submit" disabled={isCreatingAgent}>
-                {isCreatingAgent ? 'Creating…' : 'Submit to backend'}
-              </button>
+              <div className="dialog-actions">
+                <button type="submit" disabled={isCreatingAgent}>
+                  {isCreatingAgent ? 'Submitting…' : 'Create character'}
+                </button>
+              </div>
             </form>
           </div>
         </div>

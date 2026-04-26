@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
+import { vi } from 'vitest'
 import App from './App'
 
 function jsonResponse(body: unknown, init?: { ok?: boolean; status?: number }) {
@@ -32,8 +33,10 @@ describe('App', () => {
       if (url.endsWith('/agents') && init?.method === 'POST') {
         return jsonResponse({
           id: 'agent-1',
-          name: 'Nova',
+          name: 'Warm School',
           archetype: 'maker',
+          personaSummary: 'Warm school guide',
+          backstoryPrompt: 'Helps every newcomer settle in.',
           imageUrl: 'data:image/svg+xml;utf8,avatar',
           createdAt: '2026-04-26T00:00:00.000Z',
           updatedAt: '2026-04-26T00:00:00.000Z',
@@ -48,6 +51,7 @@ describe('App', () => {
     render(<App />)
     expect(screen.getByRole('heading', { name: /편하게 둘러보는 데모 공간/i })).toBeInTheDocument()
     expect(screen.getByRole('complementary')).toHaveTextContent(/낯설지 않게 시작하는 안내/i)
+    expect(screen.getByRole('button', { name: /open persona dialog/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     await screen.findByRole('list', { name: /live items list/i })
   })
@@ -71,33 +75,37 @@ describe('App', () => {
 
     render(<App />)
 
-    fireEvent.click(screen.getByRole('button', { name: /create agent/i }))
-    fireEvent.change(screen.getByLabelText(/agent name/i), { target: { value: 'Nova' } })
-    fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'maker' } })
-    fireEvent.click(screen.getByRole('button', { name: /submit to backend/i }))
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Warm school guide' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), {
+      target: { value: 'Helps every newcomer settle in.' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
-    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/nova is pending as a maker/i)
-    expect(screen.getByText(/nova is pending while the backend finishes image generation/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/nova · maker · pending image generation/i)).toHaveLength(1)
+    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/warm school is pending as a scout/i)
+    expect(screen.getByText(/wait for backend completion before movement and interaction unlock/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /spawned avatars: 1/i })).toBeInTheDocument()
+    expect(screen.getAllByText(/warm school · scout · pending image generation/i)).toHaveLength(1)
 
     createRequest.resolve(
       jsonResponse({
         id: 'agent-1',
-        name: 'Nova',
+        name: 'Warm School',
         archetype: 'maker',
+        personaSummary: 'Warm school guide',
+        backstoryPrompt: 'Helps every newcomer settle in.',
         imageUrl: 'data:image/svg+xml;utf8,avatar',
         createdAt: '2026-04-26T00:00:00.000Z',
         updatedAt: '2026-04-26T00:00:00.000Z',
       }),
     )
 
-    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/nova joined as a maker/i)
-    expect(screen.getByRole('heading', { name: /agents in world: 1/i })).toBeInTheDocument()
-    expect(screen.getByText(/nova is the latest fully created agent on the canvas/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/^nova · maker$/i)).toHaveLength(2)
+    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/warm school joined as a maker/i)
+    expect(screen.getByText(/controlling warm school at \(160, 180\)/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/^warm school · maker$/i)).toHaveLength(2)
   })
 
-  it('appends multiple created agents instead of replacing the roster', async () => {
+  it('appends multiple created characters instead of replacing the current roster', async () => {
     let createCount = 0
 
     vi.mocked(globalThis.fetch).mockImplementation(async (input, init) => {
@@ -109,16 +117,32 @@ describe('App', () => {
 
       if (url.endsWith('/agents') && init?.method === 'POST') {
         createCount += 1
-        const body = JSON.parse(String(init.body)) as { name: string; archetype: string }
+        const body = JSON.parse(String(init.body)) as { personaSummary: string; backstoryPrompt: string }
 
-        return jsonResponse({
-          id: `agent-${createCount}`,
-          name: body.name,
-          archetype: body.archetype,
-          imageUrl: `data:image/svg+xml;utf8,avatar-${createCount}`,
-          createdAt: '2026-04-26T00:00:00.000Z',
-          updatedAt: '2026-04-26T00:00:00.000Z',
-        })
+        const responses = [
+          {
+            id: 'agent-1',
+            name: 'Nova Scout',
+            archetype: 'scout',
+            personaSummary: body.personaSummary,
+            backstoryPrompt: body.backstoryPrompt,
+            imageUrl: 'data:image/svg+xml;utf8,avatar-1',
+            createdAt: '2026-04-26T00:00:00.000Z',
+            updatedAt: '2026-04-26T00:00:00.000Z',
+          },
+          {
+            id: 'agent-2',
+            name: 'Milo Spark',
+            archetype: 'spark',
+            personaSummary: body.personaSummary,
+            backstoryPrompt: body.backstoryPrompt,
+            imageUrl: 'data:image/svg+xml;utf8,avatar-2',
+            createdAt: '2026-04-26T00:00:00.000Z',
+            updatedAt: '2026-04-26T00:00:00.000Z',
+          },
+        ]
+
+        return jsonResponse(responses[createCount - 1])
       }
 
       return jsonResponse({}, { ok: false, status: 404 })
@@ -126,20 +150,22 @@ describe('App', () => {
 
     render(<App />)
 
-    fireEvent.click(screen.getByRole('button', { name: /create agent/i }))
-    fireEvent.change(screen.getByLabelText(/agent name/i), { target: { value: 'Nova' } })
-    fireEvent.click(screen.getByRole('button', { name: /submit to backend/i }))
-    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/nova joined as a scout/i)
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Nova scout' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Explores the room.' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/nova scout joined as a scout/i)
 
-    fireEvent.click(screen.getByRole('button', { name: /create agent/i }))
-    fireEvent.change(screen.getByLabelText(/agent name/i), { target: { value: 'Milo' } })
-    fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'spark' } })
-    fireEvent.click(screen.getByRole('button', { name: /submit to backend/i }))
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Milo spark' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Energizes the room.' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
-    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/milo joined as a spark/i)
-    expect(screen.getByRole('heading', { name: /agents in world: 2/i })).toBeInTheDocument()
-    expect(screen.getAllByText(/^nova · scout$/i)).toHaveLength(2)
-    expect(screen.getAllByText(/^milo · spark$/i)).toHaveLength(2)
+    expect(await screen.findByLabelText(/current character summary/i)).toHaveTextContent(/milo spark joined as a spark/i)
+    expect(screen.getByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
+    expect(screen.getByText(/controlling milo spark at \(340, 180\)/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/^nova scout · scout$/i)).toHaveLength(2)
+    expect(screen.getAllByText(/^milo spark · spark$/i)).toHaveLength(2)
   })
 
   it('renders live items from the backend demo slice', async () => {
@@ -187,13 +213,14 @@ describe('App', () => {
 
     render(<App />)
 
-    fireEvent.click(screen.getByRole('button', { name: /create agent/i }))
-    fireEvent.change(screen.getByLabelText(/agent name/i), { target: { value: 'Nova' } })
-    fireEvent.click(screen.getByRole('button', { name: /submit to backend/i }))
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Warm guide' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Supports the class.' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('API request failed: 500')
-    expect(screen.queryByText(/nova joined as/i)).not.toBeInTheDocument()
-    expect(screen.queryByText(/nova is pending/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/pending as/i)).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /spawned avatars: 0/i })).toBeInTheDocument()
   })
 
   it('shows a configuration error when the API base URL is missing', async () => {
@@ -203,5 +230,53 @@ describe('App', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
     expect(globalThis.fetch).not.toHaveBeenCalled()
+  })
+
+  it('keeps the latest created character as the active world agent after multiple creations', async () => {
+    vi.mocked(globalThis.fetch)
+      .mockResolvedValueOnce(jsonResponse([]))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          id: 'agent-1',
+          name: 'Nova Scout',
+          archetype: 'scout',
+          personaSummary: 'Nova scout',
+          backstoryPrompt: 'Explores the room.',
+          imageUrl: 'data:image/svg+xml;utf8,avatar-1',
+          createdAt: '2026-04-26T00:00:00.000Z',
+          updatedAt: '2026-04-26T00:00:00.000Z',
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          id: 'agent-2',
+          name: 'Milo Spark',
+          archetype: 'spark',
+          personaSummary: 'Milo spark',
+          backstoryPrompt: 'Energizes the room.',
+          imageUrl: 'data:image/svg+xml;utf8,avatar-2',
+          createdAt: '2026-04-26T00:00:00.000Z',
+          updatedAt: '2026-04-26T00:00:00.000Z',
+        }),
+      )
+
+    render(<App />)
+    await screen.findByRole('list', { name: /live items list/i })
+
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Nova scout' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Explores the room.' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    await screen.findByRole('heading', { name: /spawned avatars: 1/i })
+
+    fireEvent.click(screen.getByRole('button', { name: /open persona dialog/i }))
+    fireEvent.change(screen.getByLabelText(/persona summary/i), { target: { value: 'Milo spark' } })
+    fireEvent.change(screen.getByLabelText(/backstory \/ prompt/i), { target: { value: 'Energizes the room.' } })
+    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+
+    expect(await screen.findByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/current character summary/i)).toHaveTextContent(/milo spark joined as a spark/i)
+    expect(screen.getByText(/controlling milo spark at \(340, 180\)\./i)).toBeInTheDocument()
+    expect(screen.getByText(/move closer to another generated character to interact/i)).toBeInTheDocument()
   })
 })

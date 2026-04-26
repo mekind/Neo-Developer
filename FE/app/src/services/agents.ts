@@ -1,9 +1,9 @@
-import { type CharacterArchetype, type CreatedAgent } from '@/game/characters'
+import { type CreatedAgent } from '@/game/characters'
 import { postJson } from '@/lib/api-client'
 
-export interface CreateAgentRequest {
-  name: string
-  archetype: CharacterArchetype
+export interface CreateAgentPayload {
+  personaSummary: string
+  backstoryPrompt: string
 }
 
 function isCreatedAgent(value: unknown): value is CreatedAgent {
@@ -14,19 +14,21 @@ function isCreatedAgent(value: unknown): value is CreatedAgent {
   return (
     typeof candidate.id === 'string' &&
     typeof candidate.name === 'string' &&
-    typeof candidate.archetype === 'string' &&
-    typeof candidate.imageUrl === 'string' &&
+    (candidate.archetype === 'scout' || candidate.archetype === 'maker' || candidate.archetype === 'spark') &&
+    typeof candidate.personaSummary === 'string' &&
+    typeof candidate.backstoryPrompt === 'string' &&
+    (candidate.imageUrl === undefined || typeof candidate.imageUrl === 'string') &&
     typeof candidate.createdAt === 'string' &&
-    typeof candidate.updatedAt === 'string'
+    (candidate.updatedAt === undefined || typeof candidate.updatedAt === 'string')
   )
 }
 
-export async function createAgent(request: CreateAgentRequest) {
-  const payload = await postJson('/agents', request)
+export async function createAgent(payload: CreateAgentPayload) {
+  const response = await postJson('/agents', payload)
 
-  if (!isCreatedAgent(payload)) {
+  if (!isCreatedAgent(response)) {
     throw new Error('Agent API response shape was invalid.')
   }
 
-  return payload
+  return response
 }
