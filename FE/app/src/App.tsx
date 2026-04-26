@@ -2,11 +2,17 @@ import { useEffect, useState } from 'react'
 
 import { InteractionPanel } from '@/components/InteractionPanel'
 import { buildWorldAgents, type WorldAgent } from '@/game/agents'
-import { WorldCanvas } from '@/game/WorldCanvas'
+import { WorldCanvas, type CurrentUser } from '@/game/WorldCanvas'
 import { listAgents } from '@/services/agents'
 
 export default function App() {
   const [agents, setAgents] = useState<WorldAgent[]>([])
+  const [currentUser, setCurrentUser] = useState<CurrentUser>({
+    id: 'current-user',
+    label: 'You',
+    x: 1200,
+    y: 760,
+  })
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -49,22 +55,36 @@ export default function App() {
         </div>
         <div className="topbar-summary" aria-label="Room summary">
           <span className="status-pill">Live</span>
-          <strong>{agents.length}</strong>
+          <strong>{agents.length + 1}</strong>
         </div>
       </header>
 
       <div className="app-body">
         <aside className="sidebar panel-shell">
-          <InteractionPanel agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
+          <InteractionPanel
+            agents={agents}
+            currentUser={currentUser}
+            isLoading={isLoading}
+            errorMessage={errorMessage}
+          />
         </aside>
 
         <section className="world-stage panel-shell" aria-label="world stage">
           <div className="world-stage-copy">
             <p className="eyebrow">Room</p>
             <h2>Commons Floor</h2>
-            <p className="description">NeoD처럼 Phaser가 월드 surface를 직접 렌더링하고 React는 외곽 UI를 맡습니다.</p>
+            <p className="description">
+              NeoD처럼 Phaser가 월드 surface를 직접 렌더링하고 React는 외곽 UI를 맡습니다. 기본적으로 현재 사용자
+              1명이 화면에 있고, WASD/방향키로 움직일 수 있습니다.
+            </p>
           </div>
-          <WorldCanvas agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
+          <WorldCanvas
+            agents={agents}
+            currentUser={currentUser}
+            onCurrentUserChange={setCurrentUser}
+            isLoading={isLoading}
+            errorMessage={errorMessage}
+          />
         </section>
       </div>
     </main>

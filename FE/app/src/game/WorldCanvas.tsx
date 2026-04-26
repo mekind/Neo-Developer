@@ -3,8 +3,17 @@ import type Phaser from 'phaser'
 
 import { type WorldAgent } from './agents'
 
+export type CurrentUser = {
+  id: string
+  label: string
+  x: number
+  y: number
+}
+
 type WorldCanvasProps = {
   agents: WorldAgent[]
+  currentUser: CurrentUser
+  onCurrentUserChange: (nextUser: CurrentUser) => void
   isLoading: boolean
   errorMessage: string | null
 }
@@ -14,6 +23,8 @@ const MAP_HEIGHT = 1350
 const VIEWPORT_WIDTH = 1280
 const VIEWPORT_HEIGHT = 720
 const AGENT_RADIUS = 28
+const PLAYER_RADIUS = 30
+const PLAYER_SPEED = 240
 const OBSTACLES = [
   { x: 300, y: 350, width: 320, height: 140, color: 0xcfaf84 },
   { x: 980, y: 460, width: 360, height: 150, color: 0xd7b88c },
@@ -22,12 +33,14 @@ const OBSTACLES = [
   { x: 1820, y: 860, width: 220, height: 220, color: 0x8ea275 },
 ] as const
 
-export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProps) {
+export function WorldCanvas({ agents, currentUser, onCurrentUserChange, isLoading, errorMessage }: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
+  const currentUserRef = useRef<CurrentUser>(currentUser)
 
   agentsRef.current = agents
+  currentUserRef.current = currentUser
 
   useEffect(() => {
     let cancelled = false
@@ -41,25 +54,89 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
       class BackendRosterScene extends Phaser.Scene {
         private background!: Phaser.GameObjects.Graphics
         private obstacleLayer!: Phaser.GameObjects.Graphics
+        private playerBody!: Phaser.GameObjects.Arc
+        private playerLabel!: Phaser.GameObjects.Text
+        private keys!: Phaser.Types.Input.Keyboard.CursorKeys
+        private wasdKeys!: {
+          up: Phaser.Input.Keyboard.Key
+          down: Phaser.Input.Keyboard.Key
+          left: Phaser.Input.Keyboard.Key
+          right: Phaser.Input.Keyboard.Key
+        }
         private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }>()
 
         create() {
           this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
-          this.cameras.main.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2)
+          this.cameras.main.centerOn(currentUserRef.current.x, currentUserRef.current.y)
           this.cameras.main.setBackgroundColor('#ece6da')
 
           this.background = this.add.graphics()
           this.obstacleLayer = this.add.graphics()
           this.drawBackground()
           this.drawObstacles()
+          this.createCurrentUser()
           this.syncAgents()
+
+          this.keys = this.input.keyboard!.createCursorKeys()
+          this.wasdKeys = this.input.keyboard!.addKeys({
+            up: Phaser.Input.Keyboard.KeyCodes.W,
+            down: Phaser.Input.Keyboard.KeyCodes.S,
+            left: Phaser.Input.Keyboard.KeyCodes.A,
+            right: Phaser.Input.Keyboard.KeyCodes.D,
+          }) as BackendRosterScene['wasdKeys']
 
           this.scale.on('resize', this.handleResize, this)
           this.handleResize({ width: this.scale.width, height: this.scale.height })
         }
 
-        update() {
+        update(_time: number, delta: number) {
+          this.syncCurrentUser(delta)
           this.syncAgents()
+        }
+
+        private createCurrentUser() {
+          this.playerBody = this.add.circle(currentUserRef.current.x, currentUserRef.current.y, PLAYER_RADIUS, 0x2563eb)
+          this.playerBody.setStrokeStyle(5, 0xfffbeb, 1)
+
+          this.playerLabel = this.add.text(currentUserRef.current.x - 28, currentUserRef.current.y + 40, currentUserRef.current.label, {
+            color: '#1e3a8a',
+            fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+            fontSize: '15px',
+            backgroundColor: 'rgba(255,247,237,0.92)',
+            padding: { x: 8, y: 4 },
+          })
+        }
+
+        private syncCurrentUser(delta: number) {
+          const horizontal =
+            Number(this.keys.right.isDown || this.wasdKeys.right.isDown) -
+            Number(this.keys.left.isDown || this.wasdKeys.left.isDown)
+          const vertical =
+            Number(this.keys.down.isDown || this.wasdKeys.down.isDown) -
+            Number(this.keys.up.isDown || this.wasdKeys.up.isDown)
+
+          const currentSnapshot = currentUserRef.current
+          let nextX = currentSnapshot.x
+          let nextY = currentSnapshot.y
+
+          if (horizontal !== 0 || vertical !== 0) {
+            const magnitude = Math.hypot(horizontal, vertical) || 1
+            const distance = PLAYER_SPEED * (delta / 1000)
+            nextX += (horizontal / magnitude) * distance
+            nextY += (vertical / magnitude) * distance
+            nextX = clampToWorld(nextX, PLAYER_RADIUS + 40, MAP_WIDTH - PLAYER_RADIUS - 40)
+            nextY = clampToWorld(nextY, PLAYER_RADIUS + 40, MAP_HEIGHT - PLAYER_RADIUS - 40)
+          }
+
+          this.playerBody.setPosition(nextX, nextY)
+          this.playerLabel.setPosition(nextX - 28, nextY + 40).setText(currentSnapshot.label)
+          this.cameras.main.centerOn(nextX, nextY)
+
+          if (nextX !== currentSnapshot.x || nextY !== currentSnapshot.y) {
+            const nextUser = { ...currentSnapshot, x: nextX, y: nextY }
+            currentUserRef.current = nextUser
+            onCurrentUserChange(nextUser)
+          }
         }
 
         private syncAgents() {
@@ -164,7 +241,7 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
       gameRef.current?.destroy(true, false)
       gameRef.current = null
     }
-  }, [])
+  }, [onCurrentUserChange])
 
   return (
     <div className="world-surface">
@@ -189,4 +266,8 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
       </div>
     </div>
   )
+}
+
+function clampToWorld(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
 }

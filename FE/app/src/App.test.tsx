@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
 
@@ -18,15 +18,22 @@ const backendAgents = [
 vi.mock('@/game/WorldCanvas', () => ({
   WorldCanvas: ({
     agents,
+    currentUser,
+    onCurrentUserChange,
     isLoading,
     errorMessage,
   }: {
     agents: Array<{ id: string; label: string; imageSrc: string; usesPlaceholder: boolean }>
+    currentUser: { label: string; x: number; y: number }
+    onCurrentUserChange: (nextUser: { label: string; x: number; y: number }) => void
     isLoading: boolean
     errorMessage: string | null
   }) => (
     <div aria-label="Phaser map viewport">
       <h2>Backend agents: {agents.length}</h2>
+      <p>
+        Current user: {currentUser.label} ({Math.round(currentUser.x)}, {Math.round(currentUser.y)})
+      </p>
       <p>
         {isLoading
           ? 'Loading backend agents into the world.'
@@ -42,6 +49,18 @@ vi.mock('@/game/WorldCanvas', () => ({
           <figcaption>{agent.label}</figcaption>
         </figure>
       ))}
+      <button
+        type="button"
+        onClick={() =>
+          onCurrentUserChange({
+            ...currentUser,
+            x: currentUser.x + 40,
+            y: currentUser.y + 20,
+          })
+        }
+      >
+        Move current user
+      </button>
     </div>
   ),
 }))
@@ -67,7 +86,19 @@ describe('App', () => {
     expect(screen.getByRole('complementary')).toHaveTextContent(/agents/i)
     expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/current user summary/i)).toHaveTextContent(/you is active in the room/i)
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
+  })
+
+  it('keeps one default current user visible and lets that user move', async () => {
+    render(<App />)
+
+    expect(screen.getByText(/current user: you \(1200, 760\)/i)).toBeInTheDocument()
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /move current user/i }))
+    })
+    expect(screen.getByText(/current user: you \(1240, 780\)/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/current user summary/i)).toHaveTextContent(/position: 1240, 780/i)
   })
 
   it('renders a simple backend agent roster', async () => {

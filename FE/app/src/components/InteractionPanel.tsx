@@ -1,18 +1,33 @@
 import type { WorldAgent } from '@/game/agents'
+import type { CurrentUser } from '@/game/WorldCanvas'
 
 type InteractionPanelProps = {
   agents: WorldAgent[]
+  currentUser: CurrentUser
   isLoading: boolean
   errorMessage: string | null
 }
 
-export function InteractionPanel({ agents, isLoading, errorMessage }: InteractionPanelProps) {
+export function InteractionPanel({ agents, currentUser, isLoading, errorMessage }: InteractionPanelProps) {
   return (
     <section className="sidebar-content">
       <div className="sidebar-head">
         <p className="eyebrow">Room panel</p>
         <h2>Agents</h2>
       </div>
+
+      <section className="panel-section panel-highlight" aria-label="Current user summary">
+        <div className="panel-label-row">
+          <span className="panel-kicker">Player</span>
+          <span className="panel-count">1</span>
+        </div>
+        <p>
+          <strong>{currentUser.label}</strong> is active in the room.
+        </p>
+        <p>
+          Position: {Math.round(currentUser.x)}, {Math.round(currentUser.y)}
+        </p>
+      </section>
 
       <section className="panel-section panel-highlight" aria-label="Backend agent summary">
         <div className="panel-label-row">
