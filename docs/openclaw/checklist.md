@@ -10,22 +10,26 @@
 
 ## Phase 0 — 사전 결정 (코드 시작 전)
 
-- [ ] **레포 형태 최종 확정**: `aim-openclaw` 별도 레포 vs `AIM/openclaw/` monorepo 폴더
-  - 결정 → `decisions.md` D-01 갱신
-- [ ] **GitHub repo / Vercel 프로젝트 권한** 준비
-- [ ] **AI Gateway 계정/플랜** 확인 (`AI_GATEWAY_API_KEY` 발급 가능 여부)
-- [ ] **NestJS 페어 작업 BE-18~22** backend todo에 등록
-- [ ] **공유 토큰값 생성** (`BACKEND_SERVICE_TOKEN`, `CRON_SECRET`) — 32+ chars, 양 서비스 동일
+> 외부 셋업 절차 상세는 [setup-guide.md](./setup-guide.md) 참조.
+
+- [x] **레포 형태 최종 확정**: **monorepo 폴더 `AIM/openclaw/` + 별도 Vercel 프로젝트** 채택
+  - `decisions.md` D-01 개정 완료
+- [ ] **OpenClaw용 Vercel 프로젝트 생성** (root directory = `AIM/openclaw`, Ignored Build Step 적용)
+- [ ] **AI Gateway 활성화** + Anthropic provider 등록 + ZDR 옵션
+- [x] **NestJS 페어 작업 BE-18~22** backend todo P3 섹션에 등록 완료
+- [ ] **공유 토큰 생성 + 등록** (`BACKEND_SERVICE_TOKEN` 양쪽 동일, `CRON_SECRET` OpenClaw)
+- [ ] **NestJS env 추가**: `OPENCLAW_BASE_URL`, `BACKEND_SERVICE_TOKEN`
 
 ---
 
 ## Phase 1 — 스캐폴드 (OC-01)
 
-- [ ] repo 초기화
+- [ ] repo 초기화 (monorepo 폴더 채택 — D-01 참조)
   ```bash
-  npx create-next-app@latest aim-openclaw \
+  cd /path/to/AIM    # monorepo root
+  npx create-next-app@latest openclaw \
     --ts --app --no-tailwind --src-dir --import-alias "@/*"
-  cd aim-openclaw
+  cd openclaw
   pnpm add ai zod @ai-sdk/gateway
   pnpm add -D @types/node
   ```

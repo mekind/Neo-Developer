@@ -1,15 +1,52 @@
 # Decisions
 
-## D-01: 별도 레포 / 별도 Vercel 프로젝트
+## D-01: Monorepo 폴더 / 별도 Vercel 프로젝트 (개정 — Phase 0)
 
-**선택**: `aim-openclaw` 별도 레포, 별도 Vercel 프로젝트.
+**선택**: 같은 `Neo-Developer` 모노레포 안에 `AIM/openclaw/` 폴더로 배치, **Vercel 프로젝트는 별도**.
 
-| 대안 | 채택 안 함 사유 |
-|---|---|
-| Monorepo (next-forge) | 빌드/배포 lifecycle 묶이고 LLM 의존성이 백엔드 빌드에 섞임 |
-| NestJS 안에 통합 | 책임 혼재, NestJS는 데이터 책임만 유지하는 게 plan 의도와 일치 |
+### 변경 사유 (vs 원안)
 
-**트레이드오프**: 타입 공유 비용 → 공통 타입은 `shared/contracts.ts`를 양 레포에 복제 또는 npm package로 추출 (P1).
+원안은 별도 레포(`aim-openclaw`)였으나, Phase 0 단계에서 다음 사유로 monorepo 폴더 채택:
+
+- 해커톤 페이스에서 권한/CI/리뷰 흐름 단일화가 빠름
+- 문서(`docs/openclaw/`)가 이미 같은 레포에 있어 동기화 부담 적음
+- 공유 타입(`@aim/contracts`)을 npm 발행 없이 path import로 시작 가능
+- `git worktree`/`git mv`로 코드 이동 자유로움
+
+### 비교
+
+| 형태 | 채택 여부 | 사유 |
+|---|---|---|
+| **Monorepo 폴더 (`AIM/openclaw/`) + 별도 Vercel 프로젝트** | ✅ 채택 | 위 사유 |
+| 별도 레포 (`aim-openclaw`) | ❌ | 권한/리뷰 흐름 분리 비용, MVP에 과함 |
+| Monorepo + 같은 Vercel 프로젝트 | ❌ | NestJS 빌드와 LLM 의존성 섞임, 배포 lifecycle 묶임 |
+| NestJS 안에 통합 | ❌ | 책임 혼재 |
+
+### 운영 모델
+
+- Vercel 프로젝트 root directory = `AIM/openclaw`
+- `vercel.json` / `vercel.ts`도 그 폴더에 둠 (NestJS 측 `backend/vercel.json`과 분리)
+- GitHub push가 두 Vercel 프로젝트(NestJS, OpenClaw)를 각각 트리거 — 변경된 폴더만 배포되도록 Ignored Build Step 또는 root directory 분리로 처리
+
+### 트레이드오프
+
+- 같은 레포 → 작은 변경에도 양쪽 CI 실행 가능성. `paths-filter` 또는 Vercel Ignored Build Step으로 완화.
+- 권한 분리 약함 — 동일 contributor가 양쪽 모두 수정 가능. MVP에선 허용.
+
+### 향후 (Out of MVP)
+
+별도 조직/팀 분리 시점에 `aim-openclaw`로 추출 가능. 코드는 SOUL/config/Memory를 NestJS와 HTTP로만 통신하므로 추출 비용 낮음.
+
+---
+
+## D-01a: 공유 타입 동기화 정책 (신규 — Phase 0)
+
+**선택**: 초기엔 `AIM/openclaw/src/types/contracts.ts` + `AIM/backend/src/openclaw/contracts.ts` **양쪽 수동 미러링**, drift 발생 시 `@aim/contracts` 워크스페이스 패키지로 추출.
+
+이유:
+- 해커톤 페이스에서 npm/workspace 셋업 비용보다 미러링이 단순
+- 타입 변경 빈도 낮음 (계약 표면이 좁음 — invoke/tick/notifications/log)
+- 향후 추출 시점은 `OC-11`로 별도 트래킹
 
 ---
 
