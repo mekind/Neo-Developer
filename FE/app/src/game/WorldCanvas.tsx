@@ -1,6 +1,13 @@
 import { useEffect, useRef } from 'react'
 
-export function WorldCanvas() {
+import { type WorldCharacter } from './characters'
+
+type WorldCanvasProps = {
+  characters: WorldCharacter[]
+  currentCharacter: WorldCharacter | null
+}
+
+export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -14,42 +21,126 @@ export function WorldCanvas() {
     const height = canvas.height
 
     context.clearRect(0, 0, width, height)
-    context.fillStyle = '#dfe4dc'
+
+    const wallGradient = context.createLinearGradient(0, 0, 0, height)
+    wallGradient.addColorStop(0, '#f7efe3')
+    wallGradient.addColorStop(0.5, '#efe3d2')
+    wallGradient.addColorStop(1, '#e4d2bc')
+    context.fillStyle = wallGradient
     context.fillRect(0, 0, width, height)
 
-    context.fillStyle = '#eef1eb'
-    context.fillRect(36, 36, width - 72, height - 72)
+    context.fillStyle = '#d9b792'
+    context.fillRect(0, height - 170, width, 170)
 
-    context.strokeStyle = 'rgba(89, 101, 82, 0.12)'
-    for (let x = 40; x <= width; x += 40) {
-      context.beginPath()
-      context.moveTo(x, 0)
-      context.lineTo(x, height)
-      context.stroke()
+    context.fillStyle = '#c39868'
+    for (let x = 0; x < width; x += 64) {
+      context.fillRect(x, height - 170, 4, 170)
     }
 
-    for (let y = 40; y <= height; y += 40) {
+    context.fillStyle = '#9b7959'
+    context.fillRect(56, 72, width - 112, 22)
+
+    const windows = [150, 390, 630, 870]
+    windows.forEach((x) => {
+      context.fillStyle = '#a47b59'
+      context.fillRect(x, 104, 150, 168)
+      context.fillStyle = '#dcedef'
+      context.fillRect(x + 12, 116, 126, 144)
+      context.strokeStyle = 'rgba(255,255,255,0.55)'
+      context.lineWidth = 4
       context.beginPath()
-      context.moveTo(0, y)
-      context.lineTo(width, y)
+      context.moveTo(x + 75, 116)
+      context.lineTo(x + 75, 260)
+      context.moveTo(x + 12, 188)
+      context.lineTo(x + 138, 188)
       context.stroke()
-    }
+    })
 
-    context.fillStyle = '#c77952'
-    context.fillRect(168, 116, 34, 34)
+    context.fillStyle = '#78916d'
+    context.fillRect(1020, 124, 38, 118)
+    context.beginPath()
+    context.arc(1039, 104, 42, 0, Math.PI * 2)
+    context.fill()
 
-    context.fillStyle = '#6a745f'
-    context.fillRect(248, 196, 52, 52)
+    context.fillStyle = '#d0ae80'
+    context.fillRect(176, 342, 220, 86)
+    context.fillRect(480, 360, 250, 96)
+    context.fillRect(834, 334, 200, 82)
 
-    context.fillStyle = '#384136'
+    context.fillStyle = '#936846'
+    ;[
+      [200, 428, 12, 76],
+      [360, 428, 12, 76],
+      [510, 456, 12, 70],
+      [688, 456, 12, 70],
+      [860, 416, 12, 74],
+      [1010, 416, 12, 74],
+    ].forEach(([x, y, w, h]) => {
+      context.fillRect(x, y, w, h)
+    })
+
+    context.fillStyle = '#efd48a'
+    context.beginPath()
+    context.arc(1116, 124, 28, 0, Math.PI * 2)
+    context.fill()
+    context.fillStyle = 'rgba(239, 212, 138, 0.2)'
+    context.beginPath()
+    context.arc(1116, 124, 78, 0, Math.PI * 2)
+    context.fill()
+
+    context.fillStyle = '#4d463f'
+    context.font = 'bold 18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
+    context.fillText('Warm school commons prototype', 28, 42)
     context.font = '16px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-    context.fillText('차분하게 둘러보는 월드 미리보기', 28, 34)
-    context.fillText('읽기 쉬운 톤과 부드러운 흐름을 우선합니다', 28, 58)
-  }, [])
+    context.fillText('새 캐릭터가 차분하고 읽기 쉬운 월드에 바로 배치됩니다.', 28, 68)
+
+    if (characters.length === 0) {
+      context.fillStyle = 'rgba(77, 70, 63, 0.72)'
+      context.font = '18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
+      context.fillText('아직 생성된 캐릭터가 없습니다.', 28, 120)
+      return
+    }
+
+    characters.forEach((character, index) => {
+      context.fillStyle = character.color
+      context.beginPath()
+      context.arc(character.x, character.y, 18, 0, Math.PI * 2)
+      context.fill()
+
+      context.strokeStyle = currentCharacter?.id === character.id ? '#fffaf3' : 'rgba(77, 70, 63, 0.45)'
+      context.lineWidth = currentCharacter?.id === character.id ? 3 : 1
+      context.stroke()
+
+      context.fillStyle = '#4d463f'
+      context.font = '14px Pretendard, SUIT, "Noto Sans KR", sans-serif'
+      context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
+    })
+  }, [characters, currentCharacter])
 
   return (
     <div className="world-surface">
-      <canvas ref={canvasRef} width={720} height={480} aria-label="따뜻한 데모 공간 미리보기 캔버스" />
+      <div className="world-status">
+        <div>
+          <p className="eyebrow">Live world state</p>
+          <h2>Spawned avatars: {characters.length}</h2>
+        </div>
+        <p className="world-helper">
+          {currentCharacter
+            ? `${currentCharacter.name} is the latest character added to the canvas.`
+            : '첫 번째 캐릭터를 만들면 월드에 바로 반영됩니다.'}
+        </p>
+      </div>
+      <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
+      {characters.length > 0 ? (
+        <ul className="world-roster" aria-label="World roster">
+          {characters.map((character) => (
+            <li key={character.id}>
+              <span className="world-roster-dot" style={{ backgroundColor: character.color }} aria-hidden="true" />
+              {character.name} · {character.archetype}
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   )
 }
