@@ -20,9 +20,9 @@ const VIEWPORT_WIDTH = 1280
 const VIEWPORT_HEIGHT = 720
 const PLAYER_RADIUS = 24
 const AGENT_RADIUS = 22
-const MINIMAP_WIDTH = 156
-const MINIMAP_HEIGHT = 156
-const MINIMAP_MARGIN = 16
+const MINIMAP_WIDTH = 128
+const MINIMAP_HEIGHT = 128
+const MINIMAP_MARGIN = 8
 const CAMERA_LERP = 0.18
 const CAMERA_ZOOM = 0.82
 const SPEECH_MS = 1200
@@ -121,6 +121,7 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
         private playerHalo!: Phaser.GameObjects.Arc
         private playerLabel!: Phaser.GameObjects.Text
         private promptText!: Phaser.GameObjects.Text
+        private minimapLegend!: Phaser.GameObjects.Text
         private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text; speech: Phaser.GameObjects.Text }>()
         private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
         private spaceKey?: Phaser.Input.Keyboard.Key
@@ -152,6 +153,13 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
             backgroundColor: 'rgba(17,24,39,0.82)',
             padding: { x: 8, y: 4 },
           }).setDepth(20)
+          this.minimapLegend = this.add.text(0, 0, 'ME / NPC', {
+            color: '#f8fafc',
+            fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+            fontSize: '9px',
+            backgroundColor: 'rgba(17,24,39,0.78)',
+            padding: { x: 6, y: 2 },
+          }).setScrollFactor(0).setDepth(31)
           this.promptText = this.add.text(640, 664, '', {
             color: '#f8fafc',
             fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
@@ -280,20 +288,26 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
         private drawMinimap() {
           const camera = this.cameras.main
           const viewport = getMinimapViewport(this.scale.width)
+          this.minimapLayer.fillStyle(0x111827, 0.78)
+          this.minimapLayer.fillRoundedRect(viewport.x, viewport.y - 18, 78, 16, 8)
           this.minimapLayer.clear()
           this.minimapLayer.fillStyle(0x161e18, 0.82)
           this.minimapLayer.fillRoundedRect(viewport.x, viewport.y, viewport.width, viewport.height, 16)
           this.minimapLayer.fillStyle(0xffffff, 0.94)
           this.minimapLayer.fillRoundedRect(viewport.x + 6, viewport.y + 6, viewport.width - 12, viewport.height - 12, 12)
+          this.minimapLayer.lineStyle(1, 0x111827, 0.18)
+          this.minimapLayer.strokeRoundedRect(viewport.x + 6, viewport.y + 6, viewport.width - 12, viewport.height - 12, 12)
 
           agentsRef.current.forEach((agent) => {
             const point = projectMiniMapPoint(agent.xPercent, agent.yPercent, viewport)
             this.minimapLayer.fillStyle(agent.usesPlaceholder ? 0xf59e0b : 0x2563eb, 1)
-            this.minimapLayer.fillCircle(point.x, point.y, 4)
+            this.minimapLayer.fillCircle(point.x, point.y, 3.5)
           })
           const playerPoint = projectMiniMapPoint(this.playerState.xPercent, this.playerState.yPercent, viewport)
           this.minimapLayer.fillStyle(0x22c55e, 1)
-          this.minimapLayer.fillCircle(playerPoint.x, playerPoint.y, 5)
+          this.minimapLayer.fillCircle(playerPoint.x, playerPoint.y, 4.5)
+          this.minimapLayer.lineStyle(1.5, 0xffffff, 0.95)
+          this.minimapLayer.strokeCircle(playerPoint.x, playerPoint.y, 4.5)
 
           const innerX = viewport.x + 6
           const innerY = viewport.y + 6
