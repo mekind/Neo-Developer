@@ -115,10 +115,10 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
-    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/agents/i)
     expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
     expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
