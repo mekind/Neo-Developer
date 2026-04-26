@@ -137,7 +137,7 @@ describe('App', () => {
   it('renders the shell with the game viewport and backend roster', async () => {
     render(<App />)
 
-    expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /myclaw/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/Phaser map viewport/i)).toBeInTheDocument()
     expect(await screen.findByText('Hana')).toBeInTheDocument()
     expect(await screen.findByText('Noa')).toBeInTheDocument()
