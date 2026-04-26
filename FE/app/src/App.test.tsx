@@ -133,6 +133,18 @@ describe('App', () => {
     await waitFor(() => expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1))
   })
 
+
+  it('opens the npc chat dialog from the header trigger button', async () => {
+    render(<App />)
+
+    fireEvent.click(await screen.findByRole('button', { name: /open npc chat/i }))
+
+    const dialog = await screen.findByRole('dialog')
+    expect(dialog).toHaveTextContent(/chat with hana/i)
+    expect(dialog).toHaveTextContent(/message/i)
+    expect(within(dialog).getByRole('button', { name: /send/i })).toBeDisabled()
+  })
+
   it('renders a simple backend agent roster', async () => {
     render(<App />)
 
