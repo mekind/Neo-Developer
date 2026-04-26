@@ -1,15 +1,18 @@
 import { useEffect, useRef } from 'react'
 import type Phaser from 'phaser'
 
-import type { WorldAgent, WorldPlayer } from './agents'
+import { buildWorldPlayer, INTERACTION_RADIUS_PERCENT, measurePercentDistance, type WorldAgent } from './agents'
+import {
+  moveWorldPosition,
+  PLAYER_MOVEMENT_SPEED,
+  resolvePlayerMovementStep,
+  type MovementVector,
+} from './playerMovement'
 
 type WorldCanvasProps = {
   agents: WorldAgent[]
-  player: WorldPlayer
-  isLoading: boolean
-  errorMessage: string | null
-  interactionTarget: WorldAgent | null
   lastInteractionMessage: string | null
+  onAgentInteraction: (agent: WorldAgent) => void
 }
 
 const MAP_WIDTH = 2400
@@ -46,14 +49,23 @@ function projectMiniMapPoint(xPercent: number, yPercent: number) {
   }
 }
 
-export function WorldCanvas({ agents, player }: WorldCanvasProps) {
+function getInputVector(cursors: Phaser.Types.Input.Keyboard.CursorKeys): MovementVector {
+  return {
+    x: Number(Boolean(cursors.right?.isDown)) - Number(Boolean(cursors.left?.isDown)),
+    y: Number(Boolean(cursors.down?.isDown)) - Number(Boolean(cursors.up?.isDown)),
+  }
+}
+
+export function WorldCanvas({ agents, lastInteractionMessage, onAgentInteraction }: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
-  const playerRef = useRef<WorldPlayer>(player)
+  const interactionCallbackRef = useRef(onAgentInteraction)
+  const lastInteractionMessageRef = useRef(lastInteractionMessage)
 
   agentsRef.current = agents
-  playerRef.current = player
+  interactionCallbackRef.current = onAgentInteraction
+  lastInteractionMessageRef.current = lastInteractionMessage
 
   useEffect(() => {
     let cancelled = false
@@ -70,7 +82,16 @@ export function WorldCanvas({ agents, player }: WorldCanvasProps) {
         private minimapLayer!: Phaser.GameObjects.Graphics
         private playerMarker!: Phaser.GameObjects.Arc
         private playerLabel!: Phaser.GameObjects.Text
+        private promptText!: Phaser.GameObjects.Text
+        private feedbackText!: Phaser.GameObjects.Text
         private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }>()
+        private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
+        private spaceKey?: Phaser.Input.Keyboard.Key
+        private playerState = {
+          ...buildWorldPlayer(),
+          velocity: { x: 0, y: 0 } as MovementVector,
+        }
+        private currentInteractionTarget: WorldAgent | null = null
 
         create() {
           this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
@@ -79,39 +100,79 @@ export function WorldCanvas({ agents, player }: WorldCanvasProps) {
           this.background = this.add.graphics()
           this.obstacleLayer = this.add.graphics()
           this.minimapLayer = this.add.graphics().setScrollFactor(0)
-          this.playerMarker = this.add.circle(projectX(playerRef.current.xPercent), projectY(playerRef.current.yPercent), AGENT_RADIUS + 4, 0x22c55e)
+          this.playerMarker = this.add.circle(projectX(this.playerState.xPercent), projectY(this.playerState.yPercent), AGENT_RADIUS + 4, 0x22c55e)
           this.playerMarker.setStrokeStyle(5, 0xfffbeb, 1)
-          this.playerLabel = this.add.text(0, 0, playerRef.current.label, {
+          this.playerLabel = this.add.text(0, 0, this.playerState.label, {
             color: '#234035',
             fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
             fontSize: '14px',
             backgroundColor: 'rgba(255,247,237,0.92)',
             padding: { x: 8, y: 4 },
           })
+          this.promptText = this.add.text(640, 664, '', {
+            color: '#f8fafc',
+            fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+            fontSize: '16px',
+            backgroundColor: 'rgba(17,24,39,0.82)',
+            padding: { x: 14, y: 8 },
+          })
+            .setOrigin(0.5)
+            .setScrollFactor(0)
+            .setDepth(20)
+            .setVisible(false)
+          this.feedbackText = this.add.text(20, 20, '', {
+            color: '#f8fafc',
+            fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+            fontSize: '14px',
+            backgroundColor: 'rgba(17,24,39,0.76)',
+            padding: { x: 10, y: 6 },
+          })
+            .setScrollFactor(0)
+            .setDepth(20)
+            .setVisible(false)
 
           this.drawBackground()
           this.drawObstacles()
           this.syncSprites()
           this.cameras.main.startFollow(this.playerMarker, true, CAMERA_LERP, CAMERA_LERP)
 
+          this.cursors = this.input.keyboard?.createCursorKeys() ?? ({}) as Phaser.Types.Input.Keyboard.CursorKeys
+          this.spaceKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
+          this.spaceKey?.on(Phaser.Input.Keyboard.Events.DOWN, () => {
+            if (this.currentInteractionTarget) {
+              interactionCallbackRef.current(this.currentInteractionTarget)
+            }
+          })
+
           this.scale.on('resize', this.handleResize, this)
           this.handleResize({ width: this.scale.width, height: this.scale.height })
         }
 
-        update() {
+        update(_time: number, delta: number) {
+          const movement = resolvePlayerMovementStep(
+            getInputVector(this.cursors),
+            this.playerState.velocity,
+            PLAYER_MOVEMENT_SPEED,
+            delta,
+          )
+          this.playerState.velocity = movement.velocity
+          const nextPosition = moveWorldPosition(this.playerState, movement.velocity, delta)
+          this.playerState.xPercent = nextPosition.xPercent
+          this.playerState.yPercent = nextPosition.yPercent
+
           this.syncSprites()
+          this.syncInteractionUi()
           this.drawMinimap()
         }
 
         private syncSprites() {
           const snapshot = agentsRef.current
           const ids = new Set(snapshot.map((agent) => agent.id))
-          const playerSnapshot = playerRef.current
-          const playerX = projectX(playerSnapshot.xPercent)
-          const playerY = projectY(playerSnapshot.yPercent)
+          const playerX = projectX(this.playerState.xPercent)
+          const playerY = projectY(this.playerState.yPercent)
 
           this.playerMarker.setPosition(playerX, playerY)
-          this.playerLabel.setPosition(playerX - 30, playerY + 40).setText(playerSnapshot.label)
+          this.playerLabel.setPosition(playerX - 30, playerY + 40).setText(this.playerState.label)
 
           snapshot.forEach((agent) => {
             const existing = this.agentSprites.get(agent.id)
@@ -144,6 +205,28 @@ export function WorldCanvas({ agents, player }: WorldCanvasProps) {
             sprite.body.destroy()
             sprite.label.destroy()
             this.agentSprites.delete(id)
+          }
+        }
+
+        private syncInteractionUi() {
+          this.currentInteractionTarget =
+            agentsRef.current
+              .map((agent) => ({ agent, distance: measurePercentDistance(this.playerState, agent) }))
+              .filter(({ distance }) => distance <= INTERACTION_RADIUS_PERCENT)
+              .sort((left, right) => left.distance - right.distance)[0]?.agent ?? null
+
+          if (this.currentInteractionTarget) {
+            this.promptText.setText(`SPACE · Talk to ${this.currentInteractionTarget.label}`)
+            this.promptText.setVisible(true)
+          } else {
+            this.promptText.setVisible(false)
+          }
+
+          if (lastInteractionMessageRef.current) {
+            this.feedbackText.setText(lastInteractionMessageRef.current)
+            this.feedbackText.setVisible(true)
+          } else {
+            this.feedbackText.setVisible(false)
           }
         }
 
@@ -211,7 +294,7 @@ export function WorldCanvas({ agents, player }: WorldCanvasProps) {
             this.minimapLayer.fillCircle(point.x, point.y, 4)
           })
 
-          const playerPoint = projectMiniMapPoint(playerRef.current.xPercent, playerRef.current.yPercent)
+          const playerPoint = projectMiniMapPoint(this.playerState.xPercent, this.playerState.yPercent)
           this.minimapLayer.fillStyle(0x22c55e, 1)
           this.minimapLayer.fillCircle(playerPoint.x, playerPoint.y, 5)
 
@@ -227,6 +310,7 @@ export function WorldCanvas({ agents, player }: WorldCanvasProps) {
 
         private handleResize(gameSize: { width: number; height: number }) {
           this.cameras.main.setViewport(0, 0, gameSize.width, gameSize.height)
+          this.promptText.setPosition(gameSize.width / 2, Math.max(40, gameSize.height - 56))
         }
       }
 

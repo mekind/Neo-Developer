@@ -1,52 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import {
-  INTERACTION_RADIUS_PERCENT,
-  appendCreatedAgent,
-  buildWorldAgents,
-  buildWorldPlayer,
-  measurePercentDistance,
-  type WorldAgent,
-  type WorldPlayer,
-} from '@/game/agents'
-import {
-  type MovementVector,
-  moveWorldPosition,
-  PLAYER_MOVEMENT_SPEED,
-  resolvePlayerMovementStep,
-} from '@/game/playerMovement'
+import { appendCreatedAgent, buildWorldAgents, type WorldAgent } from '@/game/agents'
 import { createAgent, listAgents } from '@/services/agents'
-
-type DirectionKey = 'up' | 'down' | 'left' | 'right'
-
-const MOVEMENT_KEYS: Record<string, DirectionKey> = {
-  ArrowUp: 'up',
-  ArrowDown: 'down',
-  ArrowLeft: 'left',
-  ArrowRight: 'right',
-}
-
-function getInputVector(pressedKeys: Set<DirectionKey>): MovementVector {
-  return {
-    x: Number(pressedKeys.has('right')) - Number(pressedKeys.has('left')),
-    y: Number(pressedKeys.has('down')) - Number(pressedKeys.has('up')),
-  }
-}
 
 export function useAgentsPage() {
   const [agents, setAgents] = useState<WorldAgent[]>([])
-  const [player, setPlayer] = useState<WorldPlayer>(() => buildWorldPlayer())
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [lastInteractionMessage, setLastInteractionMessage] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-  const pressedKeysRef = useRef<Set<DirectionKey>>(new Set())
-  const animationFrameRef = useRef<number | null>(null)
-  const lastFrameTimeRef = useRef<number | null>(null)
-  const velocityRef = useRef<MovementVector>({ x: 0, y: 0 })
-  const playerRef = useRef<WorldPlayer>(player)
-  const interactionTargetRef = useRef<WorldAgent | null>(null)
+  const [activeChatAgent, setActiveChatAgent] = useState<WorldAgent | null>(null)
+  const [isChatOpen, setIsChatOpen] = useState(false)
 
   useEffect(() => {
     let isMounted = true
@@ -78,108 +42,29 @@ export function useAgentsPage() {
     }
   }, [])
 
-  const interactionTarget = useMemo(() => {
-    return agents
-      .map((agent) => ({ agent, distance: measurePercentDistance(player, agent) }))
-      .filter(({ distance }) => distance <= INTERACTION_RADIUS_PERCENT)
-      .sort((left, right) => left.distance - right.distance)[0]?.agent ?? null
-  }, [agents, player])
-
-  useEffect(() => {
-    playerRef.current = player
-    interactionTargetRef.current = interactionTarget
-  }, [player, interactionTarget])
-
-  useEffect(() => {
-    const pressedKeys = pressedKeysRef.current
-
-    const stopMovementLoop = () => {
-      if (animationFrameRef.current !== null) {
-        window.cancelAnimationFrame(animationFrameRef.current)
-        animationFrameRef.current = null
-      }
-      lastFrameTimeRef.current = null
-    }
-
-    const stepMovement = (time: number) => {
-      const previousTime = lastFrameTimeRef.current ?? time
-      const deltaMs = time - previousTime
-      lastFrameTimeRef.current = time
-
-      const movement = resolvePlayerMovementStep(
-        getInputVector(pressedKeysRef.current),
-        velocityRef.current,
-        PLAYER_MOVEMENT_SPEED,
-        deltaMs,
-      )
-      velocityRef.current = movement.velocity
-
-      if (movement.isMoving) {
-        setPlayer((currentPlayer) => ({
-          ...currentPlayer,
-          ...moveWorldPosition(currentPlayer, movement.velocity, deltaMs),
-        }))
-        animationFrameRef.current = window.requestAnimationFrame(stepMovement)
-      } else {
-        stopMovementLoop()
-      }
-    }
-
-    const ensureMovementLoop = () => {
-      if (animationFrameRef.current !== null) return
-      animationFrameRef.current = window.requestAnimationFrame(stepMovement)
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const movementKey = MOVEMENT_KEYS[event.key]
-
-      if (movementKey) {
-        event.preventDefault()
-        pressedKeys.add(movementKey)
-        ensureMovementLoop()
-        return
-      }
-
-      if (event.code === 'Space' && interactionTargetRef.current) {
-        event.preventDefault()
-        setLastInteractionMessage(`${playerRef.current.label} greeted ${interactionTargetRef.current.label}.`)
-      }
-    }
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      const movementKey = MOVEMENT_KEYS[event.key]
-      if (!movementKey) return
-      pressedKeys.delete(movementKey)
-      ensureMovementLoop()
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('keyup', handleKeyUp)
-
-    return () => {
-      stopMovementLoop()
-      pressedKeys.clear()
-      velocityRef.current = { x: 0, y: 0 }
-      window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('keyup', handleKeyUp)
-    }
-  }, [])
-
   const handleCreateAgent = async (personaSummary: string, backstoryPrompt: string) => {
     const created = await createAgent({ personaSummary, backstoryPrompt })
     setAgents((current) => appendCreatedAgent(current, created))
   }
 
+  const handleAgentInteraction = (agent: WorldAgent) => {
+    setActiveChatAgent(agent)
+    setIsChatOpen(true)
+    setLastInteractionMessage(`You greeted ${agent.label}.`)
+  }
+
   return {
     agents,
-    player,
     isLoading,
     errorMessage,
-    interactionTarget,
     lastInteractionMessage,
     isDialogOpen,
+    activeChatAgent,
+    isChatOpen,
     openDialog: () => setIsDialogOpen(true),
     closeDialog: () => setIsDialogOpen(false),
+    closeChatDialog: () => setIsChatOpen(false),
     handleCreateAgent,
+    handleAgentInteraction,
   }
 }

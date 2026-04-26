@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
 
@@ -58,7 +58,16 @@ function installFetchMock(overrides: Record<string, { ok?: boolean; status?: num
 }
 
 vi.mock('@/game/WorldCanvas', () => ({
-  WorldCanvas: () => <div aria-label="Phaser map viewport" />,
+  WorldCanvas: ({ onAgentInteraction }: { onAgentInteraction: (agent: { id: string; label: string; usesPlaceholder: boolean }) => void }) => (
+    <div aria-label="Phaser map viewport">
+      <button
+        type="button"
+        onClick={() => onAgentInteraction({ id: 'mentor-hana', label: 'Hana', usesPlaceholder: false })}
+      >
+        Simulate interaction
+      </button>
+    </div>
+  ),
 }))
 
 describe('App', () => {
@@ -140,30 +149,13 @@ describe('App', () => {
     expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
   })
 
-  it('accepts keyboard movement and interaction input without breaking the shell', async () => {
-    const randomSpy = vi.spyOn(Math, 'random')
-    randomSpy.mockReturnValueOnce(0.1).mockReturnValueOnce(0.2).mockReturnValueOnce(0.6).mockReturnValueOnce(0.7)
-
+  it('opens the npc chat dialog from the game interaction callback', async () => {
     render(<App />)
     await screen.findByText('Hana')
 
-    vi.useFakeTimers()
-    try {
-      fireEvent.keyDown(window, { key: 'ArrowRight' })
-      act(() => {
-        vi.advanceTimersByTime(220)
-      })
-      fireEvent.keyUp(window, { key: 'ArrowRight' })
-      act(() => {
-        vi.advanceTimersByTime(220)
-      })
+    fireEvent.click(screen.getByRole('button', { name: /simulate interaction/i }))
 
-      fireEvent.keyDown(window, { key: ' ', code: 'Space' })
-      expect(screen.getByLabelText(/Phaser map viewport/i)).toBeInTheDocument()
-      expect(screen.getByText('Hana')).toBeInTheDocument()
-    } finally {
-      vi.useRealTimers()
-      randomSpy.mockRestore()
-    }
+    expect(screen.getByRole('dialog', { name: /chat with hana/i })).toBeInTheDocument()
+    expect(screen.getByText(/스쿨 커먼즈에 온 걸 환영해요/i)).toBeInTheDocument()
   })
 })
