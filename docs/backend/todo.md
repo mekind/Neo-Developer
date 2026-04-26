@@ -135,6 +135,59 @@
 
 ---
 
+## P3 — OpenClaw 페어 작업 (`docs/openclaw/` 참조)
+
+OpenClaw 런타임이 정상 동작하려면 NestJS 측 추가 엔드포인트/모듈이 필요. 상세 계약은 `docs/openclaw/api.md` 참조.
+
+### [BE-18] `OpenclawClient` 모듈
+- [ ] HTTP client 래퍼 (`fetch` 또는 `undici`)
+- [ ] `Authorization: Bearer ${BACKEND_SERVICE_TOKEN}` 자동 주입
+- [ ] timeout(15s), retry(1회), exponential backoff
+- [ ] env: `OPENCLAW_BASE_URL`, `BACKEND_SERVICE_TOKEN`
+- [ ] AC: `OpenclawClient.invoke(req)` / `.tick(req)` 로 타입 안전 호출
+
+### [BE-19] `POST /agents/:agentId/invoke` (Frontend → NestJS → OpenClaw proxy)
+- [ ] x-user-id auth 적용
+- [ ] Memory snapshot 빌더: `profile + preferences + interests + recent_history(N=10)`
+- [ ] SOUL/config 로드 + frontmatter 파싱(`gray-matter`)
+- [ ] OpenClaw `/api/invoke` 호출 → 응답 그대로 프록시
+- [ ] AC: 프론트 → NestJS → OpenClaw 왕복 1회 정상 응답
+- [ ] AC: 토큰 누락/잘못된 user_id → 401
+
+### [BE-20] `GET /agents/due?at=${iso}` (Cron 보조)
+- [ ] `config.schedule.expression`(cron) 파싱 + 매칭 로직 (`cron-parser` 등)
+- [ ] 만기 에이전트 + SOUL/config/memory_snapshot 묶음 응답
+- [ ] 서비스 토큰 인증 (OpenClaw만 호출)
+- [ ] AC: now 시각 기준 만기 agent들이 각자의 컨텍스트와 함께 반환됨
+
+### [BE-21] `POST /users/:id/notifications`
+- [ ] 서비스 토큰 인증 (OpenClaw가 호출)
+- [ ] body: `{ agentId, kind: 'alert' \| 'message', body, used_skills?, ts }`
+- [ ] DB에 알림 row 저장
+- [ ] (페어) 사용자 조회용 `GET /users/:id/notifications` 와 ack는 BE-10 영역
+- [ ] AC: tick 1회 후 notifications 테이블에 row 추가
+
+### [BE-22] `POST /users/:id/log` (append-only)
+- [ ] 서비스 토큰 인증
+- [ ] append-only 보장 (수정/삭제 미지원)
+- [ ] body: `{ ts, event, meta? }`
+- [ ] AC: invoke 1회 후 `agent:<id>:reply` 이벤트 기록
+
+### env 추가 (BE-18~22 합본)
+- [ ] `OPENCLAW_BASE_URL` — Vercel preview/prod 등록
+- [ ] `BACKEND_SERVICE_TOKEN` — 양 서비스 동일 값 (32+ chars)
+- [ ] `.env.example` 업데이트
+
+### 의존 관계
+```
+BE-18 (OpenclawClient) ─┬─> BE-19 (invoke proxy)
+                         └─> BE-20 (due) ──┐
+                                            ├─> BE-21 (notifications, alert path)
+                                            └─> BE-22 (log)
+```
+
+---
+
 ## 의존 관계 / 권장 순서
 
 ```
