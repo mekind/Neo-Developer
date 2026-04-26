@@ -1,4 +1,5 @@
 # FE Vault Activity Log
+- 2026-04-26: Added a default FE dummy NPC (`Noa`) to the loaded world roster so chat and interaction UI always have at least one safe local target during testing.
 - 2026-04-26: Added a header-level FE test trigger so the richer NPC chat dialog UI can be opened immediately before the real interaction event is wired.
 - 2026-04-26: Expanded the FE NPC chat dialog from a basic shell into a more complete chat-interface mock with transcript, prompt chips, composer, and send-button layout for future BE wiring.
 - 2026-04-26: Polished the minimal sidebar into a cleaner card-style agent lobby while keeping only the Add agent action and agent list.

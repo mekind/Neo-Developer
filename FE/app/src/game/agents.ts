@@ -67,6 +67,13 @@ export const PLAYER_IMAGE = createAvatarDataUri({
   initials: 'YOU',
 })
 
+
+const DEFAULT_DUMMY_AGENT: BackendAgentRecord = {
+  id: 'dummy-agent-noa',
+  name: 'Noa',
+  imageAsset: null,
+}
+
 function isAllowedImageAsset(value: string) {
   return value.startsWith('data:image/') || value.startsWith('https://')
 }
@@ -132,7 +139,11 @@ function buildWorldAgentBase(record: BackendAgentRecord, occupied: Array<{ xPerc
 
 export function buildWorldAgents(records: BackendAgentRecord[]): WorldAgent[] {
   const occupied: Array<{ xPercent: number; yPercent: number }> = []
-  return records.map((record) => buildWorldAgentBase(record, occupied))
+  const withDummy = records.some((record) => record.id === DEFAULT_DUMMY_AGENT.id)
+    ? records
+    : [...records, DEFAULT_DUMMY_AGENT]
+
+  return withDummy.map((record) => buildWorldAgentBase(record, occupied))
 }
 
 export function appendCreatedAgent(existingAgents: WorldAgent[], record: CreatedAgentRecord): WorldAgent[] {

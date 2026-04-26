@@ -18,9 +18,14 @@ This pass still stops short of BE wiring, but the dialog now looks and feels lik
 - `FE/app/src/styles/global.css`
   - adds polished chat-dialog styling plus the topbar trigger treatment
 
+- `FE/app/src/game/agents.ts`
+  - appends one default dummy NPC (`Noa`) into the FE world roster when backend data does not already provide it
+
 ## Intent
 
 Reach a design-ready chat interface before coupling the dialog to actual NPC interaction events or backend chat state, while still making the UI easy to test in the browser right now.
+
+This also keeps one guaranteed NPC in the FE world so the chat surface is easy to test even when backend data is sparse.
 
 ## Scope boundary
 
