@@ -139,6 +139,18 @@ describe('App', () => {
     await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('2'))
   })
 
+  it('closes the add-agent dialog with Escape', async () => {
+    render(<App />)
+    await screen.findByText('Hana')
+
+    fireEvent.click(screen.getByRole('button', { name: /에이전트 추가/i }))
+    expect(screen.getByRole('dialog', { name: /에이전트 npc 추가|에이전트 NPC 추가/i })).toBeInTheDocument()
+
+    fireEvent.keyDown(window, { key: 'Escape' })
+
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: /에이전트 npc 추가|에이전트 NPC 추가/i })).not.toBeInTheDocument())
+  })
+
   it('creates a backend agent from the dialog', async () => {
     render(<App />)
     await screen.findByText('Hana')

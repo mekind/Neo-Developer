@@ -464,3 +464,43 @@ h3 {
   user-select: none;
   pointer-events: none;
 }
+
+
+.dialog-close-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(114, 104, 90, 0.16);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(243, 233, 220, 0.98));
+  color: #4d463f;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(88, 76, 58, 0.08);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.dialog-close-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(88, 76, 58, 0.12);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(246, 238, 227, 1));
+}
+
+.dialog-close-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dialog-close-button span[aria-hidden='true'] {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(155, 106, 79, 0.12);
+  color: #8b6a4f;
+  font-size: 13px;
+  line-height: 1;
+}

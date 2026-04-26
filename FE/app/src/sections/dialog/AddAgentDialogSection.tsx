@@ -30,6 +30,19 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
     setSubmitState('idle')
   }, [isOpen])
 
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || submitState === 'submitting') return
+      event.preventDefault()
+      onClose()
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, onClose, submitState])
+
   if (!isOpen) return null
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
