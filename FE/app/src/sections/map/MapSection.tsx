@@ -19,12 +19,7 @@ export function MapSection({
   lastInteractionMessage,
 }: MapSectionProps) {
   return (
-    <section className="world-stage panel-shell" aria-label="world stage">
-      <div className="world-stage-copy">
-        <p className="eyebrow">Room</p>
-        <h2>Commons Floor</h2>
-        <p className="description">NeoD처럼 상단 미니맵, 방향키 이동, 스페이스 상호작용을 갖춘 공유공간 데모입니다.</p>
-      </div>
+    <section className="world-stage world-stage--game-only panel-shell" aria-label="world stage">
       <WorldCanvas
         agents={agents}
         player={player}
