@@ -3,8 +3,15 @@ import { HealthModule } from './health/health.module';
 import { ItemsModule } from './items/items.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RepositoriesModule } from './repositories/repositories.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [PrismaModule, RepositoriesModule, HealthModule, ItemsModule],
+  imports: [
+    PrismaModule,
+    RepositoriesModule,
+    HealthModule,
+    ItemsModule,
+    UsersModule,
+  ],
 })
 export class AppModule {}
