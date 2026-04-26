@@ -1,12 +1,15 @@
 import { useEffect, useRef } from 'react'
 import type Phaser from 'phaser'
 
-import { type WorldAgent } from './agents'
+import { INTERACTION_RADIUS_PERCENT, measurePercentDistance, type WorldAgent, type WorldPlayer } from './agents'
 
 type WorldCanvasProps = {
   agents: WorldAgent[]
+  player: WorldPlayer
   isLoading: boolean
   errorMessage: string | null
+  interactionTarget: WorldAgent | null
+  lastInteractionMessage: string | null
 }
 
 const MAP_WIDTH = 2400
@@ -22,7 +25,14 @@ const OBSTACLES = [
   { x: 1820, y: 860, width: 220, height: 220, color: 0x8ea275 },
 ] as const
 
-export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProps) {
+export function WorldCanvas({
+  agents,
+  player,
+  isLoading,
+  errorMessage,
+  interactionTarget,
+  lastInteractionMessage,
+}: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
@@ -166,26 +176,61 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
     }
   }, [])
 
+  const distanceToTarget = interactionTarget ? measurePercentDistance(player, interactionTarget) : null
+
   return (
     <div className="world-surface">
       <div className="world-status">
         <div>
           <p className="eyebrow">Room</p>
           <h2>Agents: {agents.length}</h2>
+          <p className="world-helper world-helper-strong">
+            Controlling {player.label} at ({player.xPercent.toFixed(0)}%, {player.yPercent.toFixed(0)}%).
+          </p>
         </div>
         <p className="world-helper">
           {isLoading
             ? 'Loading backend roster.'
             : errorMessage
               ? 'Backend roster unavailable.'
-              : agents.length > 0
-                ? 'Phaser-mounted once per load.'
-                : 'No backend agents returned.'}
+              : interactionTarget
+                ? `Press E near ${interactionTarget.label} to interact.`
+                : agents.length > 0
+                  ? 'Phaser-mounted once per load.'
+                  : 'No backend agents returned.'}
         </p>
       </div>
 
       <div className="world-canvas-shell">
         <div ref={mountRef} className="world-phaser-host" aria-label="Phaser map viewport" />
+        <div className="world-agent-layer" aria-hidden="true">
+          <figure className="world-agent world-player" style={{ left: `${player.xPercent}%`, top: `${player.yPercent}%` }}>
+            <div
+              className="world-agent-ring"
+              style={{ width: `${INTERACTION_RADIUS_PERCENT * 2}%`, height: `${INTERACTION_RADIUS_PERCENT * 2}%` }}
+            />
+            <img src={player.imageSrc} alt={`${player.label} avatar`} className="world-agent-avatar" />
+            <figcaption>{player.label}</figcaption>
+          </figure>
+
+          {!isLoading && !errorMessage && agents.length > 0
+            ? agents.map((agent) => (
+                <figure
+                  key={agent.id}
+                  className={`world-agent${interactionTarget?.id === agent.id ? ' world-agent-target' : ''}`}
+                  style={{ left: `${agent.xPercent}%`, top: `${agent.yPercent}%` }}
+                >
+                  <img src={agent.imageSrc} alt={`${agent.label} avatar`} className="world-agent-avatar" />
+                  <figcaption>{agent.label}</figcaption>
+                </figure>
+              ))
+            : null}
+        </div>
+      </div>
+
+      <div className="world-feedback" aria-live="polite">
+        <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
+        {distanceToTarget !== null ? <p>Distance to {interactionTarget?.label}: {distanceToTarget.toFixed(1)}%</p> : null}
       </div>
     </div>
   )
