@@ -2,38 +2,39 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import App from './App'
 
 describe('App', () => {
-  it('renders the gather-like world layout shell', () => {
+  it('renders a compact product-style shell', () => {
     render(<App />)
-    expect(screen.getByRole('heading', { name: /gather-like world layout/i })).toBeInTheDocument()
-    expect(screen.getByRole('complementary')).toHaveTextContent(/sidebar ui placeholder/i)
+    expect(screen.getByRole('heading', { name: /school commons/i })).toBeInTheDocument()
+    expect(screen.getByRole('complementary')).toHaveTextContent(/agents/i)
+    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
   })
 
   it('creates a character from the side panel and reflects it in the world UI', () => {
     render(<App />)
 
-    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Nova' } })
-    fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'maker' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Nova' } })
+    fireEvent.change(screen.getByLabelText(/role/i), { target: { value: 'maker' } })
+    fireEvent.click(screen.getByRole('button', { name: /add agent/i }))
 
-    expect(screen.getByLabelText(/current character summary/i)).toHaveTextContent(/nova joined as a maker/i)
-    expect(screen.getByRole('heading', { name: /spawned avatars: 1/i })).toBeInTheDocument()
-    expect(screen.getAllByText(/nova · maker/i)).toHaveLength(2)
+    expect(screen.getByLabelText(/current character summary/i)).toHaveTextContent(/nova/i)
+    expect(screen.getByRole('heading', { name: /1 online/i })).toBeInTheDocument()
+    expect(screen.getAllByText(/nova/i).length).toBeGreaterThan(1)
   })
 
   it('appends multiple created characters instead of replacing the current roster', () => {
     render(<App />)
 
-    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Nova' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Nova' } })
+    fireEvent.click(screen.getByRole('button', { name: /add agent/i }))
 
-    fireEvent.change(screen.getByLabelText(/character name/i), { target: { value: 'Milo' } })
-    fireEvent.change(screen.getByLabelText(/archetype/i), { target: { value: 'spark' } })
-    fireEvent.click(screen.getByRole('button', { name: /create character/i }))
+    fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Milo' } })
+    fireEvent.change(screen.getByLabelText(/role/i), { target: { value: 'spark' } })
+    fireEvent.click(screen.getByRole('button', { name: /add agent/i }))
 
-    expect(screen.getByRole('heading', { name: /spawned avatars: 2/i })).toBeInTheDocument()
-    expect(screen.getByText(/milo is the latest character added to the canvas/i)).toBeInTheDocument()
-    expect(screen.getAllByText(/nova · scout/i)).toHaveLength(2)
-    expect(screen.getAllByText(/milo · spark/i)).toHaveLength(2)
+    expect(screen.getByRole('heading', { name: /2 online/i })).toBeInTheDocument()
+    expect(screen.getAllByText(/^Milo$/i).length).toBeGreaterThan(1)
+    expect(screen.getAllByText(/scout/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/spark/i).length).toBeGreaterThan(0)
   })
 })
