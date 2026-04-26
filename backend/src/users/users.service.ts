@@ -39,8 +39,7 @@ export class UsersService {
     const user = await this.users.findById(userId);
     if (!user) throw new NotFoundException(`User ${userId} not found`);
 
-    const profile = await this.profiles.upsert({
-      userId,
+    const profile = await this.profiles.upsert(userId, {
       nickname: dto.nickname,
       purpose: dto.purpose,
       techLevel: dto.techLevel,
