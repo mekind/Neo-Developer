@@ -840,7 +840,7 @@ Memory에서 알 수 있는 값은 내부 기본값 후보로 잡아둔다.
 - 알려주는 때: 매일 아침 8시
 - 알려주는 곳: 여기서 바로
 - 말투: 친근한 반말
-- 모습: 파란 베레모 쓴 부엉이
+- 모습: 파란 베레모 쓴 청년
 
 이대로 만들까요?
 ```
@@ -914,10 +914,12 @@ Memory에서 알 수 있는 값은 내부 기본값 후보로 잡아둔다.
 
 #### 내용 규칙
 
+- **인간형 캐릭터만 허용한다.** 동물, 로봇, 사물 등 비인간형은 생성하지 않는다.
 - 외형은 한두 문장으로도 선명해야 한다.
 - 도트 캐릭터로 옮길 수 있게 구체적이어야 한다.
 - 색상은 `#RRGGBB` 형식만 쓴다.
-- 사용자 설명이 없으면 역할에서 안전하게 기본 외형을 만든다.
+- 사용자 설명이 없으면 역할에서 안전하게 기본 인간형 외형을 만든다.
+- 사용자가 동물/로봇 등을 요청하면 인간형으로 대체 제안한다.
 
 #### 예시 뼈대
 
@@ -931,10 +933,10 @@ created: 2026-04-26
 # Agent Persona: 뉴스봇
 
 ## Visual Description
-파란 베레모를 쓴 부엉이. 작은 신문을 들고 있고, 또렷한 눈빛이 특징.
+파란 베레모를 쓴 청년. 작은 신문을 들고 있고, 호기심 가득한 눈빛이 특징.
 
 ## Pixel Art Prompt
-"cute owl character, blue beret, tiny newspaper, friendly expression, 16x16 pixel art"
+"young person, blue beret, tiny newspaper, curious eyes, friendly expression, 16x16 pixel art"
 
 ## Color Palette
 - Primary: #4A90D9
@@ -1428,7 +1430,7 @@ Builder: 괜찮아요.
 - 알려주는 때: 매일 아침 8시
 - 알려주는 곳: 여기서 바로
 - 말투: 친근한 반말
-- 모습: 파란 베레모 쓴 부엉이
+- 모습: 파란 베레모 쓴 청년
 
 이대로 만들까요?
 ```
@@ -1445,10 +1447,10 @@ created: 2026-04-26
 # Agent Persona: 뉴스봇
 
 ## Visual Description
-파란 베레모를 쓴 부엉이. 작은 신문을 들고 있고 눈빛이 또렷하다.
+파란 베레모를 쓴 청년. 작은 신문을 들고 있고, 또렷한 눈빛이 특징.
 
 ## Pixel Art Prompt
-"cute owl character, blue beret, tiny newspaper, alert eyes, 16x16 pixel art"
+"young person, blue beret, tiny newspaper, alert eyes, friendly expression, 16x16 pixel art"
 
 ## Color Palette
 - Primary: #4A90D9
