@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type Phaser from 'phaser'
 
-import { INTERACTION_RADIUS_PERCENT, measurePercentDistance, type WorldAgent, type WorldPlayer } from './agents'
+import { measurePercentDistance, type WorldAgent, type WorldPlayer } from './agents'
 
 type WorldCanvasProps = {
   agents: WorldAgent[]
@@ -17,6 +17,12 @@ const MAP_HEIGHT = 1350
 const VIEWPORT_WIDTH = 1280
 const VIEWPORT_HEIGHT = 720
 const AGENT_RADIUS = 28
+const PLAYER_RADIUS = 30
+const MINIMAP_PADDING = 16
+const MINIMAP_MIN_WIDTH = 160
+const MINIMAP_MAX_WIDTH = 240
+const MINIMAP_WIDTH_RATIO = 0.24
+const MAIN_CAMERA_ZOOM = 1.15
 const OBSTACLES = [
   { x: 300, y: 350, width: 320, height: 140, color: 0xcfaf84 },
   { x: 980, y: 460, width: 360, height: 150, color: 0xd7b88c },
@@ -24,6 +30,26 @@ const OBSTACLES = [
   { x: 620, y: 920, width: 540, height: 110, color: 0xd6b48b },
   { x: 1820, y: 860, width: 220, height: 220, color: 0x8ea275 },
 ] as const
+
+function toWorldX(percent: number) {
+  return (percent / 100) * MAP_WIDTH
+}
+
+function toWorldY(percent: number) {
+  return (percent / 100) * MAP_HEIGHT
+}
+
+function getMinimapViewport(gameWidth: number) {
+  const width = Math.min(MINIMAP_MAX_WIDTH, Math.max(MINIMAP_MIN_WIDTH, Math.floor(gameWidth * MINIMAP_WIDTH_RATIO)))
+  const height = Math.max(96, Math.floor((width * MAP_HEIGHT) / MAP_WIDTH))
+
+  return {
+    width,
+    height,
+    x: Math.max(MINIMAP_PADDING, gameWidth - width - MINIMAP_PADDING),
+    y: MINIMAP_PADDING,
+  }
+}
 
 export function WorldCanvas({
   agents,
@@ -36,8 +62,12 @@ export function WorldCanvas({
   const mountRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<Phaser.Game | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
+  const playerRef = useRef<WorldPlayer>(player)
+  const interactionTargetRef = useRef<WorldAgent | null>(interactionTarget)
 
   agentsRef.current = agents
+  playerRef.current = player
+  interactionTargetRef.current = interactionTarget
 
   useEffect(() => {
     let cancelled = false
@@ -51,25 +81,73 @@ export function WorldCanvas({
       class BackendRosterScene extends Phaser.Scene {
         private background!: Phaser.GameObjects.Graphics
         private obstacleLayer!: Phaser.GameObjects.Graphics
+        private playerBody!: Phaser.GameObjects.Arc
+        private playerRing!: Phaser.GameObjects.Arc
+        private playerLabel!: Phaser.GameObjects.Text
+        private mainCamera!: Phaser.Cameras.Scene2D.Camera
+        private minimapCamera!: Phaser.Cameras.Scene2D.Camera
         private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }>()
 
         create() {
-          this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
-          this.cameras.main.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2)
-          this.cameras.main.setBackgroundColor('#ece6da')
+          this.mainCamera = this.cameras.main
+          this.mainCamera.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
+          this.mainCamera.setBackgroundColor('#ece6da')
+          this.mainCamera.setZoom(MAIN_CAMERA_ZOOM)
+          this.mainCamera.roundPixels = true
 
           this.background = this.add.graphics()
           this.obstacleLayer = this.add.graphics()
           this.drawBackground()
           this.drawObstacles()
+
+          this.minimapCamera = this.cameras.add(0, 0, 10, 10)
+          this.minimapCamera.setBackgroundColor('#f8efe0')
+          this.minimapCamera.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
+          this.minimapCamera.roundPixels = true
+
+          this.createPlayer()
+          this.minimapCamera.ignore([this.playerLabel, this.playerRing])
+          this.syncPlayer()
           this.syncAgents()
+
+          this.mainCamera.startFollow(this.playerBody, true, 0.12, 0.12)
+          this.mainCamera.setDeadzone(180, 120)
 
           this.scale.on('resize', this.handleResize, this)
           this.handleResize({ width: this.scale.width, height: this.scale.height })
         }
 
         update() {
+          this.syncPlayer()
           this.syncAgents()
+        }
+
+        private createPlayer() {
+          const x = toWorldX(playerRef.current.xPercent)
+          const y = toWorldY(playerRef.current.yPercent)
+
+          this.playerRing = this.add.circle(x, y, PLAYER_RADIUS * 2.6, 0x22c55e, 0.12)
+          this.playerRing.setStrokeStyle(3, 0x22c55e, 0.28)
+
+          this.playerBody = this.add.circle(x, y, PLAYER_RADIUS, 0x22c55e)
+          this.playerBody.setStrokeStyle(5, 0xf7f7f2, 1)
+
+          this.playerLabel = this.add.text(x - 26, y + 44, playerRef.current.label, {
+            color: '#1f3b25',
+            fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+            fontSize: '15px',
+            backgroundColor: 'rgba(245,255,247,0.92)',
+            padding: { x: 8, y: 4 },
+          })
+        }
+
+        private syncPlayer() {
+          const x = toWorldX(playerRef.current.xPercent)
+          const y = toWorldY(playerRef.current.yPercent)
+
+          this.playerRing.setPosition(x, y)
+          this.playerBody.setPosition(x, y)
+          this.playerLabel.setPosition(x - 26, y + 44).setText(playerRef.current.label)
         }
 
         private syncAgents() {
@@ -78,11 +156,13 @@ export function WorldCanvas({
 
           snapshot.forEach((agent) => {
             const existing = this.agentSprites.get(agent.id)
-            const x = (agent.xPercent / 100) * MAP_WIDTH
-            const y = (agent.yPercent / 100) * MAP_HEIGHT
+            const x = toWorldX(agent.xPercent)
+            const y = toWorldY(agent.yPercent)
+            const isInteractionTarget = agent.id === interactionTargetRef.current?.id
+            const fillColor = isInteractionTarget ? 0xf59e0b : agent.usesPlaceholder ? 0xfde68a : 0x93c5fd
 
             if (!existing) {
-              const body = this.add.circle(x, y, AGENT_RADIUS, agent.usesPlaceholder ? 0xfde68a : 0x93c5fd)
+              const body = this.add.circle(x, y, AGENT_RADIUS, fillColor)
               body.setStrokeStyle(4, 0xfffbeb, 1)
 
               const label = this.add.text(x - 40, y + 36, agent.label, {
@@ -94,11 +174,12 @@ export function WorldCanvas({
               })
 
               this.agentSprites.set(agent.id, { body, label })
+              this.minimapCamera.ignore(label)
               return
             }
 
             existing.body.setPosition(x, y)
-            existing.body.setFillStyle(agent.usesPlaceholder ? 0xfde68a : 0x93c5fd)
+            existing.body.setFillStyle(fillColor)
             existing.label.setPosition(x - 40, y + 36).setText(agent.label)
           })
 
@@ -148,7 +229,20 @@ export function WorldCanvas({
         }
 
         private handleResize(gameSize: { width: number; height: number }) {
-          this.cameras.main.setViewport(0, 0, gameSize.width, gameSize.height)
+          this.mainCamera.setViewport(0, 0, gameSize.width, gameSize.height)
+
+          const minimapViewport = getMinimapViewport(gameSize.width)
+          this.minimapCamera.setViewport(
+            minimapViewport.x,
+            minimapViewport.y,
+            minimapViewport.width,
+            minimapViewport.height,
+          )
+          this.minimapCamera.setZoom(
+            Math.min(minimapViewport.width / MAP_WIDTH, minimapViewport.height / MAP_HEIGHT),
+          )
+          this.minimapCamera.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2)
+          this.minimapCamera.setRoundPixels(true)
         }
       }
 
@@ -196,35 +290,15 @@ export function WorldCanvas({
               : interactionTarget
                 ? `Press E near ${interactionTarget.label} to interact.`
                 : agents.length > 0
-                  ? 'Phaser-mounted once per load.'
+                  ? 'Main camera follows the player. Minimap shows the full room.'
                   : 'No backend agents returned.'}
         </p>
       </div>
 
       <div className="world-canvas-shell">
         <div ref={mountRef} className="world-phaser-host" aria-label="Phaser map viewport" />
-        <div className="world-agent-layer" aria-hidden="true">
-          <figure className="world-agent world-player" style={{ left: `${player.xPercent}%`, top: `${player.yPercent}%` }}>
-            <div
-              className="world-agent-ring"
-              style={{ width: `${INTERACTION_RADIUS_PERCENT * 2}%`, height: `${INTERACTION_RADIUS_PERCENT * 2}%` }}
-            />
-            <img src={player.imageSrc} alt={`${player.label} avatar`} className="world-agent-avatar" />
-            <figcaption>{player.label}</figcaption>
-          </figure>
-
-          {!isLoading && !errorMessage && agents.length > 0
-            ? agents.map((agent) => (
-                <figure
-                  key={agent.id}
-                  className={`world-agent${interactionTarget?.id === agent.id ? ' world-agent-target' : ''}`}
-                  style={{ left: `${agent.xPercent}%`, top: `${agent.yPercent}%` }}
-                >
-                  <img src={agent.imageSrc} alt={`${agent.label} avatar`} className="world-agent-avatar" />
-                  <figcaption>{agent.label}</figcaption>
-                </figure>
-              ))
-            : null}
+        <div className="world-canvas-hud" aria-hidden="true">
+          <span className="world-minimap-badge">Minimap</span>
         </div>
       </div>
 

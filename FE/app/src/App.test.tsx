@@ -117,7 +117,7 @@ describe('App', () => {
     expect(screen.getByLabelText(/current player summary/i)).toHaveTextContent(/you is the controllable user avatar/i)
     expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
-    expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
+    expect(screen.getByText(/controlling you at \(50%, 50%\)/i)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
@@ -210,12 +210,12 @@ describe('App', () => {
       })
       fireEvent.keyUp(window, { key: 'ArrowRight' })
 
-      expect(screen.getByText(/controlling you at \(21%, 32%\)/i)).toBeInTheDocument()
-      expect(screen.getByText(/press e near hana to interact/i)).toBeInTheDocument()
+      expect(screen.getByText(/controlling you at \(59%, 50%\)/i)).toBeInTheDocument()
+      expect(screen.getByText(/press e near min to interact/i)).toBeInTheDocument()
 
       fireEvent.keyDown(window, { key: 'e' })
 
-      expect(screen.getByText(/you greeted hana/i)).toBeInTheDocument()
+      expect(screen.getByText(/you greeted min/i)).toBeInTheDocument()
     } finally {
       vi.useRealTimers()
       randomSpy.mockRestore()

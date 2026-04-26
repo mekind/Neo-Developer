@@ -1,5 +1,6 @@
 # FE Vault Activity Log
 
+- 2026-04-26: Centered the initial player spawn, switched the main Phaser camera to follow the player, and added a true in-canvas minimap camera so the room view is part of the game surface.
 - 2026-04-26: Updated the movement/interactions note to reflect the corrected FE contract: the user controls a dedicated player avatar while generated agents are separate NPCs.
 - 2026-04-26: Documented the backend-driven world-agent roster pass, including `/agents` ownership, FE-side roster mapping, placeholder avatar fallback, and per-load random placement rules.
 - 2026-04-26: Replaced the inline character-creation form with a persona dialog, added the first FE write-path agent create service plus backend `/agents` endpoint, and documented the new immediate-spawn API-backed flow.

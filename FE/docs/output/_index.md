@@ -3,6 +3,7 @@
 Generated and time-bound frontend artifacts live here.
 
 ## Current Outputs
+- [[World Camera Minimap Note]] ([World Camera Minimap Note](world-camera-minimap-note-2026-04-26.md))
 - [[Character Movement Interaction Note]] ([Character Movement Interaction Note](character-movement-interaction-note-2026-04-26.md))
 - [[Demo Scope Note]] ([Demo Scope Note](demo-scope-note-2026-04-26.md))
 - [[Gather-like Layout Note]] ([Gather-like Layout Note](gather-like-layout-note-2026-04-26.md))
