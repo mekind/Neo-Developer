@@ -1,6 +1,8 @@
 # FE Vault Activity Log
-
+- 2026-04-26: Polished the minimal sidebar into a cleaner card-style agent lobby while keeping only the Add agent action and agent list.
+- 2026-04-26: Simplified the sidebar so it only shows the Add agent entry point plus the backend agent list, removing extra sidebar summary blocks.
 - 2026-04-26: Converted the add-agent flow into a FE-only NPC dialog with random default names and local append behavior, explicitly avoiding backend write changes for this pass.
+- 2026-04-26: Added a dedicated FE NPC chat-dialog shell component so future agent interactions can open a reusable conversation surface without rebuilding the layout.
 - 2026-04-26: Updated the movement/interactions note to reflect the corrected FE contract: the user controls a dedicated player avatar while generated agents are separate NPCs.
 - 2026-04-26: Documented the backend-driven world-agent roster pass, including `/agents` ownership, FE-side roster mapping, placeholder avatar fallback, and per-load random placement rules.
 - 2026-04-26: Replaced the inline character-creation form with a persona dialog, added the first FE write-path agent create service plus backend `/agents` endpoint, and documented the new immediate-spawn API-backed flow.
@@ -20,3 +22,4 @@
 - 2026-04-26: Compacted the FE shell into a more product-like surface by stripping placeholder copy and tightening UI density without changing feature logic.
 - 2026-04-26: Shifted the FE world viewport from React-drawn canvas rendering to a Phaser-backed map surface so the stage behaves more like the NeoD-style game canvas direction.
 - 2026-04-26: Configured frontend production CI to inject `VITE_API_BASE_URL=https://backend-kappa-brown-63.vercel.app` during the Vercel deploy workflow instead of relying on a source fallback.
+- 2026-04-26: aligned frontend world controls with NeoD-style minimap, arrow-key movement, and spacebar interaction.

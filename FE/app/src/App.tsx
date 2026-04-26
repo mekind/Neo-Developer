@@ -25,7 +25,6 @@ export default function App() {
       <div className="app-body">
         <SidebarSection
           agents={agents}
-          player={player}
           isLoading={isLoading}
           errorMessage={errorMessage}
           onOpenDialog={openDialog}

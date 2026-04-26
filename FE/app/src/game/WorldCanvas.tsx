@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import type Phaser from 'phaser'
 
 import { INTERACTION_RADIUS_PERCENT, measurePercentDistance, type WorldAgent, type WorldPlayer } from './agents'
 
@@ -16,68 +17,6 @@ const MAP_HEIGHT = 1350
 const VIEWPORT_WIDTH = 1280
 const VIEWPORT_HEIGHT = 720
 const AGENT_RADIUS = 28
-
-type DestroyableGame = {
-  destroy: (removeCanvas?: boolean, noReturn?: boolean) => void
-}
-
-type PhaserLike = {
-  AUTO: number
-  Scale: {
-    RESIZE: number
-    CENTER_BOTH: number
-  }
-  Game: new (config: Record<string, unknown>) => DestroyableGame
-  Scene: new (...args: never[]) => {
-    cameras: {
-      main: {
-        setBounds: (...args: number[]) => void
-        centerOn: (...args: number[]) => void
-        setBackgroundColor: (color: string) => void
-        setViewport: (...args: number[]) => void
-      }
-    }
-    add: {
-      graphics: () => {
-        clear: () => void
-        fillStyle: (color: number, alpha?: number) => void
-        fillRect: (...args: number[]) => void
-        fillRoundedRect: (...args: number[]) => void
-        lineStyle: (width: number, color: number, alpha?: number) => void
-        strokeRoundedRect: (...args: number[]) => void
-        fillCircle: (...args: number[]) => void
-      }
-      circle: (x: number, y: number, radius: number, color: number) => {
-        setStrokeStyle: (width: number, color: number, alpha?: number) => void
-        setPosition: (x: number, y: number) => void
-        setFillStyle: (color: number) => void
-        destroy: () => void
-      }
-      text: (x: number, y: number, text: string, style: Record<string, unknown>) => {
-        setPosition: (x: number, y: number) => { setText: (text: string) => void }
-        destroy: () => void
-      }
-    }
-    scale: {
-      width: number
-      height: number
-      on: (event: string, handler: (gameSize: { width: number; height: number }) => void, context: unknown) => void
-    }
-  }
-}
-
-type AgentSprite = {
-  body: {
-    setPosition: (x: number, y: number) => void
-    setFillStyle: (color: number) => void
-    destroy: () => void
-  }
-  label: {
-    setPosition: (x: number, y: number) => { setText: (text: string) => void }
-    destroy: () => void
-  }
-}
-
 const OBSTACLES = [
   { x: 300, y: 350, width: 320, height: 140, color: 0xcfaf84 },
   { x: 980, y: 460, width: 360, height: 150, color: 0xd7b88c },
@@ -95,10 +34,12 @@ export function WorldCanvas({
   lastInteractionMessage,
 }: WorldCanvasProps) {
   const mountRef = useRef<HTMLDivElement | null>(null)
-  const gameRef = useRef<DestroyableGame | null>(null)
+  const gameRef = useRef<Phaser.Game | null>(null)
   const agentsRef = useRef<WorldAgent[]>(agents)
+  const playerRef = useRef<WorldPlayer>(player)
 
   agentsRef.current = agents
+  playerRef.current = player
 
   useEffect(() => {
     let cancelled = false
@@ -106,36 +47,54 @@ export function WorldCanvas({
     async function mountGame() {
       if (!mountRef.current || gameRef.current) return
 
-      const Phaser = (await import('phaser')).default as unknown as PhaserLike
+      const Phaser = (await import('phaser')).default
       if (cancelled || !mountRef.current) return
 
       class BackendRosterScene extends Phaser.Scene {
-        private background!: ReturnType<InstanceType<PhaserLike['Scene']>['add']['graphics']>
-        private obstacleLayer!: ReturnType<InstanceType<PhaserLike['Scene']>['add']['graphics']>
-        private agentSprites = new Map<string, AgentSprite>()
+        private background!: Phaser.GameObjects.Graphics
+        private obstacleLayer!: Phaser.GameObjects.Graphics
+        private playerMarker!: Phaser.GameObjects.Arc
+        private playerLabel!: Phaser.GameObjects.Text
+        private agentSprites = new Map<string, { body: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }>()
 
         create() {
           this.cameras.main.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT)
-          this.cameras.main.centerOn(MAP_WIDTH / 2, MAP_HEIGHT / 2)
           this.cameras.main.setBackgroundColor('#ece6da')
 
           this.background = this.add.graphics()
           this.obstacleLayer = this.add.graphics()
+          this.playerMarker = this.add.circle(0, 0, AGENT_RADIUS + 4, 0x22c55e)
+          this.playerMarker.setStrokeStyle(5, 0xfffbeb, 1)
+          this.playerLabel = this.add.text(0, 0, playerRef.current.label, {
+            color: '#234035',
+            fontFamily: 'Pretendard, SUIT, "Noto Sans KR", sans-serif',
+            fontSize: '14px',
+            backgroundColor: 'rgba(255,247,237,0.92)',
+            padding: { x: 8, y: 4 },
+          })
+
           this.drawBackground()
           this.drawObstacles()
-          this.syncAgents()
+          this.syncSprites()
 
           this.scale.on('resize', this.handleResize, this)
           this.handleResize({ width: this.scale.width, height: this.scale.height })
         }
 
         update() {
-          this.syncAgents()
+          this.syncSprites()
         }
 
-        private syncAgents() {
+        private syncSprites() {
           const snapshot = agentsRef.current
           const ids = new Set(snapshot.map((agent) => agent.id))
+          const playerSnapshot = playerRef.current
+          const playerX = (playerSnapshot.xPercent / 100) * MAP_WIDTH
+          const playerY = (playerSnapshot.yPercent / 100) * MAP_HEIGHT
+
+          this.playerMarker.setPosition(playerX, playerY)
+          this.playerLabel.setPosition(playerX - 30, playerY + 40).setText(playerSnapshot.label)
+          this.cameras.main.centerOn(playerX, playerY)
 
           snapshot.forEach((agent) => {
             const existing = this.agentSprites.get(agent.id)
@@ -255,15 +214,35 @@ export function WorldCanvas({
             : errorMessage
               ? 'Backend roster unavailable.'
               : interactionTarget
-                ? `Press E near ${interactionTarget.label} to interact.`
+                ? `Press Space near ${interactionTarget.label} to interact.`
                 : agents.length > 0
-                  ? 'Phaser-mounted once per load.'
+                  ? 'Arrow keys move. Space interacts when a target enters range.'
                   : 'No backend agents returned.'}
         </p>
       </div>
 
       <div className="world-canvas-shell">
         <div ref={mountRef} className="world-phaser-host" aria-label="Phaser map viewport" />
+
+        <section className="world-minimap" aria-label="World minimap">
+          <div className="world-minimap__header">
+            <span>MINIMAP</span>
+            <strong>{agents.length + 1}</strong>
+          </div>
+          <div className="world-minimap__body">
+            <div className="world-minimap__viewport" style={{ left: `${player.xPercent - 7}%`, top: `${player.yPercent - 7}%` }} />
+            <div className="world-minimap__dot world-minimap__dot--player" style={{ left: `${player.xPercent}%`, top: `${player.yPercent}%` }} />
+            {agents.map((agent) => (
+              <div
+                key={agent.id}
+                className={`world-minimap__dot${interactionTarget?.id === agent.id ? ' world-minimap__dot--target' : ''}`}
+                style={{ left: `${agent.xPercent}%`, top: `${agent.yPercent}%` }}
+                title={agent.label}
+              />
+            ))}
+          </div>
+        </section>
+
         <div className="world-agent-layer" aria-hidden="true">
           <figure className="world-agent world-player" style={{ left: `${player.xPercent}%`, top: `${player.yPercent}%` }}>
             <div
@@ -286,6 +265,8 @@ export function WorldCanvas({
                 </figure>
               ))
             : null}
+
+          {interactionTarget ? <div className="world-interaction-prompt">SPACE · Talk to {interactionTarget.label}</div> : null}
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
 
@@ -68,11 +68,12 @@ vi.mock('@/game/WorldCanvas', () => ({
           : errorMessage
             ? 'Backend roster unavailable.'
             : interactionTarget
-              ? `Press E near ${interactionTarget.label} to interact.`
+              ? `Press Space near ${interactionTarget.label} to interact.`
               : agents.length > 0
-                ? 'Phaser-mounted once per load.'
+                ? 'Arrow keys move. Space interacts when a target enters range.'
                 : 'No backend agents returned.'}
       </p>
+      <p>Minimap visible.</p>
       <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
       <img src={player.imageSrc} alt={`${player.label} avatar`} />
       {agents.map((agent) => (
@@ -101,10 +102,9 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/current player summary/i)).toHaveTextContent(/you is the controllable user avatar/i)
-    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
-    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
+    expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
@@ -121,12 +121,13 @@ describe('App', () => {
     fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
 
-    await waitFor(() => expect(screen.getByLabelText(/backend agent summary/i)).toHaveTextContent('3 agents ready.'))
-    expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
+    await waitFor(() => expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1))
   })
 
   it('renders a simple backend agent roster', async () => {
     render(<App />)
+
+    expect(screen.getByRole('button', { name: /^add agent$/i })).toBeInTheDocument()
 
     const roster = await screen.findByRole('list', { name: /backend agent list/i })
     expect(within(roster).getByText('Hana')).toBeInTheDocument()
@@ -186,4 +187,36 @@ describe('App', () => {
     expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
   })
 
+  it('moves only the user avatar with smoothed motion and unlocks interaction feedback near an agent npc', async () => {
+    const randomSpy = vi.spyOn(Math, 'random')
+    randomSpy.mockReturnValueOnce(0.1).mockReturnValueOnce(0.2).mockReturnValueOnce(0.6).mockReturnValueOnce(0.7)
+
+    render(<App />)
+    await screen.findByRole('img', { name: /hana avatar/i })
+
+    vi.useFakeTimers()
+    try {
+      expect(screen.getByText(/controlling you at/i)).toHaveTextContent('Controlling You at (12%, 32%).')
+      expect(screen.getByText(/press space near hana to interact/i)).toBeInTheDocument()
+
+      fireEvent.keyDown(window, { key: 'ArrowRight' })
+      act(() => {
+        vi.advanceTimersByTime(220)
+      })
+      fireEvent.keyUp(window, { key: 'ArrowRight' })
+      act(() => {
+        vi.advanceTimersByTime(220)
+      })
+
+      const statusLines = screen.getAllByText((content) => content.includes('Controlling'))
+      expect(statusLines[0]?.textContent).not.toBe('Controlling You at (12%, 32%).')
+
+      fireEvent.keyDown(window, { key: ' ', code: 'Space' })
+
+      expect(screen.getByText(/you greeted hana/i)).toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+      randomSpy.mockRestore()
+    }
+  })
 })
