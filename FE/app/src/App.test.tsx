@@ -30,24 +30,11 @@ function installFetchMock(overrides: Record<string, { ok?: boolean; status?: num
 
     const payload =
       override ??
-      (pathname === '/agents' && method === 'POST'
-        ? {
-            ok: true,
-            status: 200,
-            json: {
-              id: 'new-agent',
-              name: 'Warm Guide',
-              archetype: 'maker',
-              personaSummary: 'Warm school guide',
-              backstoryPrompt: 'Helps every newcomer settle in.',
-              createdAt: '2026-04-26T00:00:00.000Z',
-            },
-          }
-        : {
-            ok: true,
-            status: 200,
-            json: backendAgents,
-          })
+      {
+        ok: true,
+        status: 200,
+        json: backendAgents,
+      }
 
     return {
       ok: payload.ok ?? true,
@@ -121,13 +108,17 @@ describe('App', () => {
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
-  it('keeps the add agent flow and appends a created npc', async () => {
+  it('opens the npc dialog with a random default name and appends a created npc locally', async () => {
     render(<App />)
 
     fireEvent.click(screen.getAllByRole('button', { name: /^add agent$/i })[0])
     const dialog = screen.getByRole('dialog')
+
+    const nameInput = within(dialog).getByLabelText(/name/i) as HTMLInputElement
+    expect(nameInput.value).not.toBe('')
+
+    fireEvent.change(nameInput, { target: { value: 'Warm Guide' } })
     fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
-    fireEvent.change(within(dialog).getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
 
     await waitFor(() => expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1))
