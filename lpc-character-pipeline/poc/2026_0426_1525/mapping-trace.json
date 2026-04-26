@@ -1,0 +1,87 @@
+{
+  "form_fallback_note": null,
+  "trace": [
+    {
+      "selectionGroup": "bodyType",
+      "value": "male",
+      "reason": "Persona describes a '청년' (young person), mapped to 'male' body type as a general representation."
+    },
+    {
+      "selectionGroup": "body",
+      "itemId": "body",
+      "recolor": "light",
+      "reason": "Default human body, 'light' skin tone chosen as a common default."
+    },
+    {
+      "selectionGroup": "head",
+      "itemId": "heads_human_male",
+      "recolor": "light",
+      "reason": "Persona describes a '청년' (young person), mapped to 'heads_human_male' with matching 'light' skin tone."
+    },
+    {
+      "selectionGroup": "expression",
+      "itemId": "face_happy",
+      "reason": "Persona mentions '호기심 가득한 눈빛이 특징이다' (curious eyes, friendly expression), mapped to 'face_happy' to convey friendliness."
+    },
+    {
+      "selectionGroup": "hair",
+      "itemId": "hair_plain",
+      "recolor": "dark brown",
+      "reason": "Hair style not specified, chose 'hair_plain' as a simple default. 'dark brown' chosen as a common hair color."
+    },
+    {
+      "selectionGroup": "hat",
+      "value": "null",
+      "reason": "Persona mentions an 'orange hoodie', which is a torso garment. No separate hat is specified, and no 'hoodie' item exists in the 'hat' group."
+    },
+    {
+      "selectionGroup": "facial_eyes",
+      "value": "null",
+      "reason": "No glasses or specific facial eye accessories mentioned in the persona."
+    },
+    {
+      "selectionGroup": "clothes",
+      "itemId": "torso_clothes_blouse_longsleeve",
+      "variant": "orange",
+      "reason": "Persona specifies '주황색 후드를 입은' (wearing an orange hoodie). No direct 'hoodie' item is available. 'torso_clothes_blouse_longsleeve' with 'orange' variant is the closest match for a long-sleeved orange top."
+    },
+    {
+      "selectionGroup": "legs",
+      "itemId": "legs_pants",
+      "reason": "Legs clothing not specified, chose 'legs_pants' as a common default."
+    },
+    {
+      "selectionGroup": "shoes",
+      "itemId": "feet_shoes_basic",
+      "variant": "black",
+      "reason": "Shoes not specified, chose 'feet_shoes_basic' with 'black' variant as a common default."
+    },
+    {
+      "selectionGroup": "accessory",
+      "value": "missing",
+      "reason": "Persona mentions '한 손에 작은 노트북을 들고 있고' (holding a small laptop in one hand). The catalog does not contain a laptop or similar handheld accessory."
+    },
+    {
+      "selectionGroup": "pixel_art_prompt_resolution",
+      "value": "ignored",
+      "reason": "Pixel Art Prompt resolution hints (e.g., '16x16') are ignored as per rules; LPC native resolution is 64x64."
+    }
+  ],
+  "color_palette_check": {
+    "persona_palette": [
+      "#FF6F00",
+      "#FFFFFF",
+      "#4CAF50"
+    ],
+    "applied_lpc_colors": [
+      "light",
+      "dark brown",
+      "orange",
+      "black"
+    ],
+    "missing_palette_colors": [
+      "#FFFFFF",
+      "#4CAF50"
+    ]
+  }
+}

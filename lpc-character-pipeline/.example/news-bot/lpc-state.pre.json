@@ -1,0 +1,67 @@
+{
+  "version": 2,
+  "bodyType": "male",
+  "selections": {
+    "body": {
+      "itemId": "body",
+      "variant": "",
+      "recolor": "light",
+      "name": "기본 신체 (밝은 피부톤)"
+    },
+    "head": {
+      "itemId": "heads_human_male",
+      "variant": "",
+      "recolor": "light",
+      "name": "인간 남성 머리"
+    },
+    "expression": {
+      "itemId": "face_happy",
+      "variant": "",
+      "recolor": "",
+      "name": "행복한 표정 (호기심·친근함)"
+    },
+    "hair": {
+      "itemId": "hair_parted",
+      "variant": "",
+      "recolor": "",
+      "name": "가르마 머리 (단정한 기자 스타일)"
+    },
+    "hat": {
+      "itemId": "hat_cap_bonnie",
+      "variant": "blue",
+      "recolor": "",
+      "name": "보닛 캡 — 파란 베레모 대체 (#4A90D9)"
+    },
+    "facial_eyes": {
+      "itemId": "facial_glasses_round",
+      "variant": "black",
+      "recolor": "",
+      "name": "둥근 안경"
+    },
+    "clothes": {
+      "itemId": "torso_clothes_longsleeve_formal",
+      "variant": "white",
+      "recolor": "",
+      "name": "포멀 흰 셔츠 (#FFFFFF Accent)"
+    },
+    "jacket": {
+      "itemId": "torso_jacket_trench",
+      "variant": "gray",
+      "recolor": "",
+      "name": "트렌치코트 (가벼운 코트)"
+    },
+    "legs": {
+      "itemId": "legs_widepants",
+      "variant": "charcoal",
+      "recolor": "",
+      "name": "와이드 팬츠 (차콜)"
+    },
+    "shoes": {
+      "itemId": "feet_boots_rim",
+      "variant": "brown",
+      "recolor": "",
+      "name": "림드 부츠 (브라운)"
+    }
+  },
+  "selectedAnimation": "walk"
+}

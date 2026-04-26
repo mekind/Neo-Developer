@@ -3,6 +3,7 @@
 Generated and time-bound frontend artifacts live here.
 
 ## Current Outputs
+- [[World Camera Minimap Note]] ([World Camera Minimap Note](world-camera-minimap-note-2026-04-26.md))
 - [[Character Movement Interaction Note]] ([Character Movement Interaction Note](character-movement-interaction-note-2026-04-26.md))
 - [[Demo Scope Note]] ([Demo Scope Note](demo-scope-note-2026-04-26.md))
 - [[Gather-like Layout Note]] ([Gather-like Layout Note](gather-like-layout-note-2026-04-26.md))
@@ -12,6 +13,10 @@ Generated and time-bound frontend artifacts live here.
 - [[Frontend Vercel Deploy Note]] ([Frontend Vercel Deploy Note](frontend-vercel-deploy-note-2026-04-26.md))
 - [[Character Creation Flow Note]] ([Character Creation Flow Note](character-creation-flow-note-2026-04-26.md))
 - [[Persona Dialog Agent Create Note]] ([Persona Dialog Agent Create Note](persona-dialog-agent-create-note-2026-04-26.md))
+- [[Local NPC Dialog Note]] ([Local NPC Dialog Note](local-npc-dialog-note-2026-04-26.md))
+- [[NPC Dialog Korean Copy Note]] ([NPC Dialog Korean Copy Note](npc-dialog-korean-copy-note-2026-04-26.md))
+- [[Dialog Close Button Polish Note]] ([Dialog Close Button Polish Note](dialog-close-button-polish-note-2026-04-26.md))
+- [[NPC Chat Dialog Shell Note]] ([NPC Chat Dialog Shell Note](npc-chat-dialog-shell-note-2026-04-26.md))
 
 ## Output Conventions
 - date-stamp generated artifacts when they capture a moment in time

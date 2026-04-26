@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.6
 
 # ---- builder ----------------------------------------------------------------
-FROM node:20.13.1-bookworm-slim AS builder
+FROM node:25-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -27,7 +27,7 @@ RUN npm prune --omit=dev
 
 
 # ---- runtime ----------------------------------------------------------------
-FROM node:20.13.1-bookworm-slim AS runtime
+FROM node:25-bookworm-slim AS runtime
 
 WORKDIR /app
 
