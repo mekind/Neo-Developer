@@ -35,3 +35,15 @@ The canvas placeholder now leans toward a warm school commons mood with beige wa
 ## Additional files
 
 - `FE/app/src/test/setup.ts`
+
+## Product-shell cleanup update
+
+The FE shell was further compacted to feel less like a prototype. Explanatory copy was reduced across the top bar, sidebar, and world-supporting UI, while spacing and section density were tightened without changing feature logic or the world art direction.
+
+## Additional files for shell cleanup
+
+- `FE/app/src/App.tsx`
+- `FE/app/src/components/InteractionPanel.tsx`
+- `FE/app/src/game/WorldCanvas.tsx`
+- `FE/app/src/styles/global.css`
+- `FE/app/src/App.test.tsx`

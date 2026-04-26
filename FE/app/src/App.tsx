@@ -44,13 +44,13 @@ export default function App() {
     <main className="app-shell">
       <header className="topbar panel-shell">
         <div>
-          <p className="eyebrow">demo-friendly baseline</p>
-          <h1>편하게 둘러보는 데모 공간</h1>
+          <p className="eyebrow">Neo Commons</p>
+          <h1>스쿨 커먼즈</h1>
         </div>
-        <p className="topbar-copy">
-          처음 보는 사람도 부담 없이 이해할 수 있도록, 백엔드에서 받은 agent roster가 따뜻한 중간 톤의 월드에
-          랜덤 위치로 배치되는 흐름을 편하게 보여줍니다.
-        </p>
+        <div className="topbar-summary" aria-label="Room summary">
+          <span className="status-pill">Live</span>
+          <strong>{agents.length}</strong>
+        </div>
       </header>
 
       <div className="app-body">
@@ -60,11 +60,8 @@ export default function App() {
 
         <section className="world-stage panel-shell" aria-label="world stage">
           <div className="world-stage-copy">
-            <p className="eyebrow">World viewport</p>
-            <p className="description">
-              백엔드 agent 리스트가 로드될 때마다 새로운 랜덤 위치에 배치되고, 같은 로드 안에서는 가만히 머무르는
-              첫 공유공간 데모입니다.
-            </p>
+            <p className="eyebrow">Room</p>
+            <h2>Commons Floor</h2>
           </div>
           <WorldCanvas agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
         </section>

@@ -3,9 +3,7 @@
 - 2026-04-26: Documented the backend-driven world-agent roster pass, including `/agents` ownership, FE-side roster mapping, placeholder avatar fallback, and per-load random placement rules.
 - 2026-04-26: Replaced the inline character-creation form with a persona dialog, added the first FE write-path agent create service plus backend `/agents` endpoint, and documented the new immediate-spawn API-backed flow.
 <<<<<<< HEAD
-- 2026-04-26: Documented the backend-driven world-agent roster pass, including `/agents` ownership, FE-side roster mapping, placeholder avatar fallback, and per-load random placement rules.
 =======
-- 2026-04-26: Replaced the inline character-creation form with a persona dialog, added the first FE write-path agent create service plus backend `/agents` endpoint, and documented the new immediate-spawn API-backed flow.
 >>>>>>> origin/main
 - 2026-04-26: Documented the first FE API integration baseline, including env/config ownership, transport layering, endpoint validation, and live `/items` proof in `InteractionPanel`.
 - 2026-04-26: Initialized FE llm-wiki-style vault scaffold with source/wiki/output separation and starter indexes.
@@ -20,3 +18,4 @@
 - 2026-04-26: Switched frontend deployment from GitHub Pages to Vercel and aligned the production Vite base path with root-hosted deploys.
 - 2026-04-26: Added a durable FE tone and typography guideline based on the accessibility-first warm-neutral demo direction.
 - 2026-04-26: Applied the warm-neutral accessibility-first tone guideline to the FE app with Korean-friendly copy, midtone surfaces, and Hangul-first font stack updates.
+- 2026-04-26: Compacted the FE shell into a more product-like surface by stripping placeholder copy and tightening UI density without changing feature logic.

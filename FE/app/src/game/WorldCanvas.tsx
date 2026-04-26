@@ -91,26 +91,24 @@ export function WorldCanvas({ agents, isLoading, errorMessage }: WorldCanvasProp
 
     context.fillStyle = '#4d463f'
     context.font = 'bold 18px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-    context.fillText('Warm school commons prototype', 28, 42)
-    context.font = '16px Pretendard, SUIT, "Noto Sans KR", sans-serif'
-    context.fillText('Backend agents appear at random stationary spots for the current load.', 28, 68)
+    context.fillText('School Commons', 28, 42)
   }, [])
 
   return (
     <div className="world-surface">
       <div className="world-status">
         <div>
-          <p className="eyebrow">Live world state</p>
-          <h2>Backend agents: {agents.length}</h2>
+          <p className="eyebrow">Room</p>
+          <h2>Agents: {agents.length}</h2>
         </div>
         <p className="world-helper">
           {isLoading
-            ? 'Loading backend agents into the world.'
+            ? 'Loading backend roster.'
             : errorMessage
-              ? 'Backend agent roster could not be loaded.'
+              ? 'Backend roster unavailable.'
               : agents.length > 0
-                ? 'Agents stay still after they appear, but can get new random spots on the next reload.'
-                : 'No backend agents were returned for this world load.'}
+                ? 'Randomized once per load.'
+                : 'No backend agents returned.'}
         </p>
       </div>
 

@@ -24,22 +24,27 @@ describe('App', () => {
     } as Response)
   })
 
-  it('renders the backend-driven world layout shell', async () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllEnvs()
+  })
+
+  it('renders the compact backend-driven shell', async () => {
     render(<App />)
 
-    expect(screen.getByRole('heading', { name: /편하게 둘러보는 데모 공간/i })).toBeInTheDocument()
-    expect(screen.getByRole('complementary')).toHaveTextContent(/백엔드 agent 목록 안내/i)
+    expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
+    expect(screen.getByRole('complementary')).toHaveTextContent(/agents/i)
+    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
     expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
-  it('replaces the local creation UI with a simple backend agent list', async () => {
+  it('renders a simple backend agent roster', async () => {
     render(<App />)
 
-    expect(screen.queryByRole('button', { name: /create character/i })).not.toBeInTheDocument()
     const roster = await screen.findByRole('list', { name: /backend agent list/i })
-    expect(within(roster).getByText(/hana · image asset/i)).toBeInTheDocument()
-    expect(within(roster).getByText(/min · placeholder image/i)).toBeInTheDocument()
+    expect(within(roster).getByText('Hana')).toBeInTheDocument()
+    expect(within(roster).getByText('Min')).toBeInTheDocument()
   })
 
   it('falls back to the agent id when the backend omits a display name', async () => {
@@ -56,7 +61,7 @@ describe('App', () => {
     render(<App />)
 
     const roster = await screen.findByRole('list', { name: /backend agent list/i })
-    expect(within(roster).getByText(/mystery-agent · placeholder image/i)).toBeInTheDocument()
+    expect(within(roster).getByText('mystery-agent')).toBeInTheDocument()
   })
 
   it('uses a placeholder avatar when the backend agent has no image asset', async () => {
