@@ -87,9 +87,11 @@ describe('App', () => {
 
     render(<App />)
 
-    fireEvent.change(screen.getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
-    fireEvent.change(screen.getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
-    fireEvent.click(screen.getByRole('button', { name: /add agent/i }))
+    fireEvent.click(screen.getAllByRole('button', { name: /^add agent$/i })[0])
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
+    fireEvent.change(within(dialog).getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
 
     await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3'))
     expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
