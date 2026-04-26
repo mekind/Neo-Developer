@@ -45,7 +45,7 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
       await onCreateAgent(trimmedName, trimmedPersona)
       onClose()
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Failed to create agent.')
+      setSubmitError(error instanceof Error ? error.message : '에이전트 생성에 실패했습니다.')
     } finally {
       setSubmitState('idle')
     }
@@ -56,25 +56,25 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
       <div className="dialog-panel" role="dialog" aria-modal="true" aria-labelledby="add-agent-dialog-title">
         <div className="dialog-header">
           <div>
-            <p className="eyebrow">NPC dialog</p>
-            <h3 id="add-agent-dialog-title">Add agent NPC</h3>
+            <p className="eyebrow">NPC 추가</p>
+            <h3 id="add-agent-dialog-title">에이전트 NPC 추가</h3>
           </div>
           <button type="button" className="secondary-button" onClick={onClose} disabled={submitState === 'submitting'}>
-            Close
+            닫기
           </button>
         </div>
 
-        <form className="creation-form" onSubmit={handleSubmit} aria-label="Add agent form">
+        <form className="creation-form" onSubmit={handleSubmit} aria-label="에이전트 추가 폼">
           <label className="field">
-            <span>Name</span>
+            <span>이름</span>
             <input name="name" value={name} onChange={(event) => setName(event.target.value)} required />
           </label>
 
           <label className="field">
-            <span>Persona</span>
+            <span>페르소나</span>
             <textarea
               name="persona"
-              placeholder="Warm school guide who helps newcomers feel at home."
+              placeholder="처음 온 사용자가 편하게 적응하도록 돕는 따뜻한 가이드"
               rows={4}
               value={persona}
               onChange={(event) => setPersona(event.target.value)}
@@ -85,7 +85,7 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
           {submitError ? <p role="alert">{submitError}</p> : null}
 
           <button type="submit" disabled={submitState === 'submitting'}>
-            {submitState === 'submitting' ? 'Adding…' : 'Add agent'}
+            {submitState === 'submitting' ? '추가 중…' : '에이전트 추가'}
           </button>
         </form>
       </div>
