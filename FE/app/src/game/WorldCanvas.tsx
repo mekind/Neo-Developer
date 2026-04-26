@@ -14,36 +14,44 @@ export function WorldCanvas() {
     const height = canvas.height
 
     context.clearRect(0, 0, width, height)
-    context.fillStyle = '#101826'
+    context.fillStyle = '#0f172a'
     context.fillRect(0, 0, width, height)
 
+    context.fillStyle = '#14213d'
+    context.fillRect(0, 0, width, 92)
+
     context.strokeStyle = 'rgba(255,255,255,0.08)'
-    for (let x = 0; x <= width; x += 40) {
+    for (let x = 0; x <= width; x += 48) {
       context.beginPath()
       context.moveTo(x, 0)
       context.lineTo(x, height)
       context.stroke()
     }
 
-    for (let y = 0; y <= height; y += 40) {
+    for (let y = 0; y <= height; y += 48) {
       context.beginPath()
       context.moveTo(0, y)
       context.lineTo(width, y)
       context.stroke()
     }
 
+    context.fillStyle = '#1d4ed8'
+    context.fillRect(96, 132, 180, 140)
+    context.fillRect(332, 188, 220, 180)
+    context.fillRect(598, 108, 160, 220)
+
     context.fillStyle = '#6ee7b7'
-    context.fillRect(180, 120, 28, 28)
+    context.fillRect(408, 244, 28, 28)
 
     context.fillStyle = '#f8fafc'
     context.font = '16px sans-serif'
-    context.fillText('World placeholder', 24, 32)
-    context.fillText('2D movement + interactions start here', 24, 56)
+    context.fillText('World viewport placeholder', 24, 38)
+    context.fillText('Top bar / sidebar outside the playable area', 24, 64)
   }, [])
 
   return (
     <div className="world-surface">
-      <canvas ref={canvasRef} width={720} height={480} aria-label="2D world placeholder canvas" />
+      <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world placeholder canvas" />
     </div>
   )
 }
