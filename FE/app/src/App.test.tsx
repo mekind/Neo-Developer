@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import App from './App'
 
@@ -101,6 +101,31 @@ describe('App', () => {
     expect(screen.getByLabelText(/current user summary/i)).toHaveTextContent(/position: 1240, 780/i)
   })
 
+  it('restores the add agent button and appends a created agent', async () => {
+    vi.mocked(globalThis.fetch)
+      .mockResolvedValueOnce({ ok: true, json: async () => backendAgents } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          id: 'new-agent',
+          name: 'Warm Guide',
+          archetype: 'maker',
+          personaSummary: 'Warm school guide',
+          backstoryPrompt: 'Helps every newcomer settle in.',
+          createdAt: '2026-04-26T00:00:00.000Z',
+        }),
+      } as Response)
+
+    render(<App />)
+
+    fireEvent.change(screen.getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
+    fireEvent.change(screen.getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
+    fireEvent.click(screen.getByRole('button', { name: /add agent/i }))
+
+    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('4'))
+    expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
+  })
+
   it('renders a simple backend agent roster', async () => {
     render(<App />)
 
@@ -164,13 +189,13 @@ describe('App', () => {
     expect(alerts[0]).toHaveTextContent('API request failed: 500')
   })
 
-  it('shows a configuration error when the API base URL is missing', async () => {
+  it('falls back to the default backend URL when the env is missing', async () => {
     vi.unstubAllEnvs()
 
     render(<App />)
 
-    const alerts = await screen.findAllByRole('alert')
-    expect(alerts[0]).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
-    expect(globalThis.fetch).not.toHaveBeenCalled()
+    await screen.findByRole('img', { name: /hana avatar/i })
+    expect(globalThis.fetch).toHaveBeenCalled()
+    expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
   })
 })
