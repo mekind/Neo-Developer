@@ -78,10 +78,10 @@ describe('App', () => {
     await screen.findByText('Haru')
 
     fireEvent.click(screen.getByRole('button', { name: /에이전트 추가/i }))
-    const dialog = screen.getByRole('dialog', { name: /에이전트 npc 추가/i })
+    const dialog = screen.getByRole('dialog', { name: /에이전트 npc 추가|에이전트 NPC 추가/i })
     fireEvent.change(within(dialog).getByLabelText(/이름/i), { target: { value: 'Warm Guide' } })
     fireEvent.change(within(dialog).getByLabelText(/페르소나/i), { target: { value: 'Warm school guide' } })
-    fireEvent.click(within(dialog).getByRole('button', { name: /에이전트 추가/i }))
+    fireEvent.click(within(dialog).getByRole('button', { name: /^에이전트 추가$/i }))
 
     await waitFor(() => expect(screen.getByText('Warm Guide')).toBeInTheDocument())
     await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('5'))
