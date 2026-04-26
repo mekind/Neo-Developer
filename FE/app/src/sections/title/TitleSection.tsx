@@ -7,7 +7,7 @@ type TitleSectionProps = {
 export function TitleSection({ liveCount, onOpenTestChat, isChatDisabled }: TitleSectionProps) {
   return (
     <header className="topbar topbar-compact panel-shell">
-      <h1>스쿨 커먼즈</h1>
+      <h1>Myclaw</h1>
       <div className="topbar-actions">
         <button
           type="button"
