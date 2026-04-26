@@ -1,13 +1,14 @@
-import type { WorldAgent } from '@/game/agents'
+import type { WorldAgent, WorldPlayer } from '@/game/agents'
 
 type SidebarSectionProps = {
   agents: WorldAgent[]
+  player: WorldPlayer
   isLoading: boolean
   errorMessage: string | null
   onOpenDialog: () => void
 }
 
-export function SidebarSection({ agents, isLoading, errorMessage, onOpenDialog }: SidebarSectionProps) {
+export function SidebarSection({ agents, player, isLoading, errorMessage, onOpenDialog }: SidebarSectionProps) {
   return (
     <aside className="sidebar panel-shell">
       <section className="sidebar-content">
@@ -15,6 +16,17 @@ export function SidebarSection({ agents, isLoading, errorMessage, onOpenDialog }
           <p className="eyebrow">Room panel</p>
           <h2>Agents</h2>
         </div>
+
+        <section className="panel-section panel-highlight" aria-label="Current player summary">
+          <div className="panel-label-row">
+            <span className="panel-kicker">Player</span>
+            <span className="panel-count">1</span>
+          </div>
+          <p>
+            <strong>{player.label}</strong> is the controllable user avatar.
+          </p>
+          <p>Move with WASD or arrow keys. Press E near an agent NPC to interact.</p>
+        </section>
 
         <section className="panel-section creation-launcher" aria-label="Add agent entry">
           <div className="panel-label-row">

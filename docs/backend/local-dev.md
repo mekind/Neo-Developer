@@ -11,8 +11,53 @@
 
 ```bash
 cd backend
-npm install
+cp .env.example .env       # DATABASE_URL / DIRECT_URL 채우기 (Neon dev branch 또는 로컬 Postgres)
+npm install                # postinstall에서 prisma generate 자동 실행
+npx prisma migrate dev     # 첫 실행 시 (로컬 DB에 스키마 적용)
 npm run start:dev          # watch 모드, http://localhost:3000
+```
+
+### Prisma 명령
+
+| 명령 | 용도 |
+|---|---|
+| `npx prisma migrate dev --name <name>` | 스키마 변경 후 새 마이그레이션 생성 + 로컬 DB 적용 |
+| `npx prisma migrate deploy` | 이미 만들어진 마이그레이션을 운영 DB에 적용 (CI에서 사용) |
+| `npx prisma generate` | TypeScript 클라이언트 재생성 (`postinstall`로 자동) |
+| `npx prisma studio` | 브라우저 GUI로 DB 들여다보기 |
+| `npx prisma db push` | 마이그레이션 없이 스키마만 푸시 (스크래치 작업용, 운영 금지) |
+
+### 로컬 DB 옵션
+
+1. **Neon dev branch (권장)** — Vercel Postgres 가입 후 dev branch URL을 `.env`에 넣으면 끝.
+2. **Docker Postgres (수동)** — `docker run -d --name myclaw-pg -e POSTGRES_PASSWORD=dev -p 5432:5432 postgres:16` 후 `DATABASE_URL="postgresql://postgres:dev@localhost:5432/postgres"`, `DIRECT_URL` 동일.
+3. **Docker Compose (백엔드 + DB 한 번에)** — 아래 §Docker Compose 참조.
+
+## Docker Compose (백엔드 + Postgres 통합 실행)
+
+`backend/Dockerfile` + `backend/docker-compose.yml`로 백엔드와 Postgres를 컨테이너로 같이 띄울 수 있습니다. Node/npm 설치 없이 검증만 할 때 가장 빠릅니다.
+
+```bash
+cd backend
+docker compose up --build -d            # 첫 실행: 이미지 빌드 + DB+백엔드 기동
+docker compose logs -f backend          # 로그 확인 (Ctrl+C로 빠져나옴)
+
+curl http://localhost:3000/health        # {"status":"ok","db":"ok",...}
+curl http://localhost:3000/items         # mock 2건
+
+docker compose down                      # 종료 (볼륨 유지)
+docker compose down -v                   # 종료 + DB 데이터 삭제
+```
+
+동작:
+- `backend` 컨테이너 부팅 시 `prisma migrate deploy`가 자동 실행되어 스키마 적용
+- `postgres` 서비스가 `pg_isready` 헬스체크 통과 후 backend 시작
+- DB 데이터는 `postgres-data` 볼륨에 영속화 (`down -v`로 삭제 가능)
+
+호스트에서 DB 직접 접속:
+
+```bash
+psql postgresql://myclaw:myclaw@localhost:5432/myclaw
 ```
 
 기타 스크립트 (`backend/package.json`):
@@ -39,6 +84,20 @@ curl -s http://localhost:3000/items | jq
 ```
 
 엔드포인트 전체 명세는 [api.md](./api.md) 참조.
+
+## E2E 테스트
+
+상세 가이드는 [test/README.md](./test/README.md) 참조. 빠른 실행:
+
+```bash
+cd backend
+docker compose up postgres -d
+DATABASE_URL='postgresql://myclaw:myclaw@localhost:5432/myclaw?schema=public' \
+DIRECT_URL='postgresql://myclaw:myclaw@localhost:5432/myclaw?schema=public' \
+npm run test:e2e
+```
+
+CI 자동 실행은 비활성화돼 있습니다 — 로컬 검증 전용입니다.
 
 ## 데이터 초기화
 

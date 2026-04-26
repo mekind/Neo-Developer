@@ -1,10 +1,16 @@
-# Items API
+# Backend API
 
 프론트 연동을 위한 엔드포인트 명세.
 
 - **Base URL:** `https://backend-kappa-brown-63.vercel.app`
 - **Content-Type:** `application/json`
 - **CORS:** 모든 origin 허용
+
+> 📚 **인터랙티브 문서**: `https://backend-kappa-brown-63.vercel.app/docs` 에서 Swagger UI를 통해 모든 엔드포인트 + 스키마를 직접 시험해볼 수 있습니다. OpenAPI JSON: `https://backend-kappa-brown-63.vercel.app/docs-json` (코드 생성에 사용 가능).
+>
+> 아래 본문은 Items 엔드포인트(데모용 mock)만 다룹니다. P0 도메인(`users` / `memory` / `agents` / `skills` / `greetings`) 명세는 위 Swagger UI를 참고하세요.
+
+---
 
 > ⚠️ 데이터는 서버리스 인스턴스 인메모리에만 존재합니다. 인스턴스가 새로 뜨거나 다른 콜드 인스턴스로 라우팅되면 초기 mock 2건으로 리셋됩니다. 연동 검증용으로만 사용하세요.
 
@@ -30,8 +36,6 @@ interface Item {
 | POST | `/items` | 생성 | 201 |
 | PATCH | `/items/:id` | 부분 수정 | 200 |
 | DELETE | `/items/:id` | 삭제 | 200 |
-| POST | `/memory/users/:userId/bootstrap` | 사용자 메모리 기본 구조 생성/갱신 | 201 |
-| GET | `/memory/users/:userId` | 사용자 메모리 상태 조회 | 200 |
 
 ---
 
@@ -255,89 +259,4 @@ curl -s -X DELETE $BASE/items/<id>
 
 ---
 
-## 6. 사용자 메모리 부트스트랩
-
-```
-POST /memory/users/:userId/bootstrap
-```
-
-사용자별 메모리 루트(`~/.cmux/users/<userId>/`) 아래에 아래 구조를 만듭니다. 테스트/로컬 격리를 위해 `CMUX_MEMORY_ROOT`로 루트를 덮어쓸 수 있습니다.
-
-```text
-<root>/<userId>/
-├── profile.md
-├── index.md
-└── agents/
-```
-
-**Request Body**
-
-```json
-{
-  "name": "수진",
-  "purpose": "반복업무 자동화",
-  "interests": ["marketing", "ops"]
-}
-```
-
-| 필드 | 타입 | 필수 | 제약 |
-|---|---|---|---|
-| `name` | string | ❌ | — |
-| `purpose` | string | ❌ | — |
-| `interests` | string[] | ❌ | 배열의 모든 원소가 string |
-
-**Response 201**
-
-```json
-{
-  "userId": "sujin",
-  "exists": true,
-  "createdAt": "2026-04-26T05:12:00.000Z",
-  "updatedAt": "2026-04-26T05:12:00.000Z",
-  "paths": {
-    "root": "/Users/kkh/.cmux/users/sujin",
-    "profile": "/Users/kkh/.cmux/users/sujin/profile.md",
-    "index": "/Users/kkh/.cmux/users/sujin/index.md",
-    "agents": "/Users/kkh/.cmux/users/sujin/agents"
-  },
-  "files": {
-    "profile": true,
-    "index": true,
-    "agents": true
-  },
-  "profilePreview": "# User Profile\n..."
-}
-```
-
-**Response 400**
-
-`userId`는 영문자, 숫자, `-`, `_` 만 허용합니다.
-
----
-
-## 7. 사용자 메모리 상태 조회
-
-```
-GET /memory/users/:userId
-```
-
-**Response 200**
-
-```json
-{
-  "userId": "sujin",
-  "exists": true,
-  "paths": {
-    "root": "/Users/kkh/.cmux/users/sujin",
-    "profile": "/Users/kkh/.cmux/users/sujin/profile.md",
-    "index": "/Users/kkh/.cmux/users/sujin/index.md",
-    "agents": "/Users/kkh/.cmux/users/sujin/agents"
-  },
-  "files": {
-    "profile": true,
-    "index": true,
-    "agents": true
-  },
-  "profilePreview": "# User Profile\n..."
-}
-```
+> 이 문서는 데모용 `/items` mock 만 다룹니다. P0 도메인(`users`, `memory`, `agents`, `skills`, `greetings`) 의 전체 명세는 Swagger UI(`/docs`) 또는 OpenAPI JSON(`/docs-json`) 을 참고하세요.

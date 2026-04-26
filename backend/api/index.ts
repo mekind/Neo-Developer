@@ -3,6 +3,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import { ValidationPipe, INestApplication } from '@nestjs/common';
 import express, { Request, Response } from 'express';
 import { AppModule } from '../src/app.module';
+import { setupSwagger } from '../src/swagger';
 
 const server = express();
 let app: INestApplication | null = null;
@@ -12,6 +13,7 @@ async function bootstrap(): Promise<express.Express> {
   app = await NestFactory.create(AppModule, new ExpressAdapter(server));
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.enableCors();
+  setupSwagger(app);
   await app.init();
   return server;
 }

@@ -5,15 +5,39 @@ import { TitleSection } from '@/sections/title/TitleSection'
 import { useAgentsPage } from '@/hooks/useAgentsPage'
 
 export default function App() {
-  const { agents, isLoading, errorMessage, isDialogOpen, openDialog, closeDialog, handleCreateAgent } = useAgentsPage()
+  const {
+    agents,
+    player,
+    isLoading,
+    errorMessage,
+    interactionTarget,
+    lastInteractionMessage,
+    isDialogOpen,
+    openDialog,
+    closeDialog,
+    handleCreateAgent,
+  } = useAgentsPage()
 
   return (
     <main className="app-shell">
       <TitleSection liveCount={agents.length} />
 
       <div className="app-body">
-        <SidebarSection agents={agents} isLoading={isLoading} errorMessage={errorMessage} onOpenDialog={openDialog} />
-        <MapSection agents={agents} isLoading={isLoading} errorMessage={errorMessage} />
+        <SidebarSection
+          agents={agents}
+          player={player}
+          isLoading={isLoading}
+          errorMessage={errorMessage}
+          onOpenDialog={openDialog}
+        />
+        <MapSection
+          agents={agents}
+          player={player}
+          isLoading={isLoading}
+          errorMessage={errorMessage}
+          interactionTarget={interactionTarget}
+          lastInteractionMessage={lastInteractionMessage}
+        />
       </div>
 
       <AddAgentDialogSection isOpen={isDialogOpen} onClose={closeDialog} onCreateAgent={handleCreateAgent} />
