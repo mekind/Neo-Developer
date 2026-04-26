@@ -23,14 +23,14 @@ export class SkillsService implements OnModuleInit {
             name: seed.name,
             description: seed.description,
             triggers: seed.triggers,
-            defaultParams: (seed.defaultParams ?? null) as Prisma.InputJsonValue | null,
+            defaultParams: (seed.defaultParams ?? Prisma.JsonNull) as Prisma.InputJsonValue,
             enabled: true,
           },
           update: {
             name: seed.name,
             description: seed.description,
             triggers: seed.triggers,
-            defaultParams: (seed.defaultParams ?? null) as Prisma.InputJsonValue | null,
+            defaultParams: (seed.defaultParams ?? Prisma.JsonNull) as Prisma.InputJsonValue,
           },
         });
       }
