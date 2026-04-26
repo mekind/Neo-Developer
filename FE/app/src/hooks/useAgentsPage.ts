@@ -17,17 +17,9 @@ type DirectionKey = 'up' | 'down' | 'left' | 'right'
 
 const MOVEMENT_KEYS: Record<string, DirectionKey> = {
   ArrowUp: 'up',
-  w: 'up',
-  W: 'up',
   ArrowDown: 'down',
-  s: 'down',
-  S: 'down',
   ArrowLeft: 'left',
-  a: 'left',
-  A: 'left',
   ArrowRight: 'right',
-  d: 'right',
-  D: 'right',
 }
 
 export function useAgentsPage() {
@@ -136,7 +128,7 @@ export function useAgentsPage() {
         return
       }
 
-      if (event.key.toLowerCase() === 'e' && interactionTargetRef.current) {
+      if (event.code === 'Space' && interactionTargetRef.current) {
         event.preventDefault()
         setLastInteractionMessage(`${playerRef.current.label} greeted ${interactionTargetRef.current.label}.`)
       }
