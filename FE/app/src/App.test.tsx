@@ -15,6 +15,37 @@ const backendAgents = [
   },
 ]
 
+vi.mock('@/game/WorldCanvas', () => ({
+  WorldCanvas: ({
+    agents,
+    isLoading,
+    errorMessage,
+  }: {
+    agents: Array<{ id: string; label: string; imageSrc: string; usesPlaceholder: boolean }>
+    isLoading: boolean
+    errorMessage: string | null
+  }) => (
+    <div aria-label="Phaser map viewport">
+      <h2>Backend agents: {agents.length}</h2>
+      <p>
+        {isLoading
+          ? 'Loading backend agents into the world.'
+          : errorMessage
+            ? 'Backend agent roster could not be loaded.'
+            : agents.length > 0
+              ? 'Agents are mounted into the Phaser world surface.'
+              : 'No backend agents were returned for this world load.'}
+      </p>
+      {agents.map((agent) => (
+        <figure key={agent.id}>
+          <img src={agent.imageSrc} alt={`${agent.label} avatar`} />
+          <figcaption>{agent.label}</figcaption>
+        </figure>
+      ))}
+    </div>
+  ),
+}))
+
 describe('App', () => {
   beforeEach(() => {
     vi.stubEnv('VITE_API_BASE_URL', 'https://backend-kappa-brown-63.vercel.app')

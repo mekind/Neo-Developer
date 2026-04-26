@@ -23,3 +23,6 @@ First-pass frontend scaffold for the project.
   - `VERCEL_FRONTEND_ORG_ID`
   - `VERCEL_FRONTEND_PROJECT_ID`
 - The production Vite base defaults to `/` and can be overridden with `VITE_BASE_PATH` if a non-root deployment path is needed later.
+- `VITE_API_BASE_URL` is required at runtime/build time.
+- Production CI currently injects `https://backend-kappa-brown-63.vercel.app` through `.github/workflows/deploy-frontend.yml`.
+- Local development should set the same value via `.env` / `.env.local` based on `.env.example`.
