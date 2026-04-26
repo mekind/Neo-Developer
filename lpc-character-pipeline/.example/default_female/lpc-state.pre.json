@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "bodyType": "female",
+  "selections": {
+    "body": {
+      "itemId": "body",
+      "variant": "",
+      "recolor": "light",
+      "name": "Body Color"
+    },
+    "head": {
+      "itemId": "heads_human_female",
+      "variant": "",
+      "recolor": "light",
+      "name": "Human Female"
+    },
+    "expression": {
+      "itemId": "face_neutral",
+      "variant": "",
+      "recolor": "light",
+      "name": "Neutral"
+    },
+    "hair": {
+      "itemId": "hair_ponytail",
+      "variant": "",
+      "recolor": "brown",
+      "name": "Ponytail"
+    },
+    "clothes": {
+      "itemId": "torso_clothes_longsleeve2",
+      "variant": "",
+      "recolor": "rose",
+      "name": "Longsleeve 2"
+    },
+    "legs": {
+      "itemId": "legs_pants",
+      "variant": "",
+      "recolor": "charcoal",
+      "name": "Pants"
+    },
+    "shoes": {
+      "itemId": "feet_shoes_basic",
+      "variant": "brown",
+      "recolor": "",
+      "name": "Basic Shoes"
+    }
+  },
+  "selectedAnimation": "walk"
+}

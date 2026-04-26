@@ -212,7 +212,7 @@ with Composer() as c:
 
 | File | Type | Purpose |
 |------|------|---------|
-| `character.png` | PNG (832×3456) | LPC sprite sheet (8 directions × 8 walk frames + 8 idle frames) |
+| `character.png` | PNG (832×3456) | LPC sprite sheet (walk + idle rows included, but frontend playback is walk-only) |
 | `lpc-state.json` | JSON | Round-trip state (Export to Clipboard) |
 | `CREDITS.txt` | TXT | LPC asset attribution (license obligation) |
 | `frame-map.json` | JSON | Animation frame metadata (hardcoded) |
@@ -235,6 +235,12 @@ with Composer() as c:
   }
 }
 ```
+
+**Frontend consumption policy**:
+- `frame-map.json` keeps both `walk_*` and `idle_*` entries because the LPC sheet is standard.
+- Frontend should treat `walk_n/w/s/e` as authoritative.
+- Idle rows are non-authoritative for layered clothing and should not be used for default playback.
+- If a stationary pose is needed, freeze the first walk frame or synthesize a walk-derived pseudo-idle.
 
 ---
 
@@ -339,7 +345,7 @@ uvicorn lpc-character-pipeline.scripts.api:app \
 2. **Browser permissions**: Clipboard read/write granted automatically
 3. **State round-trip**: Export to Clipboard JSON matches Import input (with caveats)
 4. **Hosted safe colors**: Only specific skin recolors work reliably on hosted LPC
-5. **Animation layout**: LPC standard 64×64 frame size, fixed y-offsets for walk/idle
+5. **Animation layout**: LPC standard 64×64 frame size, fixed y-offsets for walk/idle, with walk-only frontend playback as the current policy
 
 ### 5.4 Known Issues
 

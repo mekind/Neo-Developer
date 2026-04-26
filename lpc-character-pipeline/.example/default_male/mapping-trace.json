@@ -1,0 +1,11 @@
+{
+  "mode": "manual-default-fallback",
+  "note": "Simple clothing-only default male bundle for fallback use. Avoids jackets and extra layered accessories so walk playback stays as stable as possible.",
+  "trace": [
+    {
+      "selectionGroup": "clothes",
+      "itemId": "torso_clothes_longsleeve2",
+      "reason": "Chosen as a simple torso base without jacket layering."
+    }
+  ]
+}

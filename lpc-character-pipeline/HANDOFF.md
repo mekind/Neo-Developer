@@ -147,13 +147,16 @@ d = json.load(open('lpc-character-pipeline/.example/carrot-man/lpc-state.json'))
 print(list((d.get('selections') or {}).keys()))
 "
 
-# walk/idle crop
+# walk crop (authoritative frontend subset)
 python -c "
 from PIL import Image
 img = Image.open('lpc-character-pipeline/.example/carrot-man/character.png')
 img.crop((0, 512, 832, 768)).save('/tmp/walk.png')
-img.crop((0, 1408, 832, 1664)).save('/tmp/idle.png')
 "
+
+# idle rows exist in the LPC sheet, but do not use them for frontend playback.
+# If a stationary pose is needed, freeze the first walk frame or synthesize a
+# pseudo-idle from walk frames.
 ```
 
 ## 8. 인계 자료
@@ -169,10 +172,11 @@ img.crop((0, 1408, 832, 1664)).save('/tmp/idle.png')
 ### 프론트엔드 개발자에게
 - 폴더: `lpc-character-pipeline/.example/carrot-man/` (현재 손 누락 상태)
   - `character.png` — 832×3456 sprite sheet
-  - `frame-map.json` — walk_n/w/s/e + idle_n/w/s/e 좌표·frames·fps
+  - `frame-map.json` — walk_n/w/s/e + idle_n/w/s/e 좌표·frames·fps (단, frontend는 `walk_*`만 authoritative 하게 사용)
   - `CREDITS.txt` — 라이선스 표기 의무
   - `lpc-state.json` — 재현용
-- 가이드: `lpc-character-pipeline/README.md` "프론트엔드 개발자에게" 섹션
+- 가이드: `lpc-character-pipeline/README.md` "Frontend animation policy" 섹션
+- **주의**: idle rows는 layered clothing 누락 위험이 있어 사용하지 않는다. 정지 상태가 필요하면 첫 walk frame 고정 또는 walk-derived pseudo-idle을 사용한다.
 - **주의**: 현재 carrot-man은 손이 안 보이는 미해결 이슈가 있음. 이슈 해결 후 재배포 예정. 그 사이에는 `.example/news-bot/` 으로 작업 가능 (역시 같은 이슈 가능성 있음)
 
 ## 9. 라이선스
@@ -183,7 +187,7 @@ LPC 자산: CC-BY-SA 3.0 / OGA-BY 3.0
 
 ## 10. 미결 + 백로그 (참고)
 
-- 일부 비핵심 애니메이션 행에서 의상 누락 — LPC 자산의 per-animation 커버리지 한계. walk/idle만 쓰면 무관
+- 일부 비핵심 애니메이션 행에서 의상 누락 — LPC 자산의 per-animation 커버리지 한계. frontend는 walk-only 정책으로 회피한다.
 - 본 모듈 외부 호출 인터페이스 (Persona Builder Agent ↔ 본 모듈) — MyClaw 전체 spec 책임
 - 검증/재시도 루프 — `spec.md` §10에 의도적으로 가볍게 둠
 
