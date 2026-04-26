@@ -288,7 +288,7 @@ export function WorldCanvas({
             : errorMessage
               ? 'Backend roster unavailable.'
               : interactionTarget
-                ? `Press E near ${interactionTarget.label} to interact.`
+                ? `Press Space near ${interactionTarget.label} to interact.`
                 : agents.length > 0
                   ? 'Main camera follows the player. Minimap shows the full room.'
                   : 'No backend agents returned.'}
@@ -300,6 +300,7 @@ export function WorldCanvas({
         <div className="world-canvas-hud" aria-hidden="true">
           <span className="world-minimap-badge">Minimap</span>
         </div>
+        {interactionTarget ? <div className="world-interaction-prompt">SPACE · Talk to {interactionTarget.label}</div> : null}
       </div>
 
       <div className="world-feedback" aria-live="polite">

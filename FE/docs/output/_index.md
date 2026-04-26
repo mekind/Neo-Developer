@@ -13,8 +13,11 @@ Generated and time-bound frontend artifacts live here.
 - [[Frontend Vercel Deploy Note]] ([Frontend Vercel Deploy Note](frontend-vercel-deploy-note-2026-04-26.md))
 - [[Character Creation Flow Note]] ([Character Creation Flow Note](character-creation-flow-note-2026-04-26.md))
 - [[Persona Dialog Agent Create Note]] ([Persona Dialog Agent Create Note](persona-dialog-agent-create-note-2026-04-26.md))
+- [[Local NPC Dialog Note]] ([Local NPC Dialog Note](local-npc-dialog-note-2026-04-26.md))
+- [[NPC Chat Dialog Shell Note]] ([NPC Chat Dialog Shell Note](npc-chat-dialog-shell-note-2026-04-26.md))
 
 ## Output Conventions
 - date-stamp generated artifacts when they capture a moment in time
 - keep durable guidance in `wiki/`, not here
 - link outputs back to the topic pages or sources they depend on
+- [[NeoD-style Minimap Controls Note]] ([NeoD-style Minimap Controls Note](neod-style-minimap-controls-note-2026-04-26.md))

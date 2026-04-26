@@ -1,32 +1,48 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type AddAgentDialogSectionProps = {
   isOpen: boolean
   onClose: () => void
-  onCreateAgent: (personaSummary: string, backstoryPrompt: string) => Promise<void>
+  onCreateAgent: (name: string, persona: string) => Promise<void>
+}
+
+const nameLeft = ['Warm', 'Sunny', 'Kind', 'Brave', 'Calm', 'Bright']
+const nameRight = ['Guide', 'Buddy', 'Helper', 'Scout', 'Friend', 'Keeper']
+
+function createRandomAgentName() {
+  const left = nameLeft[Math.floor(Math.random() * nameLeft.length)]
+  const right = nameRight[Math.floor(Math.random() * nameRight.length)]
+  return `${left} ${right}`
 }
 
 export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAgentDialogSectionProps) {
-  const [personaSummary, setPersonaSummary] = useState('')
-  const [backstoryPrompt, setBackstoryPrompt] = useState('')
+  const [name, setName] = useState('')
+  const [persona, setPersona] = useState('')
   const [submitState, setSubmitState] = useState<'idle' | 'submitting'>('idle')
   const [submitError, setSubmitError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    setName(createRandomAgentName())
+    setPersona('')
+    setSubmitError(null)
+    setSubmitState('idle')
+  }, [isOpen])
 
   if (!isOpen) return null
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const trimmedPersonaSummary = personaSummary.trim()
-    const trimmedBackstoryPrompt = backstoryPrompt.trim()
-    if (!trimmedPersonaSummary || !trimmedBackstoryPrompt) return
+    const trimmedName = name.trim()
+    const trimmedPersona = persona.trim()
+    if (!trimmedName || !trimmedPersona) return
 
     try {
       setSubmitState('submitting')
       setSubmitError(null)
-      await onCreateAgent(trimmedPersonaSummary, trimmedBackstoryPrompt)
-      setPersonaSummary('')
-      setBackstoryPrompt('')
+      await onCreateAgent(trimmedName, trimmedPersona)
       onClose()
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Failed to create agent.')
@@ -40,8 +56,8 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
       <div className="dialog-panel" role="dialog" aria-modal="true" aria-labelledby="add-agent-dialog-title">
         <div className="dialog-header">
           <div>
-            <p className="eyebrow">Agent dialog</p>
-            <h3 id="add-agent-dialog-title">Add agent</h3>
+            <p className="eyebrow">NPC dialog</p>
+            <h3 id="add-agent-dialog-title">Add agent NPC</h3>
           </div>
           <button type="button" className="secondary-button" onClick={onClose} disabled={submitState === 'submitting'}>
             Close
@@ -50,24 +66,18 @@ export function AddAgentDialogSection({ isOpen, onClose, onCreateAgent }: AddAge
 
         <form className="creation-form" onSubmit={handleSubmit} aria-label="Add agent form">
           <label className="field">
-            <span>Persona</span>
-            <input
-              name="personaSummary"
-              placeholder="Warm school guide"
-              value={personaSummary}
-              onChange={(event) => setPersonaSummary(event.target.value)}
-              required
-            />
+            <span>Name</span>
+            <input name="name" value={name} onChange={(event) => setName(event.target.value)} required />
           </label>
 
           <label className="field">
-            <span>Backstory</span>
+            <span>Persona</span>
             <textarea
-              name="backstoryPrompt"
-              placeholder="Helps every newcomer settle in."
+              name="persona"
+              placeholder="Warm school guide who helps newcomers feel at home."
               rows={4}
-              value={backstoryPrompt}
-              onChange={(event) => setBackstoryPrompt(event.target.value)}
+              value={persona}
+              onChange={(event) => setPersona(event.target.value)}
               required
             />
           </label>

@@ -30,24 +30,11 @@ function installFetchMock(overrides: Record<string, { ok?: boolean; status?: num
 
     const payload =
       override ??
-      (pathname === '/agents' && method === 'POST'
-        ? {
-            ok: true,
-            status: 200,
-            json: {
-              id: 'new-agent',
-              name: 'Warm Guide',
-              archetype: 'maker',
-              personaSummary: 'Warm school guide',
-              backstoryPrompt: 'Helps every newcomer settle in.',
-              createdAt: '2026-04-26T00:00:00.000Z',
-            },
-          }
-        : {
-            ok: true,
-            status: 200,
-            json: backendAgents,
-          })
+      {
+        ok: true,
+        status: 200,
+        json: backendAgents,
+      }
 
     return {
       ok: payload.ok ?? true,
@@ -81,11 +68,12 @@ vi.mock('@/game/WorldCanvas', () => ({
           : errorMessage
             ? 'Backend roster unavailable.'
             : interactionTarget
-              ? `Press E near ${interactionTarget.label} to interact.`
+              ? `Press Space near ${interactionTarget.label} to interact.`
               : agents.length > 0
-                ? 'Phaser-mounted once per load.'
+                ? 'Main camera follows the player. Minimap shows the full room.'
                 : 'No backend agents returned.'}
       </p>
+      <p>Minimap visible.</p>
       <p>{lastInteractionMessage ?? 'No interaction triggered yet.'}</p>
       <img src={player.imageSrc} alt={`${player.label} avatar`} />
       {agents.map((agent) => (
@@ -114,28 +102,43 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/current player summary/i)).toHaveTextContent(/you is the controllable user avatar/i)
-    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
-    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(screen.getByText(/controlling you at \(50%, 50%\)/i)).toBeInTheDocument()
+    expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
-  it('keeps the add agent flow and appends a created npc', async () => {
+  it('opens the npc dialog with a random default name and appends a created npc locally', async () => {
     render(<App />)
 
     fireEvent.click(screen.getAllByRole('button', { name: /^add agent$/i })[0])
     const dialog = screen.getByRole('dialog')
+
+    const nameInput = within(dialog).getByLabelText(/name/i) as HTMLInputElement
+    expect(nameInput.value).not.toBe('')
+
+    fireEvent.change(nameInput, { target: { value: 'Warm Guide' } })
     fireEvent.change(within(dialog).getByLabelText(/persona/i), { target: { value: 'Warm school guide' } })
-    fireEvent.change(within(dialog).getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
 
-    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3'))
-    expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
+    await waitFor(() => expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1))
+  })
+
+  it('opens the npc chat dialog from the header trigger button', async () => {
+    render(<App />)
+
+    fireEvent.click(await screen.findByRole('button', { name: /open npc chat/i }))
+
+    const dialog = await screen.findByRole('dialog')
+    expect(dialog).toHaveTextContent(/chat with hana/i)
+    expect(dialog).toHaveTextContent(/message/i)
+    expect(within(dialog).getByRole('button', { name: /send/i })).toBeDisabled()
   })
 
   it('renders a simple backend agent roster', async () => {
     render(<App />)
+
+    expect(screen.getByRole('button', { name: /^add agent$/i })).toBeInTheDocument()
 
     const roster = await screen.findByRole('list', { name: /backend agent list/i })
     expect(within(roster).getByText('Hana')).toBeInTheDocument()
@@ -195,25 +198,37 @@ describe('App', () => {
     expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
   })
 
-  it('moves only the user avatar and unlocks interaction feedback near an agent npc', async () => {
+  it('moves only the user avatar with smoothed motion and unlocks interaction feedback near an agent npc', async () => {
     const randomSpy = vi.spyOn(Math, 'random')
-    randomSpy.mockReturnValueOnce(0.1).mockReturnValueOnce(0.2).mockReturnValueOnce(0.6).mockReturnValueOnce(0.7)
+    randomSpy
+      .mockReturnValueOnce(0.1)
+      .mockReturnValueOnce(0.2)
+      .mockReturnValueOnce(0.6)
+      .mockReturnValueOnce(0.7)
+      .mockReturnValueOnce(0.95)
+      .mockReturnValueOnce(0.95)
 
     render(<App />)
     await screen.findByRole('img', { name: /hana avatar/i })
 
     vi.useFakeTimers()
     try {
+      expect(screen.getByText(/controlling you at/i)).toHaveTextContent('Controlling You at (50%, 50%).')
+      expect(screen.getByText(/press space near min to interact/i)).toBeInTheDocument()
+
       fireEvent.keyDown(window, { key: 'ArrowRight' })
       act(() => {
-        vi.advanceTimersByTime(180)
+        vi.advanceTimersByTime(220)
       })
       fireEvent.keyUp(window, { key: 'ArrowRight' })
+      act(() => {
+        vi.advanceTimersByTime(220)
+      })
 
-      expect(screen.getByText(/controlling you at \(59%, 50%\)/i)).toBeInTheDocument()
-      expect(screen.getByText(/press e near min to interact/i)).toBeInTheDocument()
+      const statusLines = screen.getAllByText((content) => content.includes('Controlling'))
+      expect(statusLines[0]?.textContent).not.toBe('Controlling You at (50%, 50%).')
 
-      fireEvent.keyDown(window, { key: 'e' })
+      fireEvent.keyDown(window, { key: ' ', code: 'Space' })
 
       expect(screen.getByText(/you greeted min/i)).toBeInTheDocument()
     } finally {

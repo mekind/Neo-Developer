@@ -2,44 +2,52 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
   INTERACTION_RADIUS_PERCENT,
-  PLAYER_STEP_PERCENT,
-  appendCreatedAgent,
+  createLocalWorldAgent,
   buildWorldAgents,
   buildWorldPlayer,
-  clampPercent,
   measurePercentDistance,
   type WorldAgent,
   type WorldPlayer,
 } from '@/game/agents'
-import { createAgent, listAgents } from '@/services/agents'
+import {
+  type MovementVector,
+  moveWorldPosition,
+  PLAYER_MOVEMENT_SPEED,
+  resolvePlayerMovementStep,
+} from '@/game/playerMovement'
+import { listAgents } from '@/services/agents'
 
 type DirectionKey = 'up' | 'down' | 'left' | 'right'
 
 const MOVEMENT_KEYS: Record<string, DirectionKey> = {
   ArrowUp: 'up',
-  w: 'up',
-  W: 'up',
   ArrowDown: 'down',
-  s: 'down',
-  S: 'down',
   ArrowLeft: 'left',
-  a: 'left',
-  A: 'left',
   ArrowRight: 'right',
-  d: 'right',
-  D: 'right',
+}
+
+function getInputVector(pressedKeys: Set<DirectionKey>): MovementVector {
+  return {
+    x: Number(pressedKeys.has('right')) - Number(pressedKeys.has('left')),
+    y: Number(pressedKeys.has('down')) - Number(pressedKeys.has('up')),
+  }
 }
 
 export function useAgentsPage() {
-  const [agents, setAgents] = useState<WorldAgent[]>([])
+  const [backendAgents, setBackendAgents] = useState<WorldAgent[]>([])
+  const [createdAgents, setCreatedAgents] = useState<WorldAgent[]>([])
   const [player, setPlayer] = useState<WorldPlayer>(() => buildWorldPlayer())
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [lastInteractionMessage, setLastInteractionMessage] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
+  const agents = useMemo(() => [...backendAgents, ...createdAgents], [backendAgents, createdAgents])
+
   const pressedKeysRef = useRef<Set<DirectionKey>>(new Set())
-  const movementIntervalRef = useRef<number | null>(null)
+  const animationFrameRef = useRef<number | null>(null)
+  const lastFrameTimeRef = useRef<number | null>(null)
+  const velocityRef = useRef<MovementVector>({ x: 0, y: 0 })
   const playerRef = useRef<WorldPlayer>(player)
   const interactionTargetRef = useRef<WorldAgent | null>(null)
 
@@ -52,12 +60,12 @@ export function useAgentsPage() {
         setErrorMessage(null)
         const nextAgents = await listAgents()
         if (isMounted) {
-          setAgents(buildWorldAgents(nextAgents))
+          setBackendAgents(buildWorldAgents(nextAgents))
         }
       } catch (error) {
         if (isMounted) {
           setErrorMessage(error instanceof Error ? error.message : 'Failed to load backend agents.')
-          setAgents([])
+          setBackendAgents([])
         }
       } finally {
         if (isMounted) {
@@ -85,40 +93,44 @@ export function useAgentsPage() {
     interactionTargetRef.current = interactionTarget
   }, [player, interactionTarget])
 
-  const movePlayer = () => {
-    const pressedKeys = pressedKeysRef.current
-    if (pressedKeys.size === 0) return
-
-    setPlayer((currentPlayer) => {
-      let nextX = currentPlayer.xPercent
-      let nextY = currentPlayer.yPercent
-
-      if (pressedKeys.has('up')) nextY -= PLAYER_STEP_PERCENT
-      if (pressedKeys.has('down')) nextY += PLAYER_STEP_PERCENT
-      if (pressedKeys.has('left')) nextX -= PLAYER_STEP_PERCENT
-      if (pressedKeys.has('right')) nextX += PLAYER_STEP_PERCENT
-
-      return {
-        ...currentPlayer,
-        xPercent: clampPercent(nextX, 8, 92),
-        yPercent: clampPercent(nextY, 18, 78),
-      }
-    })
-  }
-
   useEffect(() => {
     const pressedKeys = pressedKeysRef.current
 
     const stopMovementLoop = () => {
-      if (movementIntervalRef.current !== null) {
-        window.clearInterval(movementIntervalRef.current)
-        movementIntervalRef.current = null
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current)
+        animationFrameRef.current = null
+      }
+      lastFrameTimeRef.current = null
+    }
+
+    const stepMovement = (time: number) => {
+      const previousTime = lastFrameTimeRef.current ?? time
+      const deltaMs = time - previousTime
+      lastFrameTimeRef.current = time
+
+      const movement = resolvePlayerMovementStep(
+        getInputVector(pressedKeysRef.current),
+        velocityRef.current,
+        PLAYER_MOVEMENT_SPEED,
+        deltaMs,
+      )
+      velocityRef.current = movement.velocity
+
+      if (movement.isMoving) {
+        setPlayer((currentPlayer) => ({
+          ...currentPlayer,
+          ...moveWorldPosition(currentPlayer, movement.velocity, deltaMs),
+        }))
+        animationFrameRef.current = window.requestAnimationFrame(stepMovement)
+      } else {
+        stopMovementLoop()
       }
     }
 
-    const startMovementLoop = () => {
-      if (movementIntervalRef.current !== null || pressedKeysRef.current.size === 0) return
-      movementIntervalRef.current = window.setInterval(movePlayer, 90)
+    const ensureMovementLoop = () => {
+      if (animationFrameRef.current !== null) return
+      animationFrameRef.current = window.requestAnimationFrame(stepMovement)
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -126,17 +138,12 @@ export function useAgentsPage() {
 
       if (movementKey) {
         event.preventDefault()
-
-        if (!pressedKeys.has(movementKey)) {
-          pressedKeys.add(movementKey)
-          movePlayer()
-        }
-
-        startMovementLoop()
+        pressedKeys.add(movementKey)
+        ensureMovementLoop()
         return
       }
 
-      if (event.key.toLowerCase() === 'e' && interactionTargetRef.current) {
+      if (event.code === 'Space' && interactionTargetRef.current) {
         event.preventDefault()
         setLastInteractionMessage(`${playerRef.current.label} greeted ${interactionTargetRef.current.label}.`)
       }
@@ -145,9 +152,8 @@ export function useAgentsPage() {
     const handleKeyUp = (event: KeyboardEvent) => {
       const movementKey = MOVEMENT_KEYS[event.key]
       if (!movementKey) return
-
       pressedKeys.delete(movementKey)
-      if (pressedKeys.size === 0) stopMovementLoop()
+      ensureMovementLoop()
     }
 
     window.addEventListener('keydown', handleKeyDown)
@@ -156,14 +162,24 @@ export function useAgentsPage() {
     return () => {
       stopMovementLoop()
       pressedKeys.clear()
+      velocityRef.current = { x: 0, y: 0 }
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [interactionTarget])
+  }, [])
 
-  const handleCreateAgent = async (personaSummary: string, backstoryPrompt: string) => {
-    const created = await createAgent({ personaSummary, backstoryPrompt })
-    setAgents((current) => appendCreatedAgent(current, created))
+  const handleCreateAgent = async (name: string, persona: string) => {
+    const created = {
+      id: `local-agent-${globalThis.crypto?.randomUUID?.() ?? Date.now()}`,
+      name,
+      personaSummary: persona,
+      createdAt: new Date().toISOString(),
+    }
+
+    setCreatedAgents((current) => [
+      ...current,
+      createLocalWorldAgent([...backendAgents, ...current], created),
+    ])
   }
 
   return {
