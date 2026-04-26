@@ -1,8 +1,20 @@
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vitest/config'
 
-export default defineConfig({
+function resolveBasePath() {
+  const repository = process.env.GITHUB_REPOSITORY
+  const repoName = repository?.split('/')[1]
+
+  if (!repoName) {
+    return '/'
+  }
+
+  return `/${repoName}/`
+}
+
+export default defineConfig(({ mode }) => ({
+  base: mode === 'production' ? resolveBasePath() : '/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -14,4 +26,4 @@ export default defineConfig({
     globals: true,
     setupFiles: './src/test/setup.ts',
   },
-})
+}))

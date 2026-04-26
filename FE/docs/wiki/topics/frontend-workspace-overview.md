@@ -3,7 +3,9 @@
 ## Purpose
 
 `FE/` is the repository-local frontend knowledge vault.
-It is meant to collect context in a structure that works well for both humans and LLMs: raw inputs stay separate, durable understanding is synthesized into wiki pages, and task-specific outputs are generated into a separate area.
+It is meant to collect demo-oriented frontend context in a structure that works well for both humans and LLMs: raw inputs stay separate, durable understanding is synthesized into wiki pages, and task-specific outputs are generated into a separate area.
+
+The current frontend effort should be treated as a demo / prototype track rather than a production-hardened product.
 
 ## Structure
 
@@ -38,7 +40,7 @@ It is meant to collect context in a structure that works well for both humans an
 At initialization time, the repository has:
 - a minimal root `README.md`
 - a `docs/hackerthon-infos/` directory with hackathon reference material
-- a newly initialized `FE/` vault prepared to become the frontend documentation knowledge base
+- a newly initialized `FE/` vault prepared to become the frontend documentation knowledge base for the demo build
 
 ## Suggested First Documents
 
