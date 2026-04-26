@@ -8,8 +8,8 @@
 - 본 모듈: **lpc-character-pipeline** — `persona.md` (외형 정의) → LPC sprite sheet PNG + 메타 자산
 - 작업 디렉토리: `/Users/rs/Git/NeoD/Neo-Developer`
 - 브랜치: `feat/lpc-character-pipeline`
-- 명세 마스터: `lpc-character-pipeline/spec.md`
-- 모듈 README: `lpc-character-pipeline/README.md`
+- 명세 마스터: `backend/lpc-character-pipeline/spec.md`
+- 모듈 README: `backend/lpc-character-pipeline/README.md`
 
 ## 2. 파이프라인 (구현 완료)
 
@@ -24,16 +24,16 @@ persona.md ─► [mapper.py: Gemini]   ─► lpc-state.pre.json
 ```
 
 코드 위치:
-- `lpc-character-pipeline/scripts/mapper.py` — Gemini 호출
-- `lpc-character-pipeline/scripts/composer.py` — Playwright 자동화
-- `lpc-character-pipeline/scripts/generate_character.py` — CLI 진입점
-- `lpc-character-pipeline/scripts/api.py` — FastAPI sidecar (백엔드 인계용)
-- `lpc-character-pipeline/lpc-catalog.json` — LPC 전체 catalog (655 items)
-- `lpc-character-pipeline/poc/lpc-catalog-curated.json` — 인간/오피스용 subset (mapper 입력, ~105KB)
+- `backend/lpc-character-pipeline/scripts/mapper.py` — Gemini 호출
+- `backend/lpc-character-pipeline/scripts/composer.py` — Playwright 자동화
+- `backend/lpc-character-pipeline/scripts/generate_character.py` — CLI 진입점
+- `backend/lpc-character-pipeline/scripts/api.py` — FastAPI sidecar (백엔드 인계용)
+- `backend/lpc-character-pipeline/lpc-catalog.json` — LPC 전체 catalog (655 items)
+- `backend/lpc-character-pipeline/poc/lpc-catalog-curated.json` — 인간/오피스용 subset (mapper 입력, ~105KB)
 
 산출물 샘플:
-- `lpc-character-pipeline/.example/carrot-man/` — 당근봇 (현재 진행 중인 디버그 대상)
-- `lpc-character-pipeline/.example/news-bot/` — 뉴스봇
+- `backend/lpc-character-pipeline/.example/carrot-man/` — 당근봇 (현재 진행 중인 디버그 대상)
+- `backend/lpc-character-pipeline/.example/news-bot/` — 뉴스봇
 
 ## 3. 현재 상태
 
@@ -51,7 +51,7 @@ persona.md ─► [mapper.py: Gemini]   ─► lpc-state.pre.json
 ## 4. 미해결 핵심 이슈 (당장 해결 필요)
 
 ### 증상
-- `lpc-character-pipeline/.example/carrot-man/character.png` walk row(N/W/S/E)에서 **손이 안 보임**
+- `backend/lpc-character-pipeline/.example/carrot-man/character.png` walk row(N/W/S/E)에서 **손이 안 보임**
 - round-trip `lpc-state.json`의 selections에 `body` / `head` / `expression` 항목이 사라짐 (mapper의 `lpc-state.pre.json`에는 있음)
 
 ### 시도한 디버그
@@ -127,30 +127,30 @@ source .venv/bin/activate   # 이미 만들어져 있음
 export GEMINI_API_KEY=$(grep '^GEMINI_API_KEY=' .env | head -1 | cut -d= -f2)
 
 # 풀 파이프라인
-python lpc-character-pipeline/scripts/generate_character.py \
-    lpc-character-pipeline/personas/news-bot.md \
-    lpc-character-pipeline/.example/news-bot
+python backend/lpc-character-pipeline/scripts/generate_character.py \
+    backend/lpc-character-pipeline/personas/news-bot.md \
+    backend/lpc-character-pipeline/.example/news-bot
 
 # Composer 단독 (mapping 결과 재사용)
-python lpc-character-pipeline/scripts/composer.py \
-    lpc-character-pipeline/.example/carrot-man/lpc-state.pre.json \
-    lpc-character-pipeline/.example/carrot-man
+python backend/lpc-character-pipeline/scripts/composer.py \
+    backend/lpc-character-pipeline/.example/carrot-man/lpc-state.pre.json \
+    backend/lpc-character-pipeline/.example/carrot-man
 
 # headed 디버그
-python lpc-character-pipeline/scripts/generate_character.py \
+python backend/lpc-character-pipeline/scripts/generate_character.py \
     persona.md output_dir --no-headless
 
 # 결과 검증
 python -c "
 import json
-d = json.load(open('lpc-character-pipeline/.example/carrot-man/lpc-state.json'))
+d = json.load(open('backend/lpc-character-pipeline/.example/carrot-man/lpc-state.json'))
 print(list((d.get('selections') or {}).keys()))
 "
 
 # walk/idle crop
 python -c "
 from PIL import Image
-img = Image.open('lpc-character-pipeline/.example/carrot-man/character.png')
+img = Image.open('backend/lpc-character-pipeline/.example/carrot-man/character.png')
 img.crop((0, 512, 832, 768)).save('/tmp/walk.png')
 img.crop((0, 1408, 832, 1664)).save('/tmp/idle.png')
 "
@@ -159,20 +159,20 @@ img.crop((0, 1408, 832, 1664)).save('/tmp/idle.png')
 ## 8. 인계 자료
 
 ### 백엔드(NestJS) 개발자에게
-- `lpc-character-pipeline/scripts/api.py` 가 FastAPI sidecar
+- `backend/lpc-character-pipeline/scripts/api.py` 가 FastAPI sidecar
 - 기동 명령: `uvicorn lpc-character-pipeline.scripts.api:app --port 8001 --workers 1`
 - 엔드포인트: `POST /generate-character`, `GET /healthz`
 - 요청/응답 schema는 `api.py`의 `GenerateRequest` / `GenerateResponse`
-- 의존성: `lpc-character-pipeline/requirements.txt`
+- 의존성: `backend/lpc-character-pipeline/requirements.txt`
 - 환경변수: `GEMINI_API_KEY`
 
 ### 프론트엔드 개발자에게
-- 폴더: `lpc-character-pipeline/.example/carrot-man/` (현재 손 누락 상태)
+- 폴더: `backend/lpc-character-pipeline/.example/carrot-man/` (현재 손 누락 상태)
   - `character.png` — 832×3456 sprite sheet
   - `frame-map.json` — walk_n/w/s/e + idle_n/w/s/e 좌표·frames·fps
   - `CREDITS.txt` — 라이선스 표기 의무
   - `lpc-state.json` — 재현용
-- 가이드: `lpc-character-pipeline/README.md` "프론트엔드 개발자에게" 섹션
+- 가이드: `backend/lpc-character-pipeline/README.md` "프론트엔드 개발자에게" 섹션
 - **주의**: 현재 carrot-man은 손이 안 보이는 미해결 이슈가 있음. 이슈 해결 후 재배포 예정. 그 사이에는 `.example/news-bot/` 으로 작업 가능 (역시 같은 이슈 가능성 있음)
 
 ## 9. 라이선스

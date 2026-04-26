@@ -12,8 +12,8 @@
 
 | File | Size | Purpose | Status |
 |------|------|---------|--------|
-| `lpc-character-pipeline/lpc-catalog.json` | 10,570 lines | Full LPC catalog (655 items) | ✅ Committed |
-| `lpc-character-pipeline/poc/lpc-catalog-curated.json` | 4,687 lines | Curated subset (human/office personas) | ✅ Committed |
+| `backend/lpc-character-pipeline/lpc-catalog.json` | 10,570 lines | Full LPC catalog (655 items) | ✅ Committed |
+| `backend/lpc-character-pipeline/poc/lpc-catalog-curated.json` | 4,687 lines | Curated subset (human/office personas) | ✅ Committed |
 
 ### 1.2 Catalog Generation
 
@@ -86,7 +86,7 @@ Both catalogs follow identical structure:
 
 ### 2.1 Entry Point
 
-**File**: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/mapper.py`
+**File**: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/mapper.py`
 
 **Function**: `map_persona(persona_md: str, catalog_json: str, *, model: str = DEFAULT_MODEL) -> dict`
 
@@ -159,7 +159,7 @@ python mapper.py <persona.md> <lpc-catalog-curated.json>
 
 ### 3.1 Entry Point
 
-**File**: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/composer.py`
+**File**: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/composer.py`
 
 **Class**: `Composer(headless: bool = True)`
 
@@ -242,11 +242,11 @@ with Composer() as c:
 
 ### 4.1 CLI Entry Point
 
-**File**: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/generate_character.py`
+**File**: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/generate_character.py`
 
 **Command**:
 ```bash
-python lpc-character-pipeline/scripts/generate_character.py \
+python backend/lpc-character-pipeline/scripts/generate_character.py \
     <persona.md> \
     <output_dir> \
     [--catalog PATH] \
@@ -254,7 +254,7 @@ python lpc-character-pipeline/scripts/generate_character.py \
     [--skip-compose]
 ```
 
-**Default Catalog**: `lpc-character-pipeline/poc/lpc-catalog-curated.json`
+**Default Catalog**: `backend/lpc-character-pipeline/poc/lpc-catalog-curated.json`
 
 ### 4.2 Pipeline Flow
 
@@ -280,7 +280,7 @@ output_dir/
 
 ### 4.3 FastAPI Sidecar
 
-**File**: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/api.py`
+**File**: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/api.py`
 
 **Purpose**: HTTP wrapper for backend integration
 
@@ -358,25 +358,25 @@ uvicorn lpc-character-pipeline.scripts.api:app \
 ## 6. FILE LOCATIONS (EXACT PATHS)
 
 ### Catalogs
-- Full: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/lpc-catalog.json`
-- Curated: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/poc/lpc-catalog-curated.json`
+- Full: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/lpc-catalog.json`
+- Curated: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/poc/lpc-catalog-curated.json`
 
 ### Scripts
-- Mapper: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/mapper.py`
-- Composer: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/composer.py`
-- CLI: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/generate_character.py`
-- API: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/api.py`
+- Mapper: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/mapper.py`
+- Composer: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/composer.py`
+- CLI: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/generate_character.py`
+- API: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/api.py`
 
 ### Examples
-- Carrot-man: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/.example/carrot-man/`
-- News-bot: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/.example/news-bot/`
+- Carrot-man: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/.example/carrot-man/`
+- News-bot: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/.example/news-bot/`
 
 ### Documentation
-- Module README: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/README.md`
-- Spec: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/spec.md`
-- PoC README: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/poc/README.md`
-- Handoff: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/HANDOFF.md`
-- Scripts README: `/Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/README.md`
+- Module README: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/README.md`
+- Spec: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/spec.md`
+- PoC README: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/poc/README.md`
+- Handoff: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/HANDOFF.md`
+- Scripts README: `/Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/README.md`
 
 ---
 
@@ -384,24 +384,24 @@ uvicorn lpc-character-pipeline.scripts.api:app \
 
 ### Mapper (standalone)
 ```bash
-python /Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/mapper.py \
+python /Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/mapper.py \
     <persona.md> \
     <lpc-catalog-curated.json>
 ```
 
 ### Composer (standalone)
 ```bash
-python /Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/composer.py \
+python /Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/composer.py \
     <lpc-state.json> \
     <output_dir>
 ```
 
 ### Full Pipeline (CLI)
 ```bash
-python /Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/scripts/generate_character.py \
-    /Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/personas/news-bot.md \
-    /Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/.example/news-bot \
-    --catalog /Users/rs/Git/NeoD/Neo-Developer/lpc-character-pipeline/poc/lpc-catalog-curated.json
+python /Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/scripts/generate_character.py \
+    /Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/personas/news-bot.md \
+    /Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/.example/news-bot \
+    --catalog /Users/rs/Git/NeoD/Neo-Developer/backend/lpc-character-pipeline/poc/lpc-catalog-curated.json
 ```
 
 ### FastAPI Sidecar

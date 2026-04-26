@@ -5,7 +5,7 @@
 ## 구조
 
 ```
-lpc-character-pipeline/
+backend/lpc-character-pipeline/
 ├── README.md              ← 이 파일
 ├── spec.md                ← 모듈 명세
 ├── lpc-catalog.json       ← LPC 전체 catalog (655 items)
@@ -24,13 +24,13 @@ lpc-character-pipeline/
 ## 사용법
 
 ```bash
-pip install -r lpc-character-pipeline/requirements.txt
+pip install -r backend/lpc-character-pipeline/requirements.txt
 playwright install chromium
 export GEMINI_API_KEY=...   # do NOT commit
 
-python lpc-character-pipeline/scripts/generate_character.py \
-    lpc-character-pipeline/personas/news-bot.md \
-    lpc-character-pipeline/.example/news-bot
+python backend/lpc-character-pipeline/scripts/generate_character.py \
+    backend/lpc-character-pipeline/personas/news-bot.md \
+    backend/lpc-character-pipeline/.example/news-bot
 ```
 
 세부는 `scripts/README.md` 참고.

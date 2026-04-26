@@ -8,7 +8,7 @@ Endpoints:
     POST /generate-character      synchronous: persona.md text -> assets
 
 Run:
-    pip install -r lpc-character-pipeline/requirements.txt
+    pip install -r backend/lpc-character-pipeline/requirements.txt
     pip install fastapi uvicorn
     playwright install chromium
     export GEMINI_API_KEY=...

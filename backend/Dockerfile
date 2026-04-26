@@ -1,13 +1,14 @@
 # syntax=docker/dockerfile:1.6
 
 # ---- builder ----------------------------------------------------------------
-FROM node:25-bookworm-slim AS builder
+FROM node:25-bookworm AS builder
 
 WORKDIR /app
 
-# OpenSSL for Prisma engines
+# OpenSSL for Prisma engines, Python for pipeline
 RUN apt-get update -y \
-  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && apt-get install -y --no-install-recommends \
+     openssl ca-certificates python3 python3-pip python3-venv \
   && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies (cache-friendly)
@@ -22,21 +23,23 @@ COPY api ./api
 RUN npx prisma generate \
   && npm run build
 
-# Drop dev dependencies for the runtime image
-RUN npm prune --omit=dev
-
-
 # ---- runtime ----------------------------------------------------------------
-FROM node:25-bookworm-slim AS runtime
+FROM node:25-bookworm AS runtime
 
 WORKDIR /app
 
 ENV NODE_ENV=production \
-    PORT=3000
+    PORT=3000 \
+    PYTHONUNBUFFERED=1
 
+# Install Python and Playwright dependencies
 RUN apt-get update -y \
-  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && apt-get install -y --no-install-recommends \
+     openssl ca-certificates python3 python3-pip python3-venv curl \
   && rm -rf /var/lib/apt/lists/*
+
+# Install Playwright system dependencies
+RUN npx playwright install-deps chromium
 
 # Copy production deps + build artifacts
 COPY --from=builder /app/node_modules ./node_modules
@@ -44,8 +47,20 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./package.json
 
-EXPOSE 3000
+# Copy LPC Character Pipeline
+COPY lpc-character-pipeline ./lpc-character-pipeline
 
-# Apply migrations before starting the server.
-# `prisma migrate deploy` is idempotent and safe to run on every boot.
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+# Install Python dependencies
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install --no-cache-dir -r lpc-character-pipeline/requirements.txt \
+  && playwright install chromium
+
+# Copy start script
+COPY start.sh ./
+RUN chmod +x start.sh
+
+EXPOSE 3000 8001
+
+# Apply migrations and start both services
+CMD ["./start.sh"]

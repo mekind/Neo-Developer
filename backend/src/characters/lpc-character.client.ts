@@ -76,8 +76,16 @@ export class LpcCharacterClient {
           throw new BadGatewayException(`LPC Service ${res.status}: ${text}`);
         }
 
-        return (await res.json()) as T;
+        try {
+          return (await res.json()) as T;
+        } catch (jsonErr) {
+          throw new BadGatewayException(`LPC Service returned invalid JSON: ${jsonErr instanceof Error ? jsonErr.message : 'Unknown error'}`);
+        }
       } catch (err) {
+        if (err instanceof BadGatewayException || err instanceof GatewayTimeoutException) {
+          throw err;
+        }
+
         const isAbort = (err as { name?: string })?.name === 'AbortError';
         if (isAbort) {
           lastError = new GatewayTimeoutException(`LPC Service request timed out after ${this.timeoutMs}ms`);
@@ -86,15 +94,20 @@ export class LpcCharacterClient {
         }
         if (attempt >= maxAttempts) break;
         if (!this.isRetryable(err)) break;
+        this.logger.warn(`LPC Service request failed (attempt ${attempt}/${maxAttempts}): ${err instanceof Error ? err.message : err}. Retrying...`);
         await this.backoff(attempt);
       } finally {
         clearTimeout(timer);
       }
     }
 
-    throw lastError instanceof Error
-      ? lastError
-      : new BadGatewayException('LPC Service request failed');
+    if (lastError instanceof GatewayTimeoutException) {
+      throw lastError;
+    }
+
+    throw new ServiceUnavailableException(
+      `LPC Service unreachable or failed: ${lastError instanceof Error ? lastError.message : 'Unknown error'}`,
+    );
   }
 
   private async safeReadText(res: Response): Promise<string> {
@@ -109,8 +122,15 @@ export class LpcCharacterClient {
     if (!err) return false;
     const name = (err as { name?: string }).name;
     if (name === 'AbortError') return false; // Don't retry on timeout for this heavy service
+    
+    // Check for native fetch errors or typical connection errors
+    const message = (err as { message?: string }).message;
+    if (message && (message.includes('fetch failed') || message.includes('terminated'))) {
+      return true;
+    }
+
     const code = (err as { code?: string }).code;
-    if (code && ['ECONNRESET', 'ECONNREFUSED', 'EAI_AGAIN'].includes(code)) {
+    if (code && ['ECONNRESET', 'ECONNREFUSED', 'EAI_AGAIN', 'UND_ERR_CONNECT_TIMEOUT'].includes(code)) {
       return true;
     }
     return false;

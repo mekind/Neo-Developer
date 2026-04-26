@@ -25,7 +25,7 @@ from pathlib import Path
 from mapper import map_persona, enforce_torso_coverage
 from composer import compose
 
-MODULE_ROOT = Path(__file__).resolve().parent.parent  # lpc-character-pipeline/
+MODULE_ROOT = Path(__file__).resolve().parent.parent  # backend/lpc-character-pipeline/
 DEFAULT_CATALOG = MODULE_ROOT / "poc" / "lpc-catalog-curated.json"
 
 
