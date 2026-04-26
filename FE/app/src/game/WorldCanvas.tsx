@@ -111,7 +111,8 @@ export function WorldCanvas({ agents, onAgentInteraction }: WorldCanvasProps) {
     async function mountGame() {
       if (!mountRef.current || gameRef.current) return
 
-      const Phaser = (await import('phaser')).default
+      const PhaserModule = await import('phaser')
+      const Phaser = (PhaserModule.default ?? PhaserModule) as typeof PhaserModule
       if (cancelled || !mountRef.current) return
 
       class BackendRosterScene extends Phaser.Scene {
