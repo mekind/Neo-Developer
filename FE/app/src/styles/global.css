@@ -179,6 +179,27 @@ h3 {
   margin-bottom: 0;
 }
 
+.world-helper-strong {
+  color: #f8fafc;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.world-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.world-feedback p {
+  margin-bottom: 0;
+  color: #cbd5e1;
+}
+
 .world-roster {
   display: flex;
   flex-wrap: wrap;
