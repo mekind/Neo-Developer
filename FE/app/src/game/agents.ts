@@ -221,7 +221,7 @@ export function buildWorldPlayer(): WorldPlayer {
     label: 'You',
     imageSrc: PLAYER_IMAGE,
     spriteBundleId: DEFAULT_LPC_BUNDLE_ID,
-    xPercent: 50,
+    xPercent: 38,
     yPercent: 50,
   }
 }

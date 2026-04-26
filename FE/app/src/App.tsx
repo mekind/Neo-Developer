@@ -1,5 +1,3 @@
-import { useMemo } from 'react'
-
 import { useAgentsPage } from '@/hooks/useAgentsPage'
 import { useLpcSpriteBundle } from '@/hooks/useLpcSpriteBundle'
 import { AddAgentDialogSection } from '@/sections/dialog/AddAgentDialogSection'
@@ -29,12 +27,7 @@ export default function App() {
     handleSendChatMessage,
     handleFocusAgent,
   } = useAgentsPage()
-  const { catalog: lpcSpriteCatalog, creditsText: localCreditsText, errorMessage: lpcErrorMessage } = useLpcSpriteBundle()
-
-  const combinedCreditsText = useMemo(() => {
-    const parts = [localCreditsText, ...agents.map((agent) => agent.apiSprite?.creditsText ?? '').filter(Boolean)]
-    return Array.from(new Set(parts.filter(Boolean))).join('\n\n')
-  }, [agents, localCreditsText])
+  const { catalog: lpcSpriteCatalog } = useLpcSpriteBundle()
 
   return (
     <main className="app-shell">
@@ -45,8 +38,6 @@ export default function App() {
           agents={agents}
           isLoading={isLoading}
           errorMessage={errorMessage}
-          lpcCreditsText={combinedCreditsText || null}
-          lpcErrorMessage={lpcErrorMessage}
           onOpenDialog={openDialog}
           onFocusAgent={handleFocusAgent}
         />

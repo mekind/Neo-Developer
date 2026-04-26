@@ -48,7 +48,7 @@ describe('buildWorldAgents', () => {
 })
 
 describe('buildWorldPlayer', () => {
-  it('starts the player from the room center', () => {
-    expect(buildWorldPlayer()).toMatchObject({ xPercent: 50, yPercent: 50, spriteBundleId: 'cafe-bot' })
+  it('starts the player from a left-shifted spawn point', () => {
+    expect(buildWorldPlayer()).toMatchObject({ xPercent: 38, yPercent: 50, spriteBundleId: 'cafe-bot' })
   })
 })

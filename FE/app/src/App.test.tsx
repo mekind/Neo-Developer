@@ -137,7 +137,6 @@ describe('App', () => {
     expect(await screen.findByText('Hana')).toBeInTheDocument()
     expect(await screen.findByText('Noa')).toBeInTheDocument()
     await waitFor(() => expect(screen.getByLabelText(/공간 요약/i)).toHaveTextContent('2'))
-    expect(screen.getByText(/Made with LPC assets/i)).toBeInTheDocument()
   })
 
   it('creates a backend agent from the dialog', async () => {
