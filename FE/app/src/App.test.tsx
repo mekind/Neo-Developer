@@ -30,24 +30,11 @@ function installFetchMock(overrides: Record<string, { ok?: boolean; status?: num
 
     const payload =
       override ??
-      (pathname === '/agents' && method === 'POST'
-        ? {
-            ok: true,
-            status: 200,
-            json: {
-              id: 'new-agent',
-              name: 'Warm Guide',
-              archetype: 'maker',
-              personaSummary: 'Warm school guide',
-              backstoryPrompt: 'Helps every newcomer settle in.',
-              createdAt: '2026-04-26T00:00:00.000Z',
-            },
-          }
-        : {
-            ok: true,
-            status: 200,
-            json: backendAgents,
-          })
+      {
+        ok: true,
+        status: 200,
+        json: backendAgents,
+      }
 
     return {
       ok: payload.ok ?? true,
@@ -122,16 +109,31 @@ describe('App', () => {
     expect(await screen.findByRole('img', { name: /hana 아바타/i })).toBeInTheDocument()
   })
 
-  it('keeps the add agent flow and appends a created npc', async () => {
+  it('opens the npc dialog with a random default name and appends a created npc locally', async () => {
     render(<App />)
 
     fireEvent.click(screen.getAllByRole('button', { name: /에이전트 추가/i })[0])
     const dialog = screen.getByRole('dialog')
+
+    const nameInput = within(dialog).getByLabelText(/이름/i) as HTMLInputElement
+    expect(nameInput.value).not.toBe('')
+
+    fireEvent.change(nameInput, { target: { value: 'Warm Guide' } })
     fireEvent.change(within(dialog).getByLabelText(/페르소나/i), { target: { value: 'Warm school guide' } })
-    fireEvent.change(within(dialog).getByLabelText(/배경 설명/i), { target: { value: 'Helps every newcomer settle in.' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /에이전트 추가/i }))
 
     await waitFor(() => expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1))
+  })
+
+  it('opens the npc chat dialog from the header trigger button', async () => {
+    render(<App />)
+
+    fireEvent.click(await screen.findByRole('button', { name: /npc 대화 열기/i }))
+
+    const dialog = await screen.findByRole('dialog')
+    expect(dialog).toHaveTextContent(/hana와 대화하기/i)
+    expect(dialog).toHaveTextContent(/메시지/i)
+    expect(within(dialog).getByRole('button', { name: /보내기/i })).toBeDisabled()
   })
 
   it('renders a simple backend agent roster', async () => {

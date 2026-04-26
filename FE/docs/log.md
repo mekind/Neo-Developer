@@ -1,9 +1,10 @@
 # FE Vault Activity Log
+- 2026-04-26: Added a header-level FE test trigger so the richer NPC chat dialog UI can be opened immediately before the real interaction event is wired.
 - 2026-04-26: Translated user-facing frontend labels, dialogs, and world guidance into Korean-first copy while preserving the same FE behavior.
 - 2026-04-26: Expanded the FE NPC chat dialog from a basic shell into a more complete chat-interface mock with transcript, prompt chips, composer, and send-button layout for future BE wiring.
 - 2026-04-26: Polished the minimal sidebar into a cleaner card-style agent lobby while keeping only the Add agent action and agent list.
 - 2026-04-26: Simplified the sidebar so it only shows the Add agent entry point plus the backend agent list, removing extra sidebar summary blocks.
-
+- 2026-04-26: Converted the add-agent flow into a FE-only NPC dialog with random default names and local append behavior, explicitly avoiding backend write changes for this pass.
 - 2026-04-26: Added a dedicated FE NPC chat-dialog shell component so future agent interactions can open a reusable conversation surface without rebuilding the layout.
 - 2026-04-26: Updated the movement/interactions note to reflect the corrected FE contract: the user controls a dedicated player avatar while generated agents are separate NPCs.
 - 2026-04-26: Documented the backend-driven world-agent roster pass, including `/agents` ownership, FE-side roster mapping, placeholder avatar fallback, and per-load random placement rules.
