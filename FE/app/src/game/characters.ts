@@ -41,24 +41,27 @@ export const archetypeOptions: Array<{
   },
 ]
 
+export function buildWorldCharacter(
+  seed: Pick<WorldCharacter, 'id' | 'name' | 'archetype'>,
+  index: number,
+): WorldCharacter {
+  const palette = archetypeOptions.find((option) => option.value === seed.archetype) ?? archetypeOptions[0]
+
+  return {
+    ...seed,
+    color: palette.color,
+    x: 160 + (index % 4) * 180,
+    y: 180 + Math.floor(index / 4) * 110,
+  }
+}
+
 export const clampToWorld = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 export const createWorldCharacter = (
   name: string,
   archetype: CharacterArchetype,
   index: number,
-): WorldCharacter => {
-  const palette = archetypeOptions.find((option) => option.value === archetype) ?? archetypeOptions[0]
-
-  return {
-    id: `${name}-${index + 1}`,
-    name,
-    archetype,
-    color: palette.color,
-    x: 160 + (index % 4) * 180,
-    y: 180 + Math.floor(index / 4) * 110,
-  }
-}
+): WorldCharacter => buildWorldCharacter({ id: `${name}-${index + 1}`, name, archetype }, index)
 
 export const measureDistance = (from: Pick<WorldCharacter, 'x' | 'y'>, to: Pick<WorldCharacter, 'x' | 'y'>) =>
   Math.hypot(from.x - to.x, from.y - to.y)

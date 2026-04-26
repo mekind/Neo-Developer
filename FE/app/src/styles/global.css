@@ -162,6 +162,7 @@ h3 {
 .panel-section h3,
 .field input,
 .field select,
+.field textarea,
 .agent-list span {
   color: #4c5648;
 }
@@ -258,18 +259,30 @@ h3 {
   gap: 10px;
 }
 
+.compact-creation-card {
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 247, 239, 0.72);
+}
+
 .field {
   display: grid;
   gap: 6px;
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   width: 100%;
   padding: 9px 11px;
   border-radius: 10px;
   border: 1px solid rgba(114, 104, 90, 0.18);
   background: rgba(255, 250, 244, 0.95);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 120px;
 }
 
 button {
@@ -284,6 +297,17 @@ button {
 
 button:hover {
   filter: brightness(1.03);
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  filter: none;
+}
+
+.secondary-button {
+  background: rgba(108, 94, 78, 0.92);
+  color: #f8f5ef;
 }
 
 .panel-section {
@@ -326,6 +350,42 @@ button:hover {
 .agent-list strong,
 .panel-highlight strong {
   color: #2f372d;
+}
+
+.helper-copy,
+.dialog-copy {
+  color: #5a544c;
+  margin-bottom: 0;
+}
+
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(47, 55, 45, 0.2);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+}
+
+.dialog-panel {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(114, 104, 90, 0.14);
+  background: rgba(255, 252, 247, 0.98);
+  box-shadow: 0 24px 48px rgba(88, 76, 58, 0.16);
+}
+
+.dialog-header,
+.dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 @media (max-width: 960px) {

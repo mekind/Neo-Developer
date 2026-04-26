@@ -1,16 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 
-import { archetypeOptions, type CharacterArchetype, type WorldCharacter } from '@/game/characters'
+import { type WorldCharacter } from '@/game/characters'
 import { listItems, type Item } from '@/services/items'
 
 type InteractionPanelProps = {
   characters: WorldCharacter[]
-  onCreateCharacter: (name: string, archetype: CharacterArchetype) => void
+  onCreateCharacter: (personaSummary: string, backstoryPrompt: string) => Promise<void>
 }
 
 export function InteractionPanel({ characters, onCreateCharacter }: InteractionPanelProps) {
-  const [name, setName] = useState('')
-  const [archetype, setArchetype] = useState<CharacterArchetype>('scout')
+  const dialogTitleId = useId()
+  const dialogDescriptionId = useId()
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [personaSummary, setPersonaSummary] = useState('')
+  const [backstoryPrompt, setBackstoryPrompt] = useState('')
+  const [submitState, setSubmitState] = useState<'idle' | 'submitting'>('idle')
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [items, setItems] = useState<Item[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -39,14 +44,26 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
     }
   }, [])
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const trimmedName = name.trim()
-    if (!trimmedName) return
+    const trimmedPersonaSummary = personaSummary.trim()
+    const trimmedBackstoryPrompt = backstoryPrompt.trim()
 
-    onCreateCharacter(trimmedName, archetype)
-    setName('')
+    if (!trimmedPersonaSummary || !trimmedBackstoryPrompt) return
+
+    try {
+      setSubmitState('submitting')
+      setSubmitError(null)
+      await onCreateCharacter(trimmedPersonaSummary, trimmedBackstoryPrompt)
+      setPersonaSummary('')
+      setBackstoryPrompt('')
+      setIsDialogOpen(false)
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Failed to create agent character.')
+    } finally {
+      setSubmitState('idle')
+    }
   }
 
   const currentCharacter = characters.at(-1)
@@ -58,31 +75,76 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
         <h2>Agents</h2>
       </div>
 
-      <form className="creation-form" onSubmit={handleSubmit}>
-        <label className="field">
-          <span>Name</span>
-          <input
-            name="name"
-            placeholder="Nova"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            required
-          />
-        </label>
+      <div className="creation-form compact-creation-card">
+        <button type="button" onClick={() => setIsDialogOpen(true)}>
+          Open persona dialog
+        </button>
+        <p className="helper-copy">Create once, spawn instantly.</p>
+      </div>
 
-        <label className="field">
-          <span>Role</span>
-          <select value={archetype} onChange={(event) => setArchetype(event.target.value as CharacterArchetype)}>
-            {archetypeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+      {isDialogOpen ? (
+        <div className="dialog-backdrop" role="presentation">
+          <div
+            className="dialog-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={dialogTitleId}
+            aria-describedby={dialogDescriptionId}
+          >
+            <div className="dialog-header">
+              <div>
+                <p className="eyebrow">Agent creation</p>
+                <h3 id={dialogTitleId}>Create persona</h3>
+              </div>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => setIsDialogOpen(false)}
+                disabled={submitState === 'submitting'}
+              >
+                Close
+              </button>
+            </div>
 
-        <button type="submit">Add agent</button>
-      </form>
+            <p id={dialogDescriptionId} className="dialog-copy">
+              Submit a summary and backstory prompt.
+            </p>
+
+            <form className="creation-form" onSubmit={handleSubmit}>
+              <label className="field">
+                <span>Persona summary</span>
+                <input
+                  name="personaSummary"
+                  placeholder="Warm school guide"
+                  value={personaSummary}
+                  onChange={(event) => setPersonaSummary(event.target.value)}
+                  required
+                />
+              </label>
+
+              <label className="field">
+                <span>Backstory / prompt</span>
+                <textarea
+                  name="backstoryPrompt"
+                  placeholder="Helps every newcomer settle in."
+                  value={backstoryPrompt}
+                  onChange={(event) => setBackstoryPrompt(event.target.value)}
+                  rows={5}
+                  required
+                />
+              </label>
+
+              {submitError ? <p role="alert">{submitError}</p> : null}
+
+              <div className="dialog-actions">
+                <button type="submit" disabled={submitState === 'submitting'}>
+                  {submitState === 'submitting' ? 'Creating…' : 'Create character'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
 
       <section className="panel-section panel-highlight" aria-label="Current character summary">
         <div className="panel-label-row">
@@ -120,7 +182,7 @@ export function InteractionPanel({ characters, onCreateCharacter }: InteractionP
 
       <section className="panel-section" aria-labelledby="live-items-title">
         <div className="panel-label-row">
-          <h3 id="live-items-title">Items</h3>
+          <h3 id={dialogTitleId + '-items'}>Items</h3>
           <span className="panel-count">{items.length}</span>
         </div>
 
