@@ -1,6 +1,13 @@
 import { useEffect, useRef } from 'react'
 
-export function WorldCanvas() {
+import { type WorldCharacter } from './characters'
+
+type WorldCanvasProps = {
+  characters: WorldCharacter[]
+  currentCharacter: WorldCharacter | null
+}
+
+export function WorldCanvas({ characters, currentCharacter }: WorldCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -81,19 +88,59 @@ export function WorldCanvas() {
     context.arc(1116, 124, 78, 0, Math.PI * 2)
     context.fill()
 
-    context.fillStyle = '#6ee7b7'
-    context.fillRect(604, 410, 28, 28)
-
     context.fillStyle = '#5b4636'
     context.font = 'bold 18px sans-serif'
-    context.fillText('Warm school commons placeholder', 28, 42)
+    context.fillText('Warm school commons prototype', 28, 42)
     context.font = '16px sans-serif'
-    context.fillText('나무 바닥, 창문, 책상 중심의 따뜻한 학교 분위기', 28, 68)
-  }, [])
+    context.fillText('새 캐릭터가 따뜻한 학교 분위기의 월드에 바로 배치됩니다.', 28, 68)
+
+    if (characters.length === 0) {
+      context.fillStyle = 'rgba(91, 70, 54, 0.72)'
+      context.font = '18px sans-serif'
+      context.fillText('No spawned characters yet', 28, 120)
+      return
+    }
+
+    characters.forEach((character, index) => {
+      context.fillStyle = character.color
+      context.beginPath()
+      context.arc(character.x, character.y, 18, 0, Math.PI * 2)
+      context.fill()
+
+      context.strokeStyle = currentCharacter?.id === character.id ? '#fff7ed' : 'rgba(91,70,54,0.45)'
+      context.lineWidth = currentCharacter?.id === character.id ? 3 : 1
+      context.stroke()
+
+      context.fillStyle = '#5b4636'
+      context.font = '14px sans-serif'
+      context.fillText(`${index + 1}. ${character.name}`, character.x - 22, character.y + 38)
+    })
+  }, [characters, currentCharacter])
 
   return (
     <div className="world-surface">
-      <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world placeholder canvas" />
+      <div className="world-status">
+        <div>
+          <p className="eyebrow">Live world state</p>
+          <h2>Spawned avatars: {characters.length}</h2>
+        </div>
+        <p className="world-helper">
+          {currentCharacter
+            ? `${currentCharacter.name} is the latest character added to the canvas.`
+            : 'Submit the form to create the first prototype avatar.'}
+        </p>
+      </div>
+      <canvas ref={canvasRef} width={1280} height={720} aria-label="2D world prototype canvas" />
+      {characters.length > 0 ? (
+        <ul className="world-roster" aria-label="World roster">
+          {characters.map((character) => (
+            <li key={character.id}>
+              <span className="world-roster-dot" style={{ backgroundColor: character.color }} aria-hidden="true" />
+              {character.name} · {character.archetype}
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   )
 }
