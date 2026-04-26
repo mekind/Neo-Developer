@@ -1,3 +1,5 @@
+const DEFAULT_API_BASE_URL = 'https://backend-kappa-brown-63.vercel.app'
+
 function trimTrailingSlash(value: string) {
   return value.replace(/\/+$/, '')
 }
@@ -5,9 +7,9 @@ function trimTrailingSlash(value: string) {
 export function getApiBaseUrl() {
   const configured = import.meta.env.VITE_API_BASE_URL?.trim()
 
-  if (!configured) {
-    throw new Error('Missing VITE_API_BASE_URL configuration.')
+  if (configured) {
+    return trimTrailingSlash(configured)
   }
 
-  return trimTrailingSlash(configured)
+  return trimTrailingSlash(DEFAULT_API_BASE_URL)
 }
