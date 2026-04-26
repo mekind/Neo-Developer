@@ -16,6 +16,7 @@ import {
 import { AgentsService } from './agents.service';
 import { CreateAgentDto } from './dto/create-agent.dto';
 import { UpdateAgentDto } from './dto/update-agent.dto';
+import { InvokeAgentDto } from './dto/invoke-agent.dto';
 
 @ApiTags('agents')
 @Controller('users/:userId/agents')
@@ -84,5 +85,17 @@ export class AgentsController {
     @Param('agentId') agentId: string,
   ) {
     return this.agents.remove(userId, agentId);
+  }
+
+  @Post(':agentId/invoke')
+  @ApiOperation({ summary: '에이전트와 대화하기 (invoke)' })
+  @ApiParam({ name: 'userId', description: '사용자 uuid' })
+  @ApiParam({ name: 'agentId', description: '에이전트 uuid' })
+  invoke(
+    @Param('userId') userId: string,
+    @Param('agentId') agentId: string,
+    @Body() dto: InvokeAgentDto,
+  ) {
+    return this.agents.invoke(userId, agentId, dto);
   }
 }
