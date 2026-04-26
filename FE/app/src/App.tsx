@@ -26,7 +26,6 @@ export default function App() {
     handleOpenChat,
     handleSendChatMessage,
     handleFocusAgent,
-    ambientSpeechByAgentId,
   } = useAgentsPage()
   const { catalog: lpcSpriteCatalog } = useLpcSpriteBundle()
 
@@ -47,7 +46,6 @@ export default function App() {
           lpcSpriteCatalog={lpcSpriteCatalog}
           onAgentInteraction={handleAgentInteraction}
           focusRequest={focusRequest}
-          ambientSpeechByAgentId={ambientSpeechByAgentId}
         />
       </div>
 
