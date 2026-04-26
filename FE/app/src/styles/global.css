@@ -499,3 +499,48 @@ figure {
   background: rgba(155, 106, 79, 0.12);
   color: #4d463f;
 }
+
+.chat-dialog-panel {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(114, 104, 90, 0.16);
+  background: rgba(255, 252, 247, 0.98);
+  box-shadow: 0 24px 60px rgba(50, 42, 31, 0.2);
+}
+
+.chat-dialog-header {
+  align-items: start;
+}
+
+.chat-transcript {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(244, 236, 227, 0.86);
+}
+
+.chat-bubble {
+  max-width: 100%;
+  padding: 12px 14px;
+  border-radius: 16px;
+}
+
+.chat-bubble p {
+  margin-bottom: 0;
+  color: #3f352d;
+}
+
+.chat-bubble-agent {
+  background: rgba(255, 247, 237, 0.96);
+  border: 1px solid rgba(155, 106, 79, 0.18);
+}
+
+.chat-dialog-footer p {
+  margin-bottom: 0;
+  color: #6a6058;
+  font-size: 13px;
+}
