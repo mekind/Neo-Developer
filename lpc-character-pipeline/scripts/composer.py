@@ -45,6 +45,13 @@ LPC_URL = os.environ.get(
     "https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/",
 )
 
+MODULE_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_BUNDLE_ROOT = MODULE_ROOT / ".example"
+DEFAULT_MALE_STATE_PATH = DEFAULT_BUNDLE_ROOT / "default_male" / "lpc-state.pre.json"
+DEFAULT_FEMALE_STATE_PATH = DEFAULT_BUNDLE_ROOT / "default_female" / "lpc-state.pre.json"
+DEFAULT_MALE_OUTPUT_DIR = DEFAULT_BUNDLE_ROOT / "default_male"
+DEFAULT_FEMALE_OUTPUT_DIR = DEFAULT_BUNDLE_ROOT / "default_female"
+
 # Debug instrumentation flag for tracking selection disappearance
 _DEBUG_LPC = os.environ.get("MYCLAW_LPC_DEBUG", "").lower() in ("1", "true", "yes")
 
@@ -126,6 +133,105 @@ def _sanitize_state(state: dict) -> dict:
     return {**state, "selections": cleaned}
 
 
+def _has_torso_layer(state: dict) -> bool:
+    """Return True when torso coverage layers exist in selections.
+
+    We treat clothes/jacket/vest itemIds as the minimum signal that walk rows
+    won't render as "undressed".
+    """
+    selections = (state or {}).get("selections", {}) or {}
+    for key in ("clothes", "jacket", "vest"):
+        value = selections.get(key)
+        if isinstance(value, dict) and isinstance(value.get("itemId"), str) and value.get("itemId"):
+            return True
+    return False
+
+
+def _fallback_template_state(body_type: str, skin_recolor: str) -> dict:
+    normalized_body_type = "female" if body_type == "female" else "male"
+    head_item_id = "heads_human_female" if normalized_body_type == "female" else "heads_human_male"
+    hair_item_id = "hair_ponytail" if normalized_body_type == "female" else "hair_plain"
+    hair_recolor = "brown" if normalized_body_type == "female" else "dark_brown"
+    torso_recolor = "rose" if normalized_body_type == "female" else "bluegray"
+    shoe_variant = "brown" if normalized_body_type == "female" else "black"
+
+    return {
+        "version": 2,
+        "bodyType": normalized_body_type,
+        "selections": {
+            "body": {"itemId": "body", "variant": "", "recolor": skin_recolor, "name": "Body"},
+            "head": {"itemId": head_item_id, "variant": "", "recolor": skin_recolor, "name": "Head"},
+            "expression": {
+                "itemId": "face_neutral",
+                "variant": "",
+                "recolor": skin_recolor,
+                "name": "Neutral",
+            },
+            "hair": {
+                "itemId": hair_item_id,
+                "variant": "",
+                "recolor": hair_recolor,
+                "name": "Fallback Hair",
+            },
+            "clothes": {
+                "itemId": "torso_clothes_longsleeve2",
+                "variant": "",
+                "recolor": torso_recolor,
+                "name": "Fallback Top",
+            },
+            "legs": {"itemId": "legs_pants", "variant": "", "recolor": "gray", "name": "Pants"},
+            "shoes": {
+                "itemId": "feet_shoes_basic",
+                "variant": shoe_variant,
+                "recolor": "",
+                "name": "Shoes",
+            },
+        },
+        "selectedAnimation": "walk",
+    }
+
+
+def _load_default_fallback_state(body_type: str, skin_recolor: str) -> dict:
+    path = DEFAULT_FEMALE_STATE_PATH if body_type == "female" else DEFAULT_MALE_STATE_PATH
+    if path.exists():
+        try:
+            state = json.loads(path.read_text(encoding="utf-8"))
+            if _has_torso_layer(state):
+                return state
+        except Exception:
+            pass
+    return _fallback_template_state(body_type, skin_recolor)
+
+
+def _copy_default_output_bundle(body_type: str, output_dir: Path) -> dict | None:
+    """Copy pre-generated default output artifacts into output_dir.
+
+    This avoids an additional compose/render cycle on fallback.
+    """
+    src_dir = DEFAULT_FEMALE_OUTPUT_DIR if body_type == "female" else DEFAULT_MALE_OUTPUT_DIR
+    required_files = (
+        ("character.png", "character_png"),
+        ("lpc-state.json", "lpc_state"),
+        ("CREDITS.txt", "credits"),
+        ("frame-map.json", "frame_map"),
+    )
+
+    if not src_dir.exists():
+        return None
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    copied: dict[str, str] = {}
+    for filename, key in required_files:
+        src = src_dir / filename
+        if not src.exists():
+            return None
+        dst = output_dir / filename
+        shutil.copy2(src, dst)
+        copied[key] = str(dst)
+
+    return copied
+
+
 def _normalize_hosted_skin_recolor(recolor: str) -> str:
     if recolor in _HOSTED_SAFE_SKIN_RECOLORS:
         return recolor
@@ -149,6 +255,16 @@ def _debug_checkpoint(label: str, state: dict) -> None:
         pass
 
 
+def _accept_dialog_safe(dialog: Any) -> None:
+    try:
+        dialog.accept()
+    except Exception:
+        # The UI can surface transient duplicate dialog events during repeated
+        # import/re-render cycles (e.g., fallback compose pass). Ignore when the
+        # dialog was already handled by Playwright internals.
+        pass
+
+
 def _import_state(page: Page, state: dict) -> None:
     """Inject state JSON via clipboard, click Import, then force a synchronous
     re-render so we can await its completion (per-item layer fetches included).
@@ -162,7 +278,7 @@ def _import_state(page: Page, state: dict) -> None:
     clean = _sanitize_state(state)
     state_json = json.dumps(clean)
     page.evaluate("text => navigator.clipboard.writeText(text)", state_json)
-    page.once("dialog", lambda d: d.accept())
+    page.once("dialog", _accept_dialog_safe)
     page.get_by_role("button", name="Import from Clipboard (JSON)").click()
     _debug_checkpoint("after_import_click", clean)
 
@@ -193,7 +309,7 @@ def _click_download(page: Page, button_label: str, expected_filename: str, dest:
 def _read_export_clipboard(page: Page) -> str:
     page.get_by_role("button", name="Export to Clipboard (JSON)").click()
     page.wait_for_timeout(300)
-    page.once("dialog", lambda d: d.accept())
+    page.once("dialog", _accept_dialog_safe)
     text = page.evaluate("() => navigator.clipboard.readText()")
     return text or ""
 
@@ -313,8 +429,44 @@ class Composer:
     def compose(self, state: dict, output_dir: Path) -> dict:
         if self._page is None:
             raise RuntimeError("Composer must be used as a context manager (with-block).")
+
         _import_state(self._page, state)
-        return _save_outputs(self._page, Path(output_dir), state)
+        paths = _save_outputs(self._page, Path(output_dir), state)
+
+        roundtrip_state: dict | None = None
+        try:
+            roundtrip_state = json.loads(Path(paths["lpc_state"]).read_text(encoding="utf-8"))
+        except Exception:
+            roundtrip_state = None
+
+        if roundtrip_state and _has_torso_layer(roundtrip_state):
+            return paths
+
+        base_state = roundtrip_state or state
+        body_type = (base_state.get("bodyType") if isinstance(base_state, dict) else None) or "male"
+        normalized_body_type = "female" if body_type == "female" else "male"
+        body_recolor = _normalize_hosted_skin_recolor(
+            (((base_state.get("selections") or {}).get("body") or {}).get("recolor") if isinstance(base_state, dict) else "light")
+            or "light"
+        )
+
+        fallback_state = _load_default_fallback_state(normalized_body_type, body_recolor)
+        print(
+            f"[LPC_FALLBACK] torso layer missing after compose; applying {normalized_body_type} default fallback",
+            file=sys.stderr,
+        )
+
+        copied = _copy_default_output_bundle(normalized_body_type, Path(output_dir))
+        if copied is not None:
+            print(
+                f"[LPC_FALLBACK] using pre-generated default_{normalized_body_type} output bundle",
+                file=sys.stderr,
+            )
+            return copied
+
+        # Last-resort fallback if default output artifacts are missing.
+        _import_state(self._page, fallback_state)
+        return _save_outputs(self._page, Path(output_dir), fallback_state)
 
     def close(self) -> None:
         try:
