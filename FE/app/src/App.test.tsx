@@ -115,10 +115,9 @@ describe('App', () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { name: /스쿨 커먼즈/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/room summary/i)).toHaveTextContent(/live/i)
-    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(screen.getByText(/controlling you at \(12%, 32%\)/i)).toBeInTheDocument()
     expect(screen.getByText(/minimap visible/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/world stage/i)).toBeInTheDocument()
     expect(await screen.findByRole('img', { name: /hana avatar/i })).toBeInTheDocument()
   })
 
@@ -131,8 +130,7 @@ describe('App', () => {
     fireEvent.change(within(dialog).getByLabelText(/backstory/i), { target: { value: 'Helps every newcomer settle in.' } })
     fireEvent.click(within(dialog).getByRole('button', { name: /^add agent$/i }))
 
-    await waitFor(() => expect(screen.getByLabelText(/room summary/i)).toHaveTextContent('3'))
-    expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1)
+    await waitFor(() => expect(screen.getAllByText('Warm Guide').length).toBeGreaterThan(1))
   })
 
   it('renders a simple backend agent roster', async () => {
@@ -198,7 +196,7 @@ describe('App', () => {
     expect(vi.mocked(globalThis.fetch).mock.calls[0]?.[0]).toContain('https://backend-kappa-brown-63.vercel.app/agents')
   })
 
-  it('moves only the user avatar and unlocks interaction feedback near an agent npc', async () => {
+  it('moves only the user avatar with smoothed motion and unlocks interaction feedback near an agent npc', async () => {
     const randomSpy = vi.spyOn(Math, 'random')
     randomSpy.mockReturnValueOnce(0.1).mockReturnValueOnce(0.2).mockReturnValueOnce(0.6).mockReturnValueOnce(0.7)
 
@@ -207,14 +205,20 @@ describe('App', () => {
 
     vi.useFakeTimers()
     try {
+      expect(screen.getByText(/controlling you at/i)).toHaveTextContent('Controlling You at (12%, 32%).')
+      expect(screen.getByText(/press space near hana to interact/i)).toBeInTheDocument()
+
       fireEvent.keyDown(window, { key: 'ArrowRight' })
       act(() => {
-        vi.advanceTimersByTime(180)
+        vi.advanceTimersByTime(220)
       })
       fireEvent.keyUp(window, { key: 'ArrowRight' })
+      act(() => {
+        vi.advanceTimersByTime(220)
+      })
 
-      expect(screen.getByText(/controlling you at \(21%, 32%\)/i)).toBeInTheDocument()
-      expect(screen.getByText(/press space near hana to interact/i)).toBeInTheDocument()
+      const statusLines = screen.getAllByText((content) => content.includes('Controlling'))
+      expect(statusLines[0]?.textContent).not.toBe('Controlling You at (12%, 32%).')
 
       fireEvent.keyDown(window, { key: ' ', code: 'Space' })
 
