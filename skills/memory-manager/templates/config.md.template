@@ -20,5 +20,5 @@ agent_id: {{agent_id}}
 - fallback: {{fallback_channel}}
 
 ## Memory
-- user_context: ../Memory.md
+- user_context: ../profile.md
 - agent_memory: ./{{agent_id}}/memory.md
