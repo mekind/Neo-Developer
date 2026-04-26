@@ -20,3 +20,9 @@ Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
     set font(_value: string) {},
   }),
 })
+
+import { afterEach, vi } from 'vitest'
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
