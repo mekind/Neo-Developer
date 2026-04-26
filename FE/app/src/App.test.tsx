@@ -106,5 +106,4 @@ describe('App', () => {
     expect(alerts[0]).toHaveTextContent('Missing VITE_API_BASE_URL configuration.')
     expect(globalThis.fetch).not.toHaveBeenCalled()
   })
-}
-)
+})

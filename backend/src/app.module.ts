@@ -4,6 +4,6 @@ import { ItemsModule } from './items/items.module';
 import { MemoryModule } from './memory/memory.module';
 
 @Module({
-  imports: [AgentsModule, ItemsModule, MemoryModule],
+  imports: [ItemsModule, MemoryModule, AgentsModule],
 })
 export class AppModule {}
