@@ -1,0 +1,367 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - heading "MyClaw" [level=1] [ref=e11]
+      - paragraph [ref=e12]: 비개발자를 위한 AI 에이전트 플랫폼
+      - paragraph [ref=e13]:
+        - text: 대화만으로 나만의 AI 에이전트를 만들고,
+        - text: Gather 스타일 공간에서 도트 캐릭터로 만나 대화하세요.
+      - generic [ref=e15]: cmux Hackathon 2026
+    - generic:
+      - generic:
+        - heading "서비스 개요" [level=2]
+        - paragraph:
+          - text: 코딩 없이, 대화만으로 나만의 AI 에이전트를 정의하고
+          - strong: Gather town 스타일
+          - text: 픽셀 공간에서 도트 캐릭터로 만나 대화하는 플랫폼
+        - generic:
+          - generic:
+            - heading "대화로 정의" [level=3]
+            - paragraph:
+              - text: "\"경쟁사 블로그 새 글 알려줘\""
+              - text: 한 마디면 에이전트 생성
+          - generic:
+            - heading "픽셀 공간에서 만남" [level=3]
+            - paragraph:
+              - text: Gather 스타일 2D 맵에서
+              - text: 에이전트 캐릭터에게 다가가면 대화 시작
+          - generic:
+            - heading "기억하는 에이전트" [level=3]
+            - paragraph:
+              - text: Memory 시스템으로
+              - text: 매번 같은 질문 없이 점점 똑똑해짐
+    - generic:
+      - generic:
+        - heading "왜 지금인가?" [level=2]
+        - paragraph: AI 에이전트 시대가 열리고 있지만, 모두의 것은 아닙니다
+        - generic:
+          - generic:
+            - heading "📈 급성장하는 관심" [level=3]
+            - paragraph:
+              - text: AI 에이전트 프레임워크 급증
+              - text: 개인 맞춤 에이전트 니즈 폭발
+              - text: LLM 모델의 비약적 성능 향상
+          - generic:
+            - heading "🚧 하지만 벽이 있다" [level=3]
+            - paragraph:
+              - text: 대부분의 솔루션이
+              - strong: 개발자 전용
+              - text: 비개발자에겐 높은 진입장벽
+              - text: "\"코딩 없이 된다\"는 거짓말뿐"
+        - generic:
+          - paragraph:
+            - strong: "\"누구나 AI 에이전트를 만들 수 있어야 한다\""
+            - text: MyClaw는 이 간극을 메웁니다
+    - generic:
+      - generic:
+        - heading "비개발자가 겪는 4가지 벽" [level=2]
+        - generic:
+          - generic:
+            - heading "복잡한 설정" [level=3]
+            - paragraph:
+              - text: 시나리오 빌더, 조건 분기, 변수...
+              - text: 30분 만에 포기
+          - generic:
+            - heading "기술 용어" [level=3]
+            - paragraph:
+              - text: API, Webhook, JSON...
+              - text: "\"그냥 답변만 하면 되는데\""
+          - generic:
+            - heading "재미 없는 UI" [level=3]
+            - paragraph:
+              - text: 대시보드와 설정 화면
+              - text: 흥미 잃으면 5분 만에 이탈
+          - generic:
+            - heading "반복되는 질문" [level=3]
+            - paragraph:
+              - text: 매번 처음부터 다시 설명
+              - text: 기억하지 못하는 챗봇
+    - generic:
+      - generic:
+        - heading "타겟 페르소나" [level=2]
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic: 수진 29세, 마케터
+                - generic: Notion·Slack 능숙 / 코딩 불가
+            - generic:
+              - text: 매일 경쟁사 블로그 3곳 수동 확인 —
+              - strong: 15분/일
+            - generic: "\"챗GPT는 매번 같은 거 물어봐야 해서 귀찮아\""
+          - generic:
+            - generic:
+              - generic:
+                - generic: 동현 35세, 1인 쇼핑몰 대표
+                - generic: 스마트스토어 익숙 / 나머지 어려움
+            - generic:
+              - text: 반복 문의 수동 응대 —
+              - strong: 20분/일
+            - generic: "\"챗봇 서비스 설정이 너무 복잡해서 결국 안 씀\""
+          - generic:
+            - generic:
+              - generic:
+                - generic: 은서 42세, 회사원
+                - generic: 호기심으로 접근 / 뭘 만들지 모름
+            - generic:
+              - text: 빈 화면 + 예시 없음 →
+              - strong: 5분 만에 이탈
+            - generic: "\"AI가 뭐든 해준다던데... 근데 뭘 시켜야 하지?\""
+    - generic:
+      - generic:
+        - heading "해결 접근" [level=2]
+        - paragraph: 비개발자의 벽을 허무는 3가지 전략
+        - generic:
+          - generic:
+            - generic: 🎮
+            - heading "게임 같은 경험" [level=3]
+            - paragraph:
+              - text: Gather 스타일 픽셀 공간
+              - text: 도트 캐릭터로 에이전트와 만남
+              - text: 설정 화면이 아닌
+              - strong: 놀이 공간
+          - generic:
+            - generic: 💬
+            - heading "대화로 정의" [level=3]
+            - paragraph:
+              - text: "\"이런 거 해줘\" 한 마디면 끝"
+              - text: Persona Builder가 의도를 파악하고
+              - text: 자동으로 에이전트를 생성
+          - generic:
+            - generic: 🧠
+            - heading "기억하는 시스템" [level=3]
+            - paragraph:
+              - text: llm-wiki 패턴의 Memory
+              - text: 한 번 말한 건 다시 안 물어봄
+              - text: 쓸수록
+              - strong: 질문이 줄어드는
+              - text: 경험
+    - generic:
+      - generic:
+        - heading "기술 아키텍처" [level=2]
+        - generic:
+          - generic:
+            - generic:
+              - strong: Frontend
+              - text: — Gather 스타일 UI
+              - generic: 캐릭터 이동 · 대화 UI · 알림 렌더
+          - generic:
+            - generic: ▼ HTTPS
+          - generic:
+            - generic:
+              - strong: NestJS Backend
+              - text: — 데이터 & 제약
+              - generic: User · Memory · Agent CRUD | Postgres (Prisma) | Auth | 3개 제한 | 알림 저장
+          - generic:
+            - generic: ▼ /api/invoke
+            - generic: "|"
+            - generic: ▲ PUT memory, notifications
+          - generic:
+            - generic:
+              - strong: OpenClaw Runtime
+              - text: — Stateless HTTP
+              - generic: SOUL → 시스템 프롬프트 | 가드레일 | Skill 실행 | LLM 호출
+              - generic:
+                - generic: load-agent
+                - generic: build-prompt
+                - generic: guardrails
+                - generic: select-skills
+                - generic: run
+                - generic: write-back
+          - generic:
+            - generic: ▼
+          - generic:
+            - generic:
+              - strong: Vercel AI Gateway
+              - generic: AI SDK v6 · LLM 프로바이더 추상화
+            - generic:
+              - strong: External APIs
+              - generic: insane-search · 검색 · 크롤링
+    - generic:
+      - generic:
+        - heading "Memory 관리" [level=2]
+        - paragraph: llm-wiki 패턴 — 파일 기반 지식 저장, [[link]] 연결
+        - generic:
+          - generic:
+            - heading "📂 폴더 구조" [level=3]
+            - generic:
+              - text: "~/.myclaw/users/{user_id}/"
+              - text: ├── index.md ← 문서 허브
+              - text: ├── log.md ← append-only 이력
+              - text: ├── profile.md ← 사용자 정보
+              - text: ├── preferences.md
+              - text: ├── agents/
+              - text: │ ├── index.md
+              - text: "│ └── {agent_id}/"
+              - text: │ ├── persona.md
+              - text: │ ├── SOUL.md
+              - text: │ └── config.md
+              - text: └── context/
+              - text: ├── interests.md
+              - text: └── history.md
+          - generic:
+            - generic:
+              - heading "[[link]] 연결" [level=3]
+              - paragraph:
+                - text: 문서 간 [[profile]], [[context/interests]] 형태로 연결
+                - text: Persona Builder가 관련 문서를 자동 참조
+            - generic:
+              - heading "append-only log" [level=3]
+              - paragraph:
+                - text: 모든 변경사항이
+                - code: log.md
+                - text: 에 시간순 기록
+                - text: 히스토리 추적 · 디버깅 · 롤백
+            - generic:
+              - heading "Memory 참조 흐름" [level=3]
+              - paragraph:
+                - text: 요청 수신 → [[profile]] 읽기 → [[interests]] 읽기
+                - text: → 이미 아는 정보는 스킵 → 모르는 것만 질문
+    - generic:
+      - generic:
+        - heading "사용자 Flow" [level=2]
+        - generic:
+          - generic:
+            - generic: 👋
+            - strong: 온보딩
+            - generic:
+              - text: 대화로 3-4개 질문
+              - text: 닉네임 · 목적 수집
+          - generic: →
+          - generic:
+            - generic: 🏗️
+            - strong: Persona Builder
+            - generic:
+              - text: 자연어로 에이전트 정의
+              - text: "\"이런 거 해줘\" 한 마디"
+          - generic: →
+          - generic:
+            - generic: 🎨
+            - strong: 캐릭터 생성
+            - generic:
+              - text: 도트 캐릭터 자동 생성
+              - text: 공간에 배치
+          - generic: →
+          - generic:
+            - generic: 🗣️
+            - strong: 대화 & 상호작용
+            - generic:
+              - text: 다가가면 대화 시작
+              - text: 역할에 맞는 응답
+          - generic: →
+          - generic:
+            - generic: 🔔
+            - strong: 알림 & 성장
+            - generic:
+              - text: 스케줄 알림 수신
+              - text: Memory가 쌓여 진화
+        - generic:
+          - generic: "접속 → 첫 봇 생성: 5분 이내"
+          - generic: "필요한 코딩: 0줄"
+    - generic:
+      - generic:
+        - heading "대화 예시" [level=2]
+        - generic:
+          - generic:
+            - heading "❌ 기존 챗봇 서비스" [level=3]
+            - generic:
+              - generic: "시나리오 빌더 화면:"
+              - text: ▸ 조건 분기 노드 추가...
+              - text: "▸ 변수명: shipping_date"
+              - text: "▸ 트리거: 정규식 매칭..."
+              - text: ▸ API 연동 설정...
+              - text: "▸ Webhook URL: https://..."
+              - generic: "→ 30분 뒤: 창 닫음 😤"
+          - generic:
+            - heading "✅ MyClaw" [level=3]
+            - generic:
+              - generic: 사용자
+              - generic:
+                - text: "\"배송 언제 와요\" 물으면"
+                - text: "\"주문 후 2-3일 걸려요\"라고 해줘"
+              - generic: Persona Builder
+              - generic: 알겠어요! 다른 질문도 추가할까요?
+              - generic: 사용자
+              - generic:
+                - text: "\"교환 가능해요?\"면"
+                - text: "\"7일 이내 가능해요\"라고"
+              - generic: Persona Builder
+              - generic:
+                - text: 두 가지 답변 봇 만들었어요! 🎉
+                - text: 저기 노란 캐릭터가 보이죠?
+            - generic: → 2분 만에 완료 ✨
+    - generic:
+      - generic:
+        - heading "Live Demo" [level=2]
+        - paragraph: 직접 보여드리겠습니다
+        - generic:
+          - generic: ▶
+          - paragraph: 실제 서비스 시연
+          - generic:
+            - generic: 온보딩 대화
+            - generic: 에이전트 생성
+            - generic: 픽셀 공간 대화
+            - generic: 알림 수신
+    - generic:
+      - generic:
+        - heading "경쟁 비교" [level=2]
+        - generic:
+          - generic:
+            - heading "기존 챗봇 서비스" [level=3]
+            - generic:
+              - text: "설정: 복잡한 빌더"
+              - text: "기술 지식: 필요"
+              - text: "UI: 대시보드"
+              - text: "기억: 매번 리셋"
+              - text: "재미: 없음"
+          - generic:
+            - heading "ChatGPT" [level=3]
+            - generic:
+              - text: "설정: 쉬움"
+              - text: "기술 지식: 불필요"
+              - text: "UI: 채팅 창"
+              - text: "기억: 제한적"
+              - text: "재미: 보통"
+          - generic:
+            - heading "개발자 프레임워크" [level=3]
+            - generic:
+              - text: "설정: 코드 필수"
+              - text: "기술 지식: 높음"
+              - text: "UI: 터미널"
+              - text: "기억: 가능"
+              - text: "재미: 개발자만"
+          - generic:
+            - heading "MyClaw ✦" [level=3]
+            - generic:
+              - text: "설정: 대화 한 마디"
+              - text: "기술 지식: 불필요"
+              - text: "UI: 픽셀 공간"
+              - text: "기억: llm-wiki"
+              - text: "재미: 게임처럼"
+        - generic:
+          - generic:
+            - generic: 5분
+            - generic: 접속 → 첫 에이전트
+          - generic:
+            - generic: 3개
+            - generic: 무료 에이전트
+          - generic:
+            - generic: 0줄
+            - generic: 필요한 코드
+    - generic:
+      - generic:
+        - generic:
+          - text: AI 에이전트,
+          - text: 이제 모두의 것으로
+        - paragraph:
+          - text: 코딩 없이, 대화만으로, 게임처럼.
+          - text: 당신만의 AI 에이전트를 만나보세요.
+        - generic:
+          - heading "MyClaw" [level=1]
+        - generic:
+          - paragraph: Q&A
+          - paragraph: 감사합니다
+  - navigation [ref=e18]:
+    - button "← 이전" [disabled] [ref=e19]
+    - generic [ref=e20]: 1 / 13
+    - button "다음 →" [ref=e21] [cursor=pointer]
