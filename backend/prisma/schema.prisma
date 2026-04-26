@@ -18,9 +18,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  profile Profile?
-  agents  Agent[]
-  memory  MemoryDocument[]
+  profile       Profile?
+  agents        Agent[]
+  memory        MemoryDocument[]
+  notifications Notification[]
 }
 
 model Profile {
@@ -70,4 +71,18 @@ model Skill {
   defaultParams Json?
   enabled       Boolean  @default(true)
   createdAt     DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  agentId   String?
+  kind      String   // 'alert' | 'message'
+  body      String
+  meta      Json?    // used_skills 등 추가 정보
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
 }
